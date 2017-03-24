@@ -1,0 +1,23 @@
+{
+    "name": "GFPHP/framework",
+    "description": "GFPHP/framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "PGF",
+            "email": "592472116@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "files": [
+            "src/Illuminate/Foundation/helpers.php",
+            "src/Illuminate/Support/helpers.php"
+        ],
+        "psr-4": {
+            "GFPHP": "src/"
+        }
+    }
+}
