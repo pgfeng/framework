@@ -35,7 +35,32 @@ class Router
         'HEAD' => [],
         'ALL' => [],
     ];
-
+    public static function init(){
+        Router::all('(.*)', function ($router) {
+            $cuts = explode('/', $router);
+            $count = count($cuts);
+            $uri = '';
+            if($count==1){
+                if($cuts[0])
+                    $uri = $cuts[0].'@index';
+                else
+                    $uri = 'Home@index';
+            }else {
+                for ($i = 0; $i < $count; $i++) {
+                    if (!$cuts[$i])
+                        continue;
+                    if ($i == $count - 1) {
+                        $uri .= '@' . $cuts[$i];
+                    } else {
+                        if($i!=0)
+                            $uri .= '/';
+                        $uri .= ucfirst($cuts[$i]);
+                    }
+                }
+            }
+            return Router::runCallback($uri, false);
+        });
+    }
     /**
      * 向路由中存储
      * @param $method
@@ -83,9 +108,16 @@ class Router
         if(!$callback) {
             $callback = function () {
                 header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
-                echo '页面不存在!';
+                return '页面不存在!';
             };
         }
+        return self::runCallBack($callback,$params);
+    }
+
+    /**
+     * 运行callback
+     */
+    public static function runCallBack($callback,$params){
         if (is_object($callback)) {
             if (!$params) {
                 return call_user_func($callback);
@@ -93,12 +125,14 @@ class Router
                 return call_user_func_array($callback,$params);
             }
         } else {
+            $callback = Application::$app_name.'/'.$callback;
             $callback = str_replace('/', '\\', $callback);
-
             $segments = explode('@', $callback);
-
             $controller = new $segments[0]();
-
+            if(!method_exists($controller, $segments[1])){
+                header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
+                return 'method '.$segments[1].' not find!';
+            }
             if (!is_array($params)) {
                 return $controller->{$segments[1]}();
             }else{

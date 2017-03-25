@@ -9,13 +9,14 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "filp/whoops":"dev-master"
     },
     "autoload": {
         "files": [
         ],
         "psr-4": {
-            "GFPHP\\": "src/"
+            "GFPHP\\": "./"
         }
     }
 }
