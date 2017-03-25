@@ -73,15 +73,15 @@ class Template
 		}
 	}
 
-	/**
-	 * 传入模板名称，返回模板编译后的内容
-	 *
-	 * @param      $template
-	 * @param bool $cacheTime
-	 * @param bool $cacheKey
-	 *
-	 * @return String
-	 */
+    /**
+     * 传入模板名称，返回模板编译后的内容
+     *
+     * @param      $template
+     * @param bool $cacheTime
+     * @param bool $cacheKey
+     * @return String
+     * @throws Exception
+     */
 	public function fetchTemplate ( $template, $cacheTime = FALSE, $cacheKey = FALSE )
 	{
         $path[ 'template_c' ] = $this->get_path ( $template, 'view_c' );
@@ -90,7 +90,6 @@ class Template
 		$cache = $cacheTime ? intval ( $cacheTime ) : Config::template ( 'view_cache_time' );
 		$cache = isset( $_POST ) && !empty( $_POST ) ? 0 : $cache;
 		$kVar = empty( $cacheKey ) ? NULL : $cacheKey;
-
 		if ( file_exists ( $path[ 'template' ] ) ) {
 			if ( $this->TemplateChange ( $template ) ) {
 				$this->write ( $path[ 'template_c' ], $this->template_parse ( file_get_contents ( $path[ 'template' ] ) ) );
@@ -99,17 +98,17 @@ class Template
 				if ( !Cache::is_cache ( $this->get_temp_name ( $template, $cacheKey ), Config::template ( 'view_cache_dir' ) ) ) {
 					$content = self::cache_compile ( $template, $cacheKey );
 					$kVar = $kVar == '' ? '' : '[' . $kVar . ']';
-					Debug::add ( 'Template:写入缓存 ' . $template . $kVar . ' 缓存时间:' . $cache . '秒.' );
+					Debug::add ( 'Template:写入缓存 ' . $path[ 'template' ] . $kVar . ' 缓存时间:' . $cache . '秒.' );
 
 				} elseif ( ( $cache < 0 || Cache::time ( $this->get_temp_name ( $template, $cacheKey ), Config::template ( 'view_cache_dir' ) ) + $cache > time () ) && filemtime ( $path[ 'template_c' ] ) < Cache::time ( $this->get_temp_name ( $template, $cacheKey ), Config::template ( 'view_cache_dir' ) ) ) {
 					$content = Cache::get ( $this->get_temp_name ( $template, $cacheKey ), Config::template ( 'view_cache_dir' ) );
 					$kVar = $kVar == '' ? '' : '[' . $kVar . ']';
-					Debug::add ( 'Template:读取缓存 ' . $template . $kVar . ' 缓存时间:' . $cache . '秒.' );
+					Debug::add ( 'Template:读取缓存 ' . $path[ 'template' ] . $kVar . ' 缓存时间:' . $cache . '秒.' );
 
 				} else {
 					$content = self::cache_compile ( $template, $cacheKey );
 					$kVar = $kVar == '' ? '' : '[' . $kVar . ']';
-					Debug::add ( 'Template:更新缓存 ' . $template . $kVar . ' 缓存时间:' . $cache . '秒.' );
+					Debug::add ( 'Template:更新缓存 ' . $path[ 'template' ] . $kVar . ' 缓存时间:' . $cache . '秒.' );
 
 				}
 			} else {
@@ -121,7 +120,7 @@ class Template
 				include $path[ 'template_c' ];
 				$content = ob_get_contents ();
 				ob_end_clean ();
-				Debug::add ( 'Template:使用模板 ' . $template . ' 未使用缓存.' );
+				Debug::add ( 'Template:使用模板 ' . $path[ 'template' ] . ' 未使用缓存.' );
 			}
 
 			return $content;

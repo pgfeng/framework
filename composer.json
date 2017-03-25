@@ -10,7 +10,8 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "filp/whoops":"2.1.8"
+        "filp/whoops":"2.1.8",
+        "php-console/php-console":"3.1.6"
     },
     "autoload": {
         "files": [

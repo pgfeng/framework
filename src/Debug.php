@@ -7,7 +7,7 @@
  */
 
 namespace GFPHP;
-use Psr\Log\NullLogger;
+use PhpConsole;
 
 
 /**
@@ -24,20 +24,20 @@ class Debug
     static $sqls = [ ];
     static $include = [ ];
     static $length;
+    static $Connector;
     /**
-     * @var \Vendor\PhpConsole
+     * @var bool| PhpConsole\Handler
      */
-    static $PhpConsole;
+    static $Handler = false;
 
     //-------添加程序执行信息--------
     static function add ( $msg, $type = 0 )
     {
-        if ( !Config::config ( 'debug' ) )
+        if ( !Config::debug ( 'debug' ) )
             return;
         switch ( $type ) {
             case 0:
                 self::$msg[] = $msg;                            //把运行信息添加进去
-
                 break;
             case '1':
                 self::$include[] = $msg;                        //把包含文件添加进去
@@ -53,7 +53,7 @@ class Debug
     static function fatalError ()
     {
         $e = error_get_last ();
-        self::$PhpConsole->error ( $e, '错误' );
+        self::error ( $e, '错误' );
         if ( Config::debug ( 'debug' ) && $e ) {
             switch ( $e[ 'type' ] ) {
                 case E_ERROR:
@@ -127,7 +127,7 @@ class Debug
 
         $content .= '=============================================================================================' . PHP_EOL . PHP_EOL;
         logMessage ( $e[ 'type' ] === 'template' ? 'template' : 'application', $content );
-        self::$PhpConsole->error ( $content, $e[ 'type' ] );
+        self::error ( $content, $e[ 'type' ] );
         // 包含异常页面模板
         IF ( Config::debug ( 'debug' ) ) {
             $exceptionFile = Config::config ( 'core_dir' ) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'Exception.php';
@@ -144,13 +144,27 @@ class Debug
         if ( Config::config ( 'gzip' ) ) {
             ob_start ( 'ob_gzhandler' );
         }
-        self::$PhpConsole = new PhpConsole;
+        $Connector = PhpConsole\Connector::getInstance();
+        $isActiveClient = $Connector->isActiveClient();
+        if($isActiveClient){
+            $Connector->setPassword(Config::debug('password'));
+            $Handler = PhpConsole\Handler::getInstance();
+            $Handler->start();
+            $Handler->checkFatalErrorOnShutDown();
+            self::$Connector = $Connector;
+            self::$Handler = $Handler;
+        }
 //        new Vendor\PhpConsole();
         register_shutdown_function ( 'GFPHP\Debug::fatalError' );
         set_error_handler ( 'GFPHP\Debug::appError' );
         self::$startTime = microtime ( TRUE );
     }
-
+    public static function debug($msg,$tag){
+        self::$Handler->debug($msg,$tag,TRUE);
+    }
+    public static function error($msg,$tag){
+        self::$Handler->handleError($tag,$msg);
+    }
     /**
      * 此方法处理非致命错误
      *
@@ -162,7 +176,7 @@ class Debug
      */
     static function appError ( $errno, $errstr )
     {
-        self::$PhpConsole->error ( $errstr, '错误' );
+        self::error ( $errstr, '错误' );
         if ( Config::debug ( 'debug' ) == TRUE && in_array ( $errno, Config::debug ( 'app_listen_error' ) ) ) {
             ob_end_clean ();
             self::halt ( $errstr );
@@ -171,11 +185,14 @@ class Debug
 
     //在脚本结束处调用获取脚本结束时间的微秒值
 
+    /**
+     *
+     */
     static function stop ()
     {
         self::$stopTime = microtime ( TRUE );   //将获取的时间赋给成员属性$stopTime
 
-        if ( Config::config ( 'debug' ) )                                                        //显示DEBUG信息
+        if ( Config::debug ( 'debug' ) )                                                        //显示DEBUG信息
             Debug::message ();
         if ( extension_loaded ( 'zlib' ) && Config::config ( 'gzip' ) ) @ob_end_flush ();
         exit;
@@ -209,14 +226,14 @@ class Debug
     static function message ()
     {
         $runTime = self::spent ();
-        self::$PhpConsole->debug ( $runTime, '运行耗时' );
-        self::$PhpConsole->debug ( number_format ( 1 / $runTime, 2 ) . 'rps/s', '吞吐率' );
-        self::$PhpConsole->debug ( round ( ( memory_get_usage () / 1024 ), 4 ) . ' kb', '内存占用' );
-        self::$PhpConsole->debug ( self::$msg, '运行信息' );
-        self::$PhpConsole->debug ( self::$include, '包含文件' );
+        self::debug ( $runTime, '运行耗时' );
+        self::debug ( number_format ( 1 / $runTime, 2 ) . 'rps/s', '吞吐率' );
+        self::debug ( round ( ( memory_get_usage () / 1024 ), 4 ) . ' kb', '内存占用' );
+        self::debug ( self::$msg, '运行信息' );
+        self::debug ( self::$include, '包含文件' );
 
         IF ( self::$sqls )
-            self::$PhpConsole->debug ( self::$sqls, '运行SQL' );
+            self::debug ( self::$sqls, '运行SQL' );
     }
 
     static function spent ()

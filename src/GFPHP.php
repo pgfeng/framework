@@ -17,10 +17,12 @@ class GFPHP
         $whoops = new \Whoops\Run;
         $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
         $whoops->register();
+        Debug::start();
         self::$app_name = $app_name;
         Router::init();
     }
     public static function run(){
         echo Router::run();
+        Debug::stop();
     }
 }
