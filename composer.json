@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "filp/whoops":"dev-master"
+        "filp/whoops":"2.1.0"
     },
     "autoload": {
         "files": [
