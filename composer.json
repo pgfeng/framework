@@ -14,6 +14,7 @@
     },
     "autoload": {
         "files": [
+            "framework/src/Helper/Base.php"
         ],
         "psr-4": {
             "GFPHP\\": "src/"

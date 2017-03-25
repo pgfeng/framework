@@ -24,7 +24,7 @@ class Hooks
     public static $Hooks = [
         'template_filter' => [
             [
-                'Hooks' => 'Hooks/GFPHP',
+                'Hooks' => '/GFPHP/Hooks/GFPHP',
                 'Func'  => 'template_parse',
             ],
         ],
@@ -50,7 +50,7 @@ class Hooks
             if (!isset($act['Hooks'])) {
                 Debug::add('Hooks: 钩子配置错误,数组必须包含`Hooks`');
             } else {
-                $hooks = Loader::Hooks($act['Hooks']);
+                $hooks = new $act['Hooks'];
                 $func = isset($act['Func']) ? $act['Func'] : Config::hooks('DefaultFunc');
                 if (method_exists($hooks, $func)) {
                     Debug::add('Hooks: 钩子 ' . $act['Hooks'] . ' 函数 ' . $func . ' 运行.');
@@ -78,7 +78,7 @@ class Hooks
                 if (!isset($act['Hooks'])) {
                     Debug::add('Hooks: 钩子配置错误,数组必须包含`Hooks`');
                 } else {
-                    $hooks = Loader::Hooks($act['Hooks']);
+                    $hooks = new $act['Hooks'];
                     $func = isset($act['Func']) ? $act['Func'] : Config::Hooks('DefaultFunc');
                     if (method_exists($hooks, $func)) {
                         Debug::add('Hooks: 钩子 ' . $act['Hooks'] . ' 函数 ' . $func . ' 运行.');
@@ -105,7 +105,8 @@ class Hooks
                 if (!isset($act['Hooks'])) {
                     Debug::add('Hooks: 钩子配置错误,数组必须包含`Hooks`');
                 } else {
-                    $hooks = Loader::Hooks($act['Hooks']);
+                    $hooks = str_replace('/','\\',$act['Hooks']);
+                    $hooks = new $hooks;
                     $func = isset($act['Func']) ? $act['Func'] : Config::Hooks('DefaultFunc');
                     if (method_exists($hooks, $func)) {
                         Debug::add('Hooks: 钩子 ' . $act['Hooks'] . ' 函数 ' . $func . ' 运行.');

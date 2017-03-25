@@ -7,7 +7,7 @@
  */
 
 namespace GFPHP;
-
+use Psr\Log\NullLogger;
 
 
 /**
@@ -37,6 +37,7 @@ class Debug
         switch ( $type ) {
             case 0:
                 self::$msg[] = $msg;                            //把运行信息添加进去
+
                 break;
             case '1':
                 self::$include[] = $msg;                        //把包含文件添加进去

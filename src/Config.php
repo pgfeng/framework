@@ -40,38 +40,14 @@ class Config
      *
      * @return bool|int
      */
-    public static function set ( $config, $type = 'config', $save = FALSE )
+    public static function set ( $config, $type = 'config' )
     {
-        if ( $save == 1 )            //判断是否要保存文件
-        {
-            $conf = self::get ( $type );
-
-            if ( empty( $conf ) )            //判断配置是否为空
-            {
-                $configCon = "<?php\nreturn ";
-                ob_start ();
-                var_export ( $config );
-                $configCon .= ob_get_contents ();
-                ob_end_clean ();
-                $configCon .= ';';
-            } else {
-                foreach ( $config as $k => $v ) {
-                    $conf[ $k ] = $v;
-                }
-                $configCon = "<?php\nreturn ";
-                var_export ( $conf );
-                $configCon .= ob_get_contents ();
-                ob_end_clean ();
-                $configCon .= ';';
-            }
-
-            return file_put_contents ( __ROOT__ . parseDir ( APP_PATH, Config::config ( 'config_dir' ) ) . $type . '.php', $configCon );
-        }
         if ( is_array ( $config ) )
             foreach ( $config as $k => $v ) {
                 self::$config[ $type ][ $k ] = $v;
             }
-
+        else
+            throw new \Exception('$config must is array');
         return TRUE;
     }
 
@@ -104,7 +80,7 @@ class Config
     public static function &get ( $type, $name = FALSE, $value = FALSE )
     {
         if ( !isset( self::$config[ $type ] ) )
-            self::$config[ $type ] = Loader::config ( $type );
+            self::$config[ $type ] = include 'config/'.$type.'.php';
         if ( $name ) {
             if ( FALSE == $value ) {
                 return self::$config[ $type ][ $name ];
