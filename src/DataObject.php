@@ -13,7 +13,7 @@ namespace GFPHP;
  *
  * @package GFPHP
  */
-class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerializable, \ArrayAccess, \Countable, Traversable
+class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerializable, \ArrayAccess, \Countable
 {
 	private $storage = [ ],
 		$table = 'Data',
@@ -130,7 +130,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 	 *
 	 * @return mixed
 	 */
-	public function &__get ( $name )
+	public function __get ( $name )
 	{
 		return $this->storage[ $name ];
 	}
@@ -178,10 +178,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 		return count ( $this->storage );
 	}
 
-	/**
-	 *
-	 */
-	function rewind ()
+	public function rewind ()
 	{
 		reset ( $this->storage );
 	}
@@ -189,7 +186,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 	/**
 	 * @return DataObject|null
 	 */
-	function &current ()
+	function current ()
 	{
 		$data = current ( $this->storage );
 		if ( !empty( $data ) ) {
@@ -202,7 +199,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 	/**
 	 * @return mixed
 	 */
-	function &key ()
+	function key ()
 	{
 		return key ( $this->storage );
 	}
@@ -210,7 +207,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 	/**
 	 * @return mixed
 	 */
-	function &next ()
+	function next ()
 	{
 		return next ( $this->storage );
 	}
@@ -226,7 +223,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 	/**
 	 * @return array
 	 */
-	function &toArray ()
+	public function toArray ()
 	{
 		return $this->storage;
 	}
@@ -234,7 +231,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 	/**
 	 * @return mixed
 	 */
-	function toJson ()
+	public function toJson ()
 	{
 		return json_encode ( $this, JSON_OBJECT_AS_ARRAY );
 	}
@@ -242,7 +239,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 	/**
 	 * @return mixed
 	 */
-	function &toXml ()
+	public function toXml ()
 	{
 		return xml_encode ( $this->storage, $this->table );
 	}
@@ -250,7 +247,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 	/**
 	 * @return \ArrayObject|DataObject
 	 */
-	function &getIterator ()
+	public function getIterator ()
 	{
 		if ( $this->storage )
 			$data = new \ArrayObject( $this->storage );
@@ -303,7 +300,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 	 *
 	 * @return DataObject
 	 */
-	public function &transPrimaryIndex ( $primary_key )
+	public function transPrimaryIndex ( $primary_key )
 	{
 		$newData = [ ];
 		if ( $this->storage ) {
