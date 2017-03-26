@@ -11,6 +11,9 @@ namespace GFPHP;
 
 class GFPHP
 {
+    /**
+     * @var string $app_name
+     */
     public static $app_name;
     public static function init($app_name = 'app'){
         date_default_timezone_set('PRC');

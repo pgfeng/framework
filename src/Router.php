@@ -142,12 +142,13 @@ class Router
                 return call_user_func_array($callback, $params);
             }
         } else {
-            $callback = \GFPHP\GFPHP::$app_name . '/' . $callback;
+            $callback = GFPHP::$app_name . '/' . $callback;
             $callback = str_replace('/', '\\', $callback);
             $segments = explode('@', $callback);
-            define('CONTROLLER_NAME', str_replace(\GFPHP\GFPHP::$app_name.'\\','',$segments[0]));
+            define('CONTROLLER_NAME', str_replace(GFPHP::$app_name.'\\','',$segments[0]));
             define('METHOD_NAME', $segments[1]);
-            $controller = new $segments[0]();
+            $controllerName = $segments[0].Config::router('controllerSuffix');
+            $controller = new $controllerName();
             $method = $segments[1].Config::router('methodSuffix');
             if (!method_exists($controller, $method)) {
                 header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
