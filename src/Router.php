@@ -42,6 +42,8 @@ class Router
      */
     public static function init()
     {
+
+        error_reporting(Config::config('error_reporting'));
         Router::all('(.*)', function ($router) {
             $cuts = explode('/', $router);
             $uri = '';

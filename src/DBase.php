@@ -435,11 +435,11 @@ abstract class DBase
 			if ( func_num_args () == 2 ) {
 				$where = '' . $field . '=' . $this->addslashes ( func_get_arg ( 1 ) );
 			} elseif ( func_num_args () == 3 ) {
-				$in = func_get_arg ( 2 );
-				if ( is_array ( $in ) ) {
-					$in = implode ( ',', $this->addslashes ( $in ) );
-				}
-				$where = '' . $field . ' ' . func_get_arg ( 1 ) . " (" . $in . ")";
+                $where = func_get_arg ( 2 );
+                if ( is_array ( $where ) ) {
+                    $where = implode ( ',', $this->addslashes ( $where ) );
+                }
+                $where = '' . $field . ' ' . func_get_arg ( 1 ) . " '" . $where . "'";
 			}
 		}
 		if ( is_array ( $where ) )

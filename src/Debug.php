@@ -47,95 +47,6 @@ class Debug
         }
     }
 
-    /**
-     * 抓取致命错误
-     */
-    static function fatalError ()
-    {
-        $e = error_get_last ();
-        self::error ( $e, '错误' );
-        if ( Config::debug ( 'debug' ) && $e ) {
-            switch ( $e[ 'type' ] ) {
-                case E_ERROR:
-                case E_PARSE:
-                case E_CORE_ERROR:
-                case E_COMPILE_ERROR:
-                case E_USER_ERROR:
-                    ob_end_clean ();
-                    self::halt ( $e );
-                    break;
-            }
-        }
-    }
-
-    /**
-     * 抛出错误信息
-     *
-     * @param bool $error
-     * @param int  $index
-     */
-    static function halt ( $error = FALSE, $index = 1 )
-    {
-        $e = [ ];
-        if ( !$error || !is_array ( $error ) ) {
-            if ( is_string ( $error ) ) {
-                $message = $error;
-                $error = debug_backtrace ()[ $index ];
-                $error [ 'message' ] = $message;
-            }
-        }
-        if ( Config::config ( 'debug' ) ) {
-            //调试模式下输出错误信息
-            if ( !is_array ( $error ) ) {
-                $error_page = Config::debug ( 'error_redirect' );
-                if ( !empty( $error_page ) ) {
-                    redirect ( $error_page );
-                }
-                $trace = debug_backtrace ();
-                $e[ 'message' ] = $error;
-                $e[ 'file' ] = isset( $trace[ 0 ][ 'file' ] ) ? $trace[ 0 ][ 'file' ] : '';
-                $e[ 'line' ] = isset( $trace[ 0 ][ 'line' ] ) ? $trace[ 0 ][ 'line' ] : '';
-                ob_start ();
-                debug_print_backtrace ();
-                $e[ 'trace' ] = ob_get_clean ();
-            } else {
-                $e = $error;
-            }
-        }
-        $template_c_path = str_replace ( '/', DIRECTORY_SEPARATOR, __ROOT__ . parseDir ( Config::config ( 'app_dir' ), Config::cache ( 'cache_dir' ), Config::template ( 'view_c_dir' ), Config::template ( 'view_name' ) ) );
-        $e[ 'type' ] = FALSE;
-        if ( isset( $e[ 'file' ] ) )
-            if ( ( $path = str_replace ( $template_c_path, '', $e[ 'file' ] ) ) != $e[ 'file' ] ) {
-                $e[ 'message' ] = '模板错误 : ' . $e[ 'message' ];
-                $e[ 'file' ] = str_replace ( '.php', Config::template ( 'view_suffix' ), $path );
-                $e[ 'type' ] = 'template';
-            }
-
-        if ( $e[ 'type' ] == 'template' ) {
-            $content = '======================== ' . date ( 'Y-m-d H:i:s' ) . ' TEMPLATE ERROR MESSAGE ========================' . PHP_EOL;
-            $content .= '== ERROR PATH : ' . $e[ 'file' ] . PHP_EOL;
-            $content .= '== ERROR LINE : ' . $e[ 'line' ] . PHP_EOL;
-            $content .= '== ERROR MESSAGE : ' . $e[ 'message' ] . PHP_EOL;
-        } else {
-            $content = '======================== ' . date ( 'Y-m-d H:i:s' ) . ' APPLICATION ERROR MESSAGE =====================' . PHP_EOL;
-            if ( isset( $e[ 'file' ] ) )
-                $content .= '== ERROR PATH : ' . $e[ 'file' ] . PHP_EOL;
-            if ( isset( $e[ 'line' ] ) )
-                $content .= '== ERROR LINE : ' . $e[ 'line' ] . PHP_EOL;
-            $content .= '== ERROR MESSAGE : ' . $e[ 'message' ] . PHP_EOL;
-        }
-
-        $content .= '=============================================================================================' . PHP_EOL . PHP_EOL;
-        logMessage ( $e[ 'type' ] === 'template' ? 'template' : 'application', $content );
-        self::error ( $content, $e[ 'type' ] );
-        // 包含异常页面模板
-        IF ( Config::debug ( 'debug' ) ) {
-            $exceptionFile = Config::config ( 'core_dir' ) . DIRECTORY_SEPARATOR . 'Tpl' . DIRECTORY_SEPARATOR . 'Exception.php';
-            require $exceptionFile;
-        }
-        self::stop ();
-        exit;
-    }
 
     //-------获取开始微秒值-----------
     static function start ()
@@ -154,9 +65,6 @@ class Debug
             self::$Connector = $Connector;
             self::$Handler = $Handler;
         }
-//        new Vendor\PhpConsole();
-        register_shutdown_function ( 'GFPHP\Debug::fatalError' );
-        set_error_handler ( 'GFPHP\Debug::appError' );
         self::$startTime = microtime ( TRUE );
     }
     public static function debug($msg,$tag){
@@ -164,23 +72,6 @@ class Debug
     }
     public static function error($msg,$tag){
         self::$Handler->handleError($tag,$msg);
-    }
-    /**
-     * 此方法处理非致命错误
-     *
-     * @param $errno
-     * @param $errstr
-     *
-     * @internal param $errfile
-     * @internal param $errline
-     */
-    static function appError ( $errno, $errstr )
-    {
-        self::error ( $errstr, '错误' );
-        if ( Config::debug ( 'debug' ) == TRUE && in_array ( $errno, Config::debug ( 'app_listen_error' ) ) ) {
-            ob_end_clean ();
-            self::halt ( $errstr );
-        }
     }
 
     //在脚本结束处调用获取脚本结束时间的微秒值

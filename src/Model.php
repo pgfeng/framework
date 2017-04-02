@@ -77,7 +77,6 @@ class Model
 	protected $model;
 
 	protected $configName = 'default';
-	private static $DataBase = FALSE;
 
 	/**
 	 * 获取配置
@@ -250,29 +249,39 @@ class Model
 	 */
 	final public function checkColumn ( &$data )
 	{
-		foreach ( $data as $column => &$value ) {
-			if ( isset( $this->Column[ $column ] ) ) {
-				if ( isset( $this->validate[ $this->Column[ $column ][ 'rule' ] ] ) ) {
-					if ( is_object ( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'rule' ] ) ) {
-						if ( $res = $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'rule' ]( $this->Column[ $column ], $value ) ) {
-							if ( isset( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] ) && $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] != '' ) {
-								return str_replace ( '%ColumnName%', $this->Column[ $column ][ 'ColumnName' ], isset( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] ) ? $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] : '请输入正确的%ColumnName%' );
-							} else {
-								return $res;
-							}
-						}
-					} else {
-						if ( preg_match ( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'rule' ], $value ) !== 1 ) {
-							return str_replace ( '%ColumnName%', $this->Column[ $column ][ 'ColumnName' ], isset( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] ) ? $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] : '请输入正确的%ColumnName%' );
-						}
-					}
-				} else {
-					Debug::add ( 'Model: 验证规则' . $this->Column[ $column ][ 'rule' ] . '未定义。' );
-				}
-			}
-		}
+        foreach ( $data as $column => &$value ) {
+            if ( isset( $this->Column[ $column ] ) ) {
+                if(is_object($this->Column[ $column ][ 'rule' ])){
+                    if ( $res = $this->Column[ $column ][ 'rule' ]( $this->Column[ $column ], $value ) ) {
+                        if ( isset( $this->Column[ $column ][ 'msg' ] ) && $this->Column[ $column ][ 'msg' ] != '' ) {
+                            return str_replace ( '%ColumnName%', $this->Column[ $column ][ 'ColumnName' ], isset( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] ) ? $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] : '请输入正确的%ColumnName%' );
+                        } else {
+                            return $res;
+                        }
+                    }
+                }else
+                    if ( isset( $this->validate[ $this->Column[ $column ][ 'rule' ] ] ) ) {
+                        if ( is_object ( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'rule' ] ) ) {
+                            if ( $res = $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'rule' ]( $this->Column[ $column ], $value ) ) {
+                                if ( isset( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] ) && $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] != '' ) {
+                                    return str_replace ( '%ColumnName%', $this->Column[ $column ][ 'ColumnName' ], isset( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] ) ? $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] : '请输入正确的%ColumnName%' );
+                                } else {
+                                    return $res;
+                                }
+                            }
+                        } else {
+                            if ( preg_match ( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'rule' ], $value ) !== 1 ) {
+                                return str_replace ( '%ColumnName%', $this->Column[ $column ][ 'ColumnName' ], isset( $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] ) ? $this->validate[ $this->Column[ $column ][ 'rule' ] ][ 'msg' ] : '请输入正确的%ColumnName%' );
+                            }
+                        }
+                    } else {
+                        Debug::add ( 'Model: 验证规则' . $this->Column[ $column ][ 'rule' ] . '未定义。' );
+                    }
+            }
+        }
 
-		return NULL;
+        return NULL;
+
 	}
 
 	/**
@@ -334,11 +343,9 @@ class Model
      */
 	final public static function __callStatic ( $func, $val )
 	{
-		if ( !self::$DataBase ) {
-			self::$DataBase = new static();
-		}
+        $DataBase = new static();
 
-		return call_user_func_array ( [ self::$DataBase, $func ], $val );
+		return call_user_func_array ( [ $DataBase, $func ], $val );
 	}
 
 	/**
@@ -365,7 +372,7 @@ class Model
 		} else {
 			$error = debug_backtrace ()[ 1 ];
 			$error[ 'message' ] = get_class ( $this ) . ' 不存在 ' . $func . '方法!';
-			Debug::halt ( $error );
+			new \Exception($error);
 		}
 
 		return FALSE;
