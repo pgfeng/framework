@@ -92,16 +92,18 @@ function Helper ( $helpername )
 /**
  * 编译视图
  *
- * @param        $vname
+ * @param        $name
  * @param bool   $data
  * @param int    $cacheTime
  * @param string $cacheKey
  *
  * @return bool
  */
-function view ( $vname, $data = FALSE, $cacheTime = 0, $cacheKey = '' )
+function view ( $name, $data = FALSE, $cacheTime = 0, $cacheKey = '' )
 {
-	return Loader::view ( $vname, $data, $cacheTime, $cacheKey );
+	if($data)
+        \GFPHP\GFPHP::$Template->assign($data);
+	return \GFPHP\GFPHP::$Template->display($name,$cacheTime,$cacheKey);
 }
 
 /**

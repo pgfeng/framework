@@ -15,24 +15,14 @@ namespace GFPHP;
  */
 class Controller
 {
-    protected $view = false;
-
-    protected $layout = FALSE;
     /**
      * Controller constructor.
      */
     public function __construct()
     {
-        $this->view = new Template();
-
-        $this->setLayout($this->layout);
         $this->Init();
     }
-    final public function __destruct()
-    {
-        // TODO: Implement __destruct() method.
-        unset($this->view);
-    }
+
     //---- 替代 __construct
     public function Init()
     {
@@ -40,7 +30,7 @@ class Controller
 
     final public function fetchTemplate($template, $cacheTime = FALSE, $cacheKey = FALSE)
     {
-        return $content = $this->view->fetchTemplate($template, $cacheTime, $cacheKey);
+        return $content = GFPHP::$Template->fetchTemplate($template, $cacheTime, $cacheKey);
     }
 
     /**
@@ -50,7 +40,7 @@ class Controller
      */
     final function fetch($templateCon)
     {
-        return $content = $this->view->fetch($templateCon);
+        return $content = GFPHP::$Template->fetch($templateCon);
     }
     //-----给模板赋值变量
     /**
@@ -60,20 +50,12 @@ class Controller
     final function assign($key)
     {
         if (func_num_args() == 1) {
-            $this->view->assign(func_get_arg(0));
+            GFPHP::$Template->assign(func_get_arg(0));
         } elseif (func_num_args() == 2) {
-            $this->view->assign(func_get_arg(0), func_get_arg(1));
+            GFPHP::$Template->assign(func_get_arg(0), func_get_arg(1));
         }
     }
 
-    /**
-     * 设置layout布局文件，设置为false将会不使用
-     *
-     * @param bool|string $layout
-     */
-    final function setLayout($layout = FALSE){
-        return $this->view->setLayout($layout);
-    }
 
     /**
      * 编译当前行为模板
@@ -81,10 +63,10 @@ class Controller
      * @param bool $cacheKey
      * @return mixed|String
      */
-    final function Display($cacheTime = FALSE, $cacheKey = FALSE)
+    final function display($cacheTime = FALSE, $cacheKey = FALSE)
     {
-        $this->Assign('_ACT', ['controller' => CONTROLLER_NAME, 'method' => METHOD_NAME]);
+        $this->Assign('_ACT', ['controller_name' => CONTROLLER_NAME, 'method_name' => METHOD_NAME]);
         /** @var string $template */
-        return $this->view->display(':'.METHOD_NAME, $cacheTime, $cacheKey);
+        return GFPHP::$Template->display('@'.METHOD_NAME, $cacheTime, $cacheKey);
     }
 }

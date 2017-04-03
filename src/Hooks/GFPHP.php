@@ -28,23 +28,23 @@ class GFPHP
 
         //注入变量
         $patterns[] = "/" . $leftDelim . "template\s+['|\"](.+?)['|\"]\,['|\"](.+?)['|\"],['|\"](.+?)['|\"]" . $rightDelim . "/iU";
-        $replaces[] = "<?php view('\\1',array('\\2'=>'\\3')); ?>";
+        $replaces[] = "<?php echo view('\\1',array('\\2'=>'\\3')); ?>";
 
         //====引入带缓存时间和缓存键值的的模板,允许键值为变量
         $patterns[] = "/" . $leftDelim . "template\s+['|\"](.+?)['|\"]\:(-?\d+?):\\$(.+?)" . $rightDelim . "/i";
-        $replaces[] = "<?php view('\\1',array(),\\2,$\\3); ?>";
+        $replaces[] = "<?php echo view('\\1',array(),\\2,$\\3); ?>";
 
         //====引入带缓存时间和缓存键值的的模板
         $patterns[] = "/" . $leftDelim . "template\s+['|\"](.+?)['|\"]\:(-?\d+?):(.+?)" . $rightDelim . "/i";
-        $replaces[] = "<?php view('\\1',array(),\\2,\\3); ?>";
+        $replaces[] = "<?php echo view('\\1',array(),\\2,\\3); ?>";
 
         //====引入带缓存时间的模板
         $patterns[] = "/" . $leftDelim . "template\s+['|\"](.+?)['|\"]\:(-?\d+?)" . $rightDelim . "/i";
-        $replaces[] = "<?php view('\\1',array(),\\2); ?>";
+        $replaces[] = "<?php echo view('\\1',array(),\\2); ?>";
 
         //====引入模板
         $patterns[] = "/" . $leftDelim . "template\s+(.+?)" . $rightDelim . "/i";
-        $replaces[] = "<?php view(\\1); ?>";
+        $replaces[] = "<?php echo view(\\1); ?>";
 
         //====引入PHP文件
         $patterns[] = "/" . $leftDelim . "include\s+(.+?)" . $rightDelim . "/i";
@@ -143,8 +143,11 @@ class GFPHP
         }, $str);
         $str = preg_replace('/' . $leftDelim . 'CSS_PATH' . $rightDelim . '/i', '<?php echo $this->var[\'view_vars\'][\'css_path\'];?>', $str);
         $str = preg_replace('/' . $leftDelim . 'BASE_DIR' . $rightDelim . '/i', '<?php echo BASE_DIR;?>', $str);
-        $str = preg_replace_callback('/' . $leftDelim . 'MODULE_PATH' . $rightDelim . '/i', function () {
-            return Config::runtime('module_path');
+        $str = preg_replace_callback('/' . $leftDelim . 'CONTROLLER_NAME' . $rightDelim . '/i', function () {
+            return CONTROLLER_NAME;
+        }, $str);
+        $str = preg_replace_callback('/' . $leftDelim . 'METHOD_NAME' . $rightDelim . '/i', function () {
+            return METHOD_NAME;
         }, $str);
         //** 引用js标签
         $str = preg_replace_callback("/" . $leftDelim . "includeScript\s+['|\"](.+?)['|\"]" . $rightDelim . "/i", function ($matches) {

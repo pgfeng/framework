@@ -80,7 +80,7 @@ class Config
     public static function &get ( $type, $name = FALSE, $value = FALSE )
     {
         if ( !isset( self::$config[ $type ] ) )
-            self::$config[ $type ] = include 'config/'.$type.'.php';
+            self::$config[ $type ] = include dirname($_SERVER['SCRIPT_FILENAME']).DIRECTORY_SEPARATOR.'config/'.$type.'.php';
         if ( $name ) {
             if ( FALSE == $value ) {
                 return self::$config[ $type ][ $name ];

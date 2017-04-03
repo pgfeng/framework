@@ -18,7 +18,6 @@ class Template
 	 */
 	public $var = [ '_router' => '', ];
 	private $literal;
-	private $layout = FALSE;
 	private $blacks = [ ];
 
 
@@ -164,30 +163,7 @@ class Template
      */
 	public function display ( $template, $cacheTime = FALSE, $cacheKey = FALSE )
 	{
-		if ( $this->layout ) {
-			$layout = $this->fetchTemplate ( $this->layout, $cacheTime, $cacheKey );
-			if ( $layout ) {
-                Debug::add ( '模板 ' . $template . ' 使用布局 ' . $this->layout );
-				return str_replace ( '[ _ _ CONTENT _ _ ]', $this->fetchTemplate ( $template, $cacheTime, $cacheKey ), $layout );
-			} else {
-                Debug::add ( $template . ' 布局文件不存在 ' . $this->layout );
-                return $this->fetchTemplate ( $template, $cacheTime, $cacheKey );
-			}
-		} else {
-            Debug::add ( $template . '未使用布局' );
-            return $this->fetchTemplate ( $template, $cacheTime, $cacheKey );
-		}
-	}
-
-	/**
-	 * 设置布局文件
-	 *
-	 * @param bool $layout
-	 */
-	public function setLayout ( $layout = FALSE )
-	{
-
-		$this->layout = $layout;
+        return $this->fetchTemplate ( $template, $cacheTime, $cacheKey );
 	}
 
 	/**
@@ -206,7 +182,7 @@ class Template
 		if ( $NM === 0 )          //没有填写 MODULE_NAME
 			$templateName = CONTROLLER_NAME . '/' . substr ( $templateName, 1 );
 		else {
-			$NC = strpos ( $templateName, ':' );
+			$NC = strpos ( $templateName, '@' );
 			if ( $NC === 0 ) {    //没有填写 MODULE_NAME 和 CONTROLLER_NAME
 				$templateName = CONTROLLER_NAME . '/' . substr ( $templateName, 1 );
 			}
@@ -301,7 +277,7 @@ class Template
 		$rightDelim = Config::template ( 'rightDelim' );
 		if ( count ( $match ) == 3 ) {
 			foreach ( $match[ 1 ] as $k => $v ) {
-				preg_match_all ( '/' . $leftDelim . 'block\s+(.*?)' . $rightDelim . '(.*?)' . $leftDelim . '\/block' . $rightDelim . '/is', $match[ 2 ][ $k ], $match_blocks );
+				preg_match_all ( '/' . $leftDelim . 'block\s+[\'|"](.*?)[\'|"]' . $rightDelim . '(.*?)' . $leftDelim . '\/block' . $rightDelim . '/is', $match[ 2 ][ $k ], $match_blocks );
 				if ( count ( $match_blocks ) != 3 ) {
 					continue;
 
@@ -311,7 +287,7 @@ class Template
 				}
 				$matches_blocks = $this->blacks;
 				$content = str_replace ( $match[ 0 ][ $k ], $this->template_parse ( file_get_contents ( $this->get_path ( $v ) ) ), $content );
-				$content = preg_replace_callback ( '/' . $leftDelim . 'block\s+(.*?)' . $rightDelim . '(.*?)' . $leftDelim . '\/block' . $rightDelim . '/is', function ( $matches ) use ( &$match, $matches_blocks ) {
+				$content = preg_replace_callback ( '/' . $leftDelim . 'block\s+[\'|"](.*?)[\'|"]' . $rightDelim . '(.*?)' . $leftDelim . '\/block' . $rightDelim . '/is', function ( $matches ) use ( &$match, $matches_blocks ) {
 					if ( count ( $matches ) == 3 ) {
 						if ( isset( $matches_blocks[ $matches[ 1 ] ] ) ) {
 							return $matches_blocks[ $matches[ 1 ] ];

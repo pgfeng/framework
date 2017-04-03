@@ -12,12 +12,17 @@ namespace GFPHP;
 class GFPHP
 {
     /**
+     * @var Template
+     */
+    public static $Template;
+    /**
      * @var string $app_name
      */
     public static $app_name;
     public static function init($app_name = 'app'){
         session_start();
         date_default_timezone_set('PRC');
+        self::$Template = new Template();
         if(Config::config('develop_mod')) {
             $whoops = new \Whoops\Run;
             $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
