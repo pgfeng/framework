@@ -33,7 +33,12 @@ class GFPHP
         Router::init();
     }
     public static function run(){
-        echo Router::run();
+        $response = Router::run();
+        if(is_array($response)){
+            response_json($response);
+        }else{
+            echo $response;
+        }
         Debug::stop();
     }
 }
