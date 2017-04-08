@@ -190,17 +190,17 @@ class Template
 
         $templateName = str_replace('\\','/',$templateName);
 		switch ( $type ) {
-			case 'template':
+            case 'template':
 
-                $path =  parseDir ( Config::template ( 'view_dir' ) ) . $templateName . Config::template ( 'view_suffix' );
-				return $path;
-			case 'cache':
+                $path =  parseDir ( Config::template ( 'view_dir' ) ) . GFPHP::$app_name . DIRECTORY_SEPARATOR . $templateName . Config::template ( 'view_suffix' );
+                return $path;
+            case 'cache':
 
-				return parseDir ( Config::cache ( 'cache_dir' ), Config::template ( 'cache_dir' ),  Config::template ( 'view_cache_dir' ) ) . '/' . $templateName . $key;
+                return parseDir ( Config::cache ( 'cache_dir' ), Config::template ( 'cache_dir' ),  Config::template ( 'view_cache_dir' ) ) . '/' . $templateName . $key;
 
-			case 'view_c':
+            case 'view_c':
 
-				return parseDir ( Config::cache ( 'cache_dir' ), Config::template ( 'view_c_dir' ), Config::template ( 'view_name' ) ) . $templateName . '.php';
+                return parseDir ( Config::cache ( 'cache_dir' ), GFPHP::$app_name, Config::template ( 'view_c_dir' ), Config::template ( 'view_name' ) ) . $templateName . '.php';
 
 		}
 

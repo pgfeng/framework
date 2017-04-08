@@ -592,12 +592,7 @@ abstract class DBase
 		if ( $res = $this->_exec ( $sql ) !== FALSE ) {
 			return $res;
 		} else {
-			$content = '======================== ' . date ( 'Y-m-d H:i:s' ) . ' EXEC  ERROR MESSAGE ========================' . PHP_EOL;
-			$content .= '== SQL : ' . $sql . PHP_EOL;
-			$content .= '== ERROR MESSAGE : ' . $this->getError () . PHP_EOL;
-			$content .= '==========================================================================================' . PHP_EOL . PHP_EOL;
-			logMessage ( 'sql', $content );
-
+            Log::log( $this->getError (),Log::ERROR);
 			return $res;
 		}
 	}
@@ -917,41 +912,12 @@ abstract class DBase
 
 			$data = $this->data[ $this->table ][ $sqlMd5 ];
 		} else {
-			//print_r($this);
-			//echo $this->config('table_pre').Config::cache('table');
-			/**
-			 * 由于目前没有找到好的数据库缓存方法，先不用了
-			 */
-			// if ($this->config('cache') && preg_match('/^SELECT/i', $sql) && ( $this->config('table_pre').Config::cache('table') != $this->table || Config::cache('driver')!='dbCache')) {
-			//     //echo '开启缓存';
-			//     if (!Cache::is_cache(md5($sql), ($this->config('cache_dir') . '/' . $this->section['table']))) {
-			//         $data = $this->_query($sql);
-			//         $cdata = '<?php exit;/*' . serialize($data) . '*/';
-			//         Cache::set(md5($sql), $cdata, ($this->config('cache_dir') . '/' . $this->section['table']));
-			//         //Cache::$cache->writeCache($sql,$data,($this->config('cache_dir').'/'.$this->section['table']));
-			//         Debug::add('DB:Update Cache ' . $sql, 2);
-			//     } else {
-			//         //$data=Cache::$cache->readCache($sql,($this->config('cache_dir').'/'.$this->section['table']));
-			//         $data = unserialize(substr(Cache::get(md5($sql), ($this->config('cache_dir') . '/' . $this->section['table'])), 13, -2));
-			//         //exit();
-			//         Debug::add('DB:Read Cache' . $sql, 2);
-			//     }
-			//     $this->_reset();
-			//     if ($data == null)         //防止直接返回Null
-			//         $data = array();
-			//     return $data;
-			// } else {
 			Debug::add ( $sql, 2 );
 			$this->_reset ();
-
 			$this->lastSql = $sql;
 			$data = $this->_query ( $sql );
 			if ( $data === FALSE ) {
-				$content = '======================== ' . date ( 'Y-m-d H:i:s' ) . ' QUERY ERROR MESSAGE ========================' . PHP_EOL;
-				$content .= '== SQL : ' . $sql . PHP_EOL;
-				$content .= '== ERROR MESSAGE : ' . $this->getError () . PHP_EOL;
-				$content .= '==========================================================================================' . PHP_EOL . PHP_EOL;
-				logMessage ( 'sql', $content );
+				Log::log( $this->getError (),Log::SQL);
 			}
 			if ( $data == NULL )         //防止直接返回Null
 				$data = [ ];
@@ -1032,6 +998,9 @@ abstract class DBase
 
 	abstract function _query ( $sql );         //返回值是查询出的数组
 
+    /**
+     * @return string
+     */
 	abstract function getError ();            //返回上一个错误信息
 	
 	abstract function real_escape_string ( $string ); //特殊字符转义

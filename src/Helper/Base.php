@@ -241,16 +241,12 @@ function mkPathDir ( $path, $mode = 0777 )
 	}
 }
 
-function logMessage ( $type, $content )
-{
-	if ( Config::debug ( 'log' ) ) {
-		$path = __ROOT__ . parseDir ( 'errLog', date ( 'Y-m-d' ) ) . $type . '.log';
-		mkPathDir ( $path );
-		$f = fopen ( $path, "a+" );
-		fwrite ( $f, $content );
-		fclose ( $f );
-	}
-}
+//function Log ($content, $type = \GFPHP\Log::MESSAGE)
+//{
+//	if ( Config::debug ( 'log' ) ) {
+//	    \GFPHP\Log::log($content,$type);
+//	}
+//}
 
 /**
  * 获取数组内数据，如果不存在则返回空值

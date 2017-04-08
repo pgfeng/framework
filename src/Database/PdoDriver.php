@@ -24,7 +24,7 @@ class PdoDriver extends DBase
 		$config = Config::database($configName);
 		$this->configName = $configName;
 		try {
-			$this->db = new \pdo( $config['DSN'], $config[ 'user' ], $config[ 'pass' ] );
+			$this->db = new \pdo('mysql:dbname='.$config['name'].';host='.$config['host'].';port='.$config['port'].';', $config[ 'user' ], $config[ 'pass' ] );
 			$this->db->setAttribute ( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
 		} catch ( \PDOException $e ) {
 

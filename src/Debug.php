@@ -33,6 +33,7 @@ class Debug
     //-------添加程序执行信息--------
     static function add ( $msg, $type = 0 )
     {
+
         if ( !Config::debug ( 'debug' ) )
             return;
         switch ( $type ) {
@@ -68,9 +69,11 @@ class Debug
         self::$startTime = microtime ( TRUE );
     }
     public static function debug($msg,$tag){
+
         self::$Handler->debug($msg,$tag,TRUE);
     }
     public static function error($msg,$tag){
+        Log::log($msg,$tag);
         self::$Handler->handleError($tag,$msg);
     }
 
@@ -86,6 +89,7 @@ class Debug
         if ( Config::debug ( 'debug' ) )                                                        //显示DEBUG信息
             Debug::message ();
         if ( extension_loaded ( 'zlib' ) && Config::config ( 'gzip' ) ) @ob_end_flush ();
+
         exit;
     }
 
