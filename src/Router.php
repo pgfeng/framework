@@ -121,7 +121,11 @@ class Router
         if (!$callback) {
             $callback = function () {
                 header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
-                throw new \Exception('没有匹配到路由!');
+                if(Config::router('default_404')){
+                    return self::runCallBack(Config::router('default_404'),[]);
+                }else {
+                    throw new \Exception('没有匹配到路由!');
+                }
             };
         }
         return self::runCallBack($callback, $params);
@@ -152,8 +156,12 @@ class Router
             $controller = new $controllerName();
             $method = $segments[1].Config::router('methodSuffix');
             if (!method_exists($controller, $method)) {
-                header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
-                throw new \Exception('method ' . $method . ' not find!');
+                if(Config::router('default_404')){
+                    return self::runCallBack(Config::router('default_404'),[]);
+                }else {
+                    header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
+                    throw new \Exception('method ' . $method . ' not find!');
+                }
             }
             if (!is_array($params)) {
                 return $controller->$method();

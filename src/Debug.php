@@ -125,7 +125,7 @@ class Debug
         self::debug ( number_format ( 1 / $runTime, 2 ) . 'rps/s', '吞吐率' );
         self::debug ( round ( ( memory_get_usage () / 1024 ), 4 ) . ' kb', '内存占用' );
         self::debug ( self::$msg, '运行信息' );
-        self::debug ( self::$include, '包含文件' );
+        self::debug ( get_included_files(), '包含文件' );
 
         IF ( self::$sqls )
             self::debug ( self::$sqls, '运行SQL' );
