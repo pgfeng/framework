@@ -22,6 +22,7 @@ class GFPHP
     public static function init($app_name = 'app'){
         session_start();
         date_default_timezone_set('PRC');
+        Cache::init();
         self::$Template = new Template();
         if(Config::config('develop_mod')) {
             $whoops = new \Whoops\Run;
