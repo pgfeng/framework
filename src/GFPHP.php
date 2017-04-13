@@ -19,12 +19,35 @@ class GFPHP
      * @var string $app_name
      */
     public static $app_name;
-    public static function init($app_name = 'app'){
+
+    public static function init($app_name = 'app')
+    {
+        //==当前时间
+        define('__NOW__', $_SERVER['REQUEST_TIME']);
+
+        //==请求类型
+        define('REQUEST_METHOD', $_SERVER['REQUEST_METHOD']);
+
+        //==是否为GET请求
+        define('IS_GET', REQUEST_METHOD == 'GET' ? true : false);
+
+        //==是否为POST请求
+        define('IS_POST', REQUEST_METHOD == 'POST' ? true : false);
+
+        //==是否为PUT请求
+        define('IS_PUT', REQUEST_METHOD == 'PUT' ? true : false);
+
+        //==是否为DELETE请求
+        define('IS_DELETE', REQUEST_METHOD == 'DELETE' ? true : false);
+
+        //==是否为AJAX请求
+        define('IS_AJAX', ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) ? true : false);
+
         session_start();
         date_default_timezone_set('PRC');
         Cache::init();
         self::$Template = new Template();
-        if(Config::config('develop_mod')) {
+        if (Config::config('develop_mod')) {
             $whoops = new \Whoops\Run;
             $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
             $whoops->register();
@@ -33,11 +56,13 @@ class GFPHP
         self::$app_name = $app_name;
         Router::init();
     }
-    public static function run(){
+
+    public static function run()
+    {
         $response = Router::run();
-        if(is_array($response)){
+        if (is_array($response)) {
             response_json($response);
-        }else{
+        } else {
             echo $response;
         }
         Debug::stop();

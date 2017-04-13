@@ -65,7 +65,7 @@ class Controller
      */
     final function display($cacheTime = FALSE, $cacheKey = FALSE)
     {
-        $this->Assign('_ACT', ['controller_name' => CONTROLLER_NAME, 'method_name' => METHOD_NAME]);
+        $this->Assign('_ACT', ['module_name'=>MODULE_NAME, 'controller_name' => CONTROLLER_NAME, 'method_name' => METHOD_NAME]);
         /** @var string $template */
         return GFPHP::$Template->display('@'.METHOD_NAME, $cacheTime, $cacheKey);
     }

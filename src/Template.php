@@ -177,17 +177,15 @@ class Template
      */
     private function get_path ( $templateName, $type = 'template', $key = FALSE )
     {
-
         $NM = strpos ( $templateName, '#' );
         if ( $NM === 0 )          //没有填写 MODULE_NAME
-            $templateName = CONTROLLER_NAME . '/' . substr ( $templateName, 1 );
+            $templateName = MODULE_NAME . '/' . substr ( $templateName, 1 );
         else {
             $NC = strpos ( $templateName, '@' );
             if ( $NC === 0 ) {    //没有填写 MODULE_NAME 和 CONTROLLER_NAME
-                $templateName = CONTROLLER_NAME . '/' . substr ( $templateName, 1 );
+                $templateName = MODULE_NAME . '/' . CONTROLLER_NAME . '/' . substr ( $templateName, 1 );
             }
         }
-
         $templateName = str_replace('\\','/',$templateName);
         switch ( $type ) {
             case 'template':
