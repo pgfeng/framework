@@ -133,6 +133,12 @@ class Router
     }
 
     /**
+     * 清空路由缓存
+     */
+    public function clearCache(){
+        return Cache::flush('GFPHP/Router');
+    }
+    /**
      * 生成链接,路由反查返回
      * @param string $uri
      * @param array  $get
@@ -142,19 +148,7 @@ class Router
     public static function url($uri = '', $get = [], $method = 'GET')
     {
         $old_uri = $uri;
-        if ($uri) {
-            $NM = strpos($uri, '#');
-            if ($NM === 0) {          //没有填写 MODULE_NAME
-                $uri = MODULE_NAME . '/' . substr($uri, 1);
-                $old_uri = MODULE_NAME . '/' . substr($old_uri, 1);
-            } else {
-                $NC = strpos($uri, '@');
-                if ($NC === 0) {    //没有填写 MODULE_NAME 和 CONTROLLER_NAME
-                    $uri = MODULE_NAME . '/' . CONTROLLER_NAME . '/' . substr($uri, 1);
-                    $old_uri = MODULE_NAME . '/' . CONTROLLER_NAME . '/' . substr($old_uri, 1);
-                }
-            }
-        }
+        $uri = parse_uri($uri);
         $uris = explode('/', $uri);
         $uris = array_filter($uris);
         $count = count($uris);
@@ -199,9 +193,8 @@ class Router
                             $uri_compile .= $exp_array[$i] . $params[0];
                     }
                     if ($get)
-                        return $uri_compile . '?' . http_build_query($get);
-                    else
-                        return $uri_compile;
+                        $uri_compile =  $uri_compile . '?' . http_build_query($get);
+                    return $uri_compile;
                 }
             }
         }
@@ -223,17 +216,16 @@ class Router
                     }
 
                     if ($get)
-                        return $uri_compile . '?' . http_build_query($get);
-                    else
-                        return $uri_compile;
+                        $uri_compile = $uri_compile . '?' . http_build_query($get);
+                    return $uri_compile;
                 }
             }
         }
-        if ($get) {
-            return '/' . $old_uri . '?' . http_build_query($get);
-        } else {
-            return '/' . $old_uri;
-        }
+        if ($get)
+            $uri_compile = '/' . $old_uri . '?' . http_build_query($get);
+        else
+            $uri_compile = '/' . $old_uri;
+        return $uri_compile;
     }
 
     /**

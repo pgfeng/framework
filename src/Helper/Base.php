@@ -634,6 +634,23 @@ function random($length, $chars = '0123456789')
 }
 
 /**
+ * 解析正确的URI
+ * @param $uri
+ * @return string
+ */
+function parse_uri($uri){
+    $NM = strpos ( $uri, '#' );
+    if ( $NM === 0 )          //没有填写 MODULE_NAME
+        $uri = MODULE_NAME . '/' . substr ( $uri, 1 );
+    else {
+        $NC = strpos ( $uri, '@' );
+        if ( $NC === 0 ) {    //没有填写 MODULE_NAME 和 CONTROLLER_NAME
+            $uri = MODULE_NAME . '/' . CONTROLLER_NAME . '/' . substr ( $uri, 1 );
+        }
+    }
+    return $uri;
+}
+/**
  * XML编码
  *
  * @param mixed  $data 数据

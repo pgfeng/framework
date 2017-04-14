@@ -83,6 +83,7 @@ class Template
      */
     public function fetchTemplate ( $template, $cacheTime = FALSE, $cacheKey = FALSE )
     {
+        $template = parse_uri($template);
         $path[ 'template_c' ] = $this->get_path ( $template, 'view_c' );
         $path[ 'template' ] = $this->get_path ( $template );
         //当缓存时间未设置时，将自动获取配置中的缓存时间
@@ -177,27 +178,24 @@ class Template
      */
     private function get_path ( $templateName, $type = 'template', $key = FALSE )
     {
-        $NM = strpos ( $templateName, '#' );
-        if ( $NM === 0 )          //没有填写 MODULE_NAME
-            $templateName = MODULE_NAME . '/' . substr ( $templateName, 1 );
-        else {
-            $NC = strpos ( $templateName, '@' );
-            if ( $NC === 0 ) {    //没有填写 MODULE_NAME 和 CONTROLLER_NAME
-                $templateName = MODULE_NAME . '/' . CONTROLLER_NAME . '/' . substr ( $templateName, 1 );
-            }
-        }
         $templateName = str_replace('\\','/',$templateName);
         switch ( $type ) {
             case 'template':
-
                 $path =  parseDir ( Config::template ( 'view_dir' ) ) . GFPHP::$app_name . DIRECTORY_SEPARATOR . $templateName . Config::template ( 'view_suffix' );
+                if ( !$fileExits = file_exists ( $path ) ){
+                    $parseTemp = explode ( '/', $templateName );
+                    $module = array_shift ( $parseTemp );
+                    $tempName = implode ( '/', $parseTemp );
+                    $dPath = GFPHP::$app_name .DIRECTORY_SEPARATOR. parseDir ( $module, 'view' ) . $tempName . Config::template ( 'view_suffix' );
+                    if ( $fileExits = file_exists ( $dPath ) ) {
+                        $path = $dPath;
+                    }
+                }
                 return $path;
             case 'cache':
                 return parseDir ( Config::cache ( 'cache_dir' ), Config::template ( 'cache_dir' ),  Config::template ( 'view_cache_dir' ), GFPHP::$app_name ) . $templateName . $key;
             case 'view_c':
-
                 return parseDir ( Config::cache ( 'cache_dir' ), GFPHP::$app_name, Config::template ( 'view_c_dir' ), Config::template ( 'view_name' ) ) . $templateName . '.php';
-
         }
 
         return '';
@@ -353,16 +351,6 @@ class Template
      */
     private function get_temp_name ( $templateName, $cacheKey )
     {
-        $NM = strpos ( $templateName, '#' );
-        if ( $NM === 0 )          //没有填写 MODULE_NAME
-            $templateName = CONTROLLER_NAME . '/' . substr ( $templateName, 1 );
-        else {
-            $NC = strpos ( $templateName, '@' );
-            if ( $NC === 0 ) {    //没有填写 MODULE_NAME 和 CONTROLLER_NAME
-                $templateName = CONTROLLER_NAME . '/' . substr ( $templateName, 1 );
-            }
-        }
-
         $templateName = str_replace('\\','/',$templateName);
 
         $templateName = GFPHP::$app_name.DIRECTORY_SEPARATOR.$templateName;
