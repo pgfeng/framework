@@ -155,8 +155,7 @@ class Router
      */
     public static function url($uri = '', $get = [], $method = 'GET')
     {
-        $old_uri = $uri;
-        $uri = parse_uri($uri);
+        $uri = $old_uri = parse_uri($uri);
         $uris = explode('/', $uri);
         $uris = array_filter($uris);
         $count = count($uris);
