@@ -182,12 +182,12 @@ class Router
         }
         $params = array_filter($params);
         $params_count = count($params);
+
+        $explode_str = '[ ROUTER _ _ PARAMS ]';
         foreach (self::$routes[$method] as $pattern => $callback) {
             if (!is_object($callback)) {
-                $explode_str = 'ROUTER _ _ PARAMS';
-                $pattern_seg = preg_replace('#\(.*\)#', $explode_str, $pattern);
+                $pattern_seg = preg_replace('#\(.+?\)#', $explode_str, $pattern);
                 $num = substr_count($pattern_seg, $explode_str);
-
                 if ($num != $params_count)
                     continue;
                 if (strcasecmp($callback, $uri) == 0) {
@@ -197,7 +197,7 @@ class Router
                         if ($i == $params_count)
                             $uri_compile .= $exp_array[$i];
                         else
-                            $uri_compile .= $exp_array[$i] . $params[0];
+                            $uri_compile .= $exp_array[$i] . $params[$i];
                     }
                     if ($get)
                         $uri_compile =  $uri_compile . '?' . http_build_query($get);
@@ -207,8 +207,7 @@ class Router
         }
         foreach (self::$routes['ALL'] as $pattern => $callback) {
             if (!is_object($callback)) {
-                $explode_str = 'ROUTER _ _ PARAMS';
-                $pattern_seg = preg_replace('#\(.*\)#', $explode_str, $pattern);
+                $pattern_seg = preg_replace('#\(.+\)#', $explode_str, $pattern);
                 $num = substr_count($pattern_seg, $explode_str);
                 if ($num != $params_count)
                     continue;
@@ -219,7 +218,7 @@ class Router
                         if ($i == $params_count)
                             $uri_compile .= $exp_array[$i];
                         else
-                            $uri_compile .= $exp_array[$i] . $params[0];
+                            $uri_compile .= $exp_array[$i] . $params[$i];
                     }
 
                     if ($get)
