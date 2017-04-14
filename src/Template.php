@@ -125,6 +125,8 @@ class Template
 
             return $content;
         } else {
+
+            header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
             throw new Exception('Template:模板' . $path[ 'template' ] . ' 不存在.');
         }
     }

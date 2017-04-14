@@ -22,7 +22,7 @@ return [
         //'driver' => 'MysqliDriver',
 //    'driver' => 'mysql',
         //--库名
-        'name'      => 'demo',
+        'name'      => 'g-cmf',
         //--用户名
         'user'      => 'root',
         //--表名前缀

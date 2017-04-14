@@ -90,11 +90,19 @@ class Router
      */
     public static function run()
     {
-        $_SERVER['REQUEST_URI'] = preg_replace('#(/+)#', '/', $_SERVER['REQUEST_URI']);
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        if(isset($_GET['_router'])){
+
+            $uri = '/'.$_GET['_router'];
+
+            unset($_GET['_router']);
+        }else{
+            $uri = '/';
+        }
+        $uri = preg_replace('#(/+)#', '/', $uri);
+        $uri = parse_url($uri, PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'];
         $callback = false;
-        $params = false;
+        $params = [];
         if (array_key_exists($uri, self::$routes[$method])) {
             $callback = self::$routes[$method][$uri];
         } elseif (array_key_exists($uri, self::$routes['ALL'])) {
@@ -252,12 +260,14 @@ class Router
             if (count($seg) != 2) {
                 throw new \Exception('传入的控制器必须两层结构!');
             }
-            define('MODULE_NAME', ucfirst($seg[0]));
-            define('CONTROLLER_NAME', ucfirst($seg[1]));
-            define('METHOD_NAME', $segments[1]);
-            $controllerName = GFPHP::$app_name . '\\' . $seg[0] . '\\' . $seg[1] . Config::router('controllerSuffix');
+            define('MODULE_NAME', ucfirst(strtolower($seg[0])));
+            define('CONTROLLER_NAME', ucfirst(strtolower($seg[1])));
+            define('METHOD_NAME', strtolower($segments[1]));
+            $controllerName = GFPHP::$app_name . '\\' . MODULE_NAME . '\\' . CONTROLLER_NAME . Config::router('controllerSuffix');
+
+            /** @var Controller $controller */
             $controller = new $controllerName();
-            $method = $segments[1] . Config::router('methodSuffix');
+            $method = METHOD_NAME . Config::router('methodSuffix');
             if (!method_exists($controller, $method)) {
                 if (Config::router('default_404')) {
                     return self::runCallBack(Config::router('default_404'), []);
