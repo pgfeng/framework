@@ -91,11 +91,12 @@ class Router
     public static function run()
     {
         if(isset($_GET['_router'])){
-
+            define('__URI__',$_GET['_router']);
             $uri = '/'.$_GET['_router'];
 
             unset($_GET['_router']);
         }else{
+            define('__URI__','');
             $uri = '/';
         }
         $uri = preg_replace('#(/+)#', '/', $uri);
