@@ -97,7 +97,7 @@ class filesModel extends Model
                             $ext = end($ext);
                             if (in_array($ext, $allow_type)) {
                                 $path = Config::file('upload_path') . date("Ymd") . '/' . time() . random(10) . '.' . $ext;
-                                $full_path = __ROOT__ . $path;
+                                $full_path = $path;
 //                                $dir_name = dirname($full_path);
 //                                @mkdir($dir_name, 0777, TRUE);
                                 mkPathDir($full_path);
