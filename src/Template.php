@@ -273,6 +273,7 @@ class Template
         $rightDelim = Config::template ( 'rightDelim' );
         if ( count ( $match ) == 3 ) {
             foreach ( $match[ 1 ] as $k => $v ) {
+                $v = parse_uri($v);
                 preg_match_all ( '/' . $leftDelim . 'block\s+[\'|"](.*?)[\'|"]' . $rightDelim . '(.*?)' . $leftDelim . '\/block' . $rightDelim . '/is', $match[ 2 ][ $k ], $match_blocks );
                 if ( count ( $match_blocks ) != 3 ) {
                     continue;
