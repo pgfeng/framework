@@ -90,16 +90,7 @@ class Router
      */
     public static function run()
     {
-        if(isset($_GET['_router'])){
-            define('__URI__',$_GET['_router']);
-            $uri = '/'.$_GET['_router'];
-
-            unset($_GET['_router']);
-        }else{
-            define('__URI__','');
-            $uri = '/';
-        }
-        $uri = preg_replace('#(/+)#', '/', $uri);
+        $uri = preg_replace('#(/+)#', '/', '/' . __URI__);
         $uri = parse_url($uri, PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'];
         $callback = false;
@@ -144,9 +135,11 @@ class Router
     /**
      * 清空路由缓存
      */
-    public function clearCache(){
+    public function clearCache()
+    {
         return Cache::flush('GFPHP/Router');
     }
+
     /**
      * 生成链接,路由反查返回
      * @param string $uri
@@ -201,7 +194,7 @@ class Router
                             $uri_compile .= $exp_array[$i] . $params[$i];
                     }
                     if ($get)
-                        $uri_compile =  $uri_compile . '?' . http_build_query($get);
+                        $uri_compile = $uri_compile . '?' . http_build_query($get);
                     return $uri_compile;
                 }
             }

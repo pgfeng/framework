@@ -46,6 +46,12 @@ class GFPHP
         session_start();
         date_default_timezone_set('PRC');
         Cache::init();
+        if(isset($_GET['_router'])){
+            define('__URI__',$_GET['_router']);
+            unset($_GET['_router']);
+        }else{
+            define('__URI__','');
+        }
         self::$Template = new Template();
         if (Config::config('develop_mod')) {
             $whoops = new \Whoops\Run;
