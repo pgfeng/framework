@@ -141,8 +141,9 @@ class GFPHP
 
             return $css;
         }, $str);
-        $str = preg_replace('/' . $leftDelim . 'CSS_PATH' . $rightDelim . '/i', '<?php echo $this->var[\'view_vars\'][\'css_path\'];?>', $str);
-        $str = preg_replace('/' . $leftDelim . 'BASE_DIR' . $rightDelim . '/i', '<?php echo BASE_DIR;?>', $str);
+        $str = preg_replace_callback('/' . $leftDelim . 'MODULE_NAME' . $rightDelim . '/i', function () {
+            return MODULE_NAME;
+        }, $str);
         $str = preg_replace_callback('/' . $leftDelim . 'CONTROLLER_NAME' . $rightDelim . '/i', function () {
             return CONTROLLER_NAME;
         }, $str);
@@ -160,12 +161,11 @@ class GFPHP
 
             return $js;
         }, $str);
-        //**  将系统设定的JS文件路径出解析
-        $str = preg_replace('/' . $leftDelim . 'JS_PATH' . $rightDelim . '/i', '<?php echo $this->var[\'view_vars\'][\'js_path\'];?>', $str);
-        if (Config::view_vars('img_path'))
-            $str = preg_replace('/' . $leftDelim . 'IMG_PATH' . $rightDelim . '/i', '<?php echo $this->var[\'view_vars\'][\'img_path\'];?>', $str);
+        $str = preg_replace('/' . $leftDelim . 'JS_PATH' . $rightDelim . '/i', Config::template('js_path'), $str);
+        $str = preg_replace('/' . $leftDelim . 'CSS_PATH' . $rightDelim . '/i', Config::template('css_path'), $str);
+        $str = preg_replace('/' . $leftDelim . 'PUBLIC_PATH' . $rightDelim . '/i', Config::template('public_path'), $str);
+        $str = preg_replace('/' . $leftDelim . 'IMG_PATH' . $rightDelim . '/i', Config::template('img_path'), $str);
         $str = preg_replace($patterns, $replaces, $str);
-
         return $str;
     }
 
