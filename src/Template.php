@@ -42,6 +42,7 @@ class Template
      */
     public function TemplateChange ( $template, $template_changeTime = 0 ,$is_layout = false)
     {
+        $template = parse_uri($template);
         $leftDelim = Config::template ( 'leftDelim' );
         $rightDelim = Config::template ( 'rightDelim' );
         $path[ 'template' ] = $this->get_path ( $template );
