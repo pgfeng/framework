@@ -73,7 +73,6 @@ class Debug
         self::$Handler->debug($msg,$tag,TRUE);
     }
     public static function error($msg,$tag){
-        Log::log($msg,$tag);
         self::$Handler->handleError($tag,$msg);
     }
 

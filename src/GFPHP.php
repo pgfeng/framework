@@ -61,7 +61,7 @@ class GFPHP
     {
         $response = Router::run();
         if (is_array($response)) {
-            response_json($response);
+            echo response_json($response);
         } else {
             echo $response;
         }
