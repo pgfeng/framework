@@ -9,7 +9,8 @@
 namespace GFPHP\Model;
 
 use GFPHP\Config;
-use Vendor\cmspage;
+use GFPHP\Model;
+
 /**
  * 数据库结构
  * DROP TABLE IF EXISTS `{$table_pre}files`;
@@ -35,30 +36,6 @@ use Vendor\cmspage;
  */
 class filesModel extends Model
 {
-    /**
-     * 已上传文件列表
-     * @param $num
-     * @param $page
-     * @param $url
-     * @param string $type
-     * @return array
-     */
-    public function getList($num, $page, $url, $type = 'all')
-    {
-        if ($type != 'all') {
-            $this->Where('file_type', $type);
-        }
-        $ctm = clone $this;
-        $count = $this->count();
-        $cmspage = new cmspage();
-        $cmspage->init($count, $url, $page, $num);
-        $cmspage->roll();
-        $pager = $cmspage->output();
-        return [
-            'pager' => $pager,
-            'list'  => $ctm->paginate($num, $page),
-        ];
-    }
 
     /**
      * 删除文件
@@ -69,7 +46,7 @@ class filesModel extends Model
     {
         $file = $this->Where('file_id', $file_id)->getOne();
         if ($file) {
-            if (unlink(__ROOT__ . $file['file_path'])) {
+            if (unlink('./' . $file['file_path'])) {
                 return $this->Where('file_id', $file_id)->delete();
             } else {
                 return FALSE;
@@ -181,8 +158,6 @@ class filesModel extends Model
                     if (in_array($ext, $allow_type)) {
                         $path = Config::file('upload_path') . date("Ymd") . '/' . time() . random(10) . '.' . $ext;
                         $full_path = __ROOT__ . $path;
-//                        $dir_name = dirname($full_path);
-//                        @mkdir($dir_name, 0777, TRUE);
                         mkPathDir($full_path);
                         if (@move_uploaded_file($file['tmp_name'], $full_path)) {
                             $this->Insert([
