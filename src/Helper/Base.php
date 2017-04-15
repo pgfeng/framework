@@ -40,10 +40,9 @@ function url($uri = '', $get = [], $method = 'GET')
 function show_error($msg = '未知错误')
 {
     if (IS_AJAX)
-        echo_json($msg, false);
+        return echo_json($msg, false);
     else {
-        include parseDir(Config::config('core_dir'), 'Tpl') . 'Error.php';
-        Debug::stop();
+        return $msg;
     }
 }
 
@@ -537,8 +536,7 @@ function echo_json($msg, $status = true, $data = [])
         'status' => $status,
     ];
     $array = array_merge($array, $data);
-    echo json_encode($array, JSON_UNESCAPED_UNICODE);
-    Debug::stop();
+    return json_encode($array, JSON_UNESCAPED_UNICODE);
 }
 
 /**
@@ -549,8 +547,7 @@ function echo_json($msg, $status = true, $data = [])
 function response_json($data)
 {
     header("Content-Type:application/Json; charset=UTF-8");
-    echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    Debug::stop();
+    return json_encode($data, JSON_UNESCAPED_UNICODE);
 }
 
 /**
