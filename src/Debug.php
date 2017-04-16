@@ -7,6 +7,7 @@
  */
 
 namespace GFPHP;
+
 use PhpConsole;
 
 
@@ -20,9 +21,9 @@ class Debug
 {
     static $startTime;
     static $stopTime;
-    static $msg = [ ];
-    static $sqls = [ ];
-    static $include = [ ];
+    static $msg = [];
+    static $sqls = [];
+    static $include = [];
     static $length;
     static $Connector;
     /**
@@ -31,12 +32,12 @@ class Debug
     static $Handler = false;
 
     //-------添加程序执行信息--------
-    static function add ( $msg, $type = 0 )
+    static function add($msg, $type = 0)
     {
 
-        if ( !Config::debug ( 'debug' ) )
+        if (!Config::debug('debug'))
             return;
-        switch ( $type ) {
+        switch ($type) {
             case 0:
                 self::$msg[] = $msg;                            //把运行信息添加进去
                 break;
@@ -50,15 +51,15 @@ class Debug
 
 
     //-------获取开始微秒值-----------
-    static function start ()
+    static function start()
     {
-        header ( 'X-Powered-By:GFPHP' );
-        if ( Config::config ( 'gzip' ) ) {
-            ob_start ( 'ob_gzhandler' );
+        header('X-Powered-By:GFPHP');
+        if (Config::config('gzip')) {
+            ob_start('ob_gzhandler');
         }
         $Connector = PhpConsole\Connector::getInstance();
         $isActiveClient = $Connector->isActiveClient();
-        if($isActiveClient){
+        if ($isActiveClient) {
             $Connector->setPassword(Config::debug('password'));
             $Handler = PhpConsole\Handler::getInstance();
             $Handler->start();
@@ -66,14 +67,20 @@ class Debug
             self::$Connector = $Connector;
             self::$Handler = $Handler;
         }
-        self::$startTime = microtime ( TRUE );
+        self::$startTime = microtime(TRUE);
     }
-    public static function debug($msg,$tag){
 
-        self::$Handler->debug($msg,$tag,TRUE);
+    public static function debug($msg, $tag)
+    {
+        if (self::$Handler)
+            self::$Handler->debug($msg, $tag, TRUE);
     }
-    public static function error($msg,$tag){
-        self::$Handler->handleError($tag,$msg);
+
+    public static function error($msg, $tag)
+    {
+
+        if (self::$Handler)
+            self::$Handler->handleError($tag, $msg);
     }
 
     //在脚本结束处调用获取脚本结束时间的微秒值
@@ -81,20 +88,19 @@ class Debug
     /**
      *
      */
-    static function stop ()
+    static function stop()
     {
-        self::$stopTime = microtime ( TRUE );   //将获取的时间赋给成员属性$stopTime
+        self::$stopTime = microtime(TRUE);   //将获取的时间赋给成员属性$stopTime
 
-        if ( Config::debug ( 'debug' ) )                                                        //显示DEBUG信息
-            Debug::message ();
-        if ( extension_loaded ( 'zlib' ) && Config::config ( 'gzip' ) ) @ob_end_flush ();
+        if (Config::debug('debug'))                                                        //显示DEBUG信息
+            Debug::message();
+        if (extension_loaded('zlib') && Config::config('gzip')) @ob_end_flush();
 
-        exit;
     }
 
-    static function getRuntime ()
+    static function getRuntime()
     {
-        return round ( ( microtime ( TRUE ) - self::$startTime ), 4 );  //计算后以4舍5入保留4位返回
+        return round((microtime(TRUE) - self::$startTime), 4);  //计算后以4舍5入保留4位返回
     }
 
     /**
@@ -104,36 +110,37 @@ class Debug
      *
      * @return mixed
      */
-    static function getSql($index = FALSE){
+    static function getSql($index = FALSE)
+    {
         $sql_count = count(self::$sqls);
-        if($index!==FALSE && is_numeric($index)) {
-            if ( $index > $sql_count ) {
-                return self::$sqls[ 0 ];
+        if ($index !== FALSE && is_numeric($index)) {
+            if ($index > $sql_count) {
+                return self::$sqls[0];
             } else {
-                return self::$sqls[ $sql_count - $index ];
+                return self::$sqls[$sql_count - $index];
             }
-        }else{
+        } else {
             return self::$sqls;
         }
     }
 
-    static function message ()
+    static function message()
     {
-        $runTime = self::spent ();
-        self::debug ( $runTime, '运行耗时' );
-        self::debug ( number_format ( 1 / $runTime, 2 ) . 'rps/s', '吞吐率' );
-        self::debug ( round ( ( memory_get_usage () / 1024 ), 4 ) . ' kb', '内存占用' );
-        self::debug ( self::$msg, '运行信息' );
-        self::debug ( get_included_files(), '包含文件' );
+        $runTime = self::spent();
+        self::debug($runTime, '运行耗时');
+        self::debug(number_format(1 / $runTime, 2) . 'rps/s', '吞吐率');
+        self::debug(round((memory_get_usage() / 1024), 4) . ' kb', '内存占用');
+        self::debug(self::$msg, '运行信息');
+        self::debug(get_included_files(), '包含文件');
 
-        IF ( self::$sqls )
-            self::debug ( self::$sqls, '运行SQL' );
+        IF (self::$sqls)
+            self::debug(self::$sqls, '运行SQL');
     }
 
-    static function spent ()
+    static function spent()
     {
 
-        return round ( ( self::$stopTime - self::$startTime ), 4 );  //计算后以4舍5入保留4位返回
+        return round((self::$stopTime - self::$startTime), 4);  //计算后以4舍5入保留4位返回
 
     }
 }
