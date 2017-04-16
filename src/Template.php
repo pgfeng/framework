@@ -16,7 +16,7 @@ class Template
      *
      * @var array
      */
-    public $var = [ '_router' => '', ];
+    public $var = [ '_router' => __URI__, ];
     private $literal;
     private $blacks = [ ];
 
@@ -27,7 +27,10 @@ class Template
      */
     final function __construct ()
     {
-        $this->var[ 'view_vars' ] = Config::view_vars ();
+        $temp_vars = Config::view_vars ();
+        foreach ($temp_vars as $key => $value){
+            $this->var[$key] = $value;
+        }
     }
 
     /**

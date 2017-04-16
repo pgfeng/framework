@@ -6,5 +6,4 @@
  */
 
 return [
-    '_router' => __URI__
 ];
