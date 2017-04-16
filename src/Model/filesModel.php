@@ -98,8 +98,6 @@ class filesModel extends Model
                             if (in_array($ext, $allow_type)) {
                                 $path = Config::file('upload_path') . date("Ymd") . '/' . time() . random(10) . '.' . $ext;
                                 $full_path = $path;
-//                                $dir_name = dirname($full_path);
-//                                @mkdir($dir_name, 0777, TRUE);
                                 mkPathDir($full_path);
                                 if (@move_uploaded_file($file['tmp_name'][ $key ], $full_path)) {
                                     $this->Insert([
@@ -157,7 +155,7 @@ class filesModel extends Model
                     $ext = end($ext);
                     if (in_array($ext, $allow_type)) {
                         $path = Config::file('upload_path') . date("Ymd") . '/' . time() . random(10) . '.' . $ext;
-                        $full_path = __ROOT__ . $path;
+                        $full_path = $path;
                         mkPathDir($full_path);
                         if (@move_uploaded_file($file['tmp_name'], $full_path)) {
                             $this->Insert([
