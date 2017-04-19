@@ -592,7 +592,7 @@ abstract class DBase
 		if ( $res = $this->_exec ( $sql ) !== FALSE ) {
 			return $res;
 		} else {
-            Log::log( $this->getError (),Log::ERROR);
+            Debug::error($this->getError(),'DB');
 			return $res;
 		}
 	}
