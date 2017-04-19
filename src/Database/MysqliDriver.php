@@ -1,5 +1,7 @@
 <?php
+
 namespace GFPHP\Database;
+
 use GFPHP\DataObject;
 use GFPHP\DBase, GFPHP\Config;
 use GFPHP\Exception;
@@ -25,7 +27,7 @@ class mysqliDriver extends DBase
         $config = Config::database($configName);
         //=====使用长连接
         $this->configName = $configName;
-            $mysqli = new mysqli('p:' . $config['host'], $config['user'], $config['pass'], $config['name']);
+        $mysqli = new \mysqli('p:' . $config['host'], $config['user'], $config['pass'], $config['name']);
         if ($mysqli->connect_error) {
             new Exception('连接数据库失败：' . $mysqli->connect_error);
         } else {
@@ -34,15 +36,17 @@ class mysqliDriver extends DBase
             return TRUE;
         }
     }
-    
+
     /**
      * @param $string
      *
      * @return string
      */
-    function real_escape_string($string){
-        return mysqli_real_escape_string($string,$this->con);
+    function real_escape_string($string)
+    {
+        return mysqli_real_escape_string($this->mysqli, $string);
     }
+
     /**
      * 返回错误信息
      * @return string
@@ -62,7 +66,7 @@ class mysqliDriver extends DBase
         if ($query) {
             $result = [];
             while ($row = $query->fetch_assoc()) {
-                $result[] = new DataObject($row,TRUE,$this->table,$this->configName);;
+                $result[] = new DataObject($row, TRUE, $this->table, $this->configName);;
             }
             unset($query);
             return $result;

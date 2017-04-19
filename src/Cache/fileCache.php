@@ -1,5 +1,7 @@
 <?php
+
 namespace GFPHP\Cache;
+
 use GFPHP\Config, GFPHP\Cache;
 
 
@@ -15,16 +17,16 @@ class fileCache extends Cache
         'default_space' => 'default_space',
     ];
 
-	/**
+    /**
      * fileCache constructor.
      *
      * @param bool|array $config
      */
-    public function __construct( $config = FALSE)
+    public function __construct($config = FALSE)
     {
         if ($config) {
             foreach ($config as $k => $v) {
-                $this->config[ $k ] = $v;
+                $this->config[$k] = $v;
             }
         }
     }
@@ -57,7 +59,7 @@ class fileCache extends Cache
 
         if (!$dir) $dir = $this->config['default_space'];
 
-        return  parseDir(Config::cache('cache_dir'), $dir) . $key . '.php';
+        return BASE_PATH . Config::cache('cache_dir') . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $key . '.php';
     }
 
     /**
@@ -75,7 +77,7 @@ class fileCache extends Cache
             return FALSE;
     }
 
-	/**
+    /**
      * 判断是否有缓存
      *
      * @param        $key
@@ -83,7 +85,7 @@ class fileCache extends Cache
      *
      * @return bool
      */
-    public function _is_cache( $key, $space = '')
+    public function _is_cache($key, $space = '')
     {
         $path = $this->toPath($key, $space);
 
@@ -195,7 +197,7 @@ class fileCache extends Cache
         }
     }
 
-	/**
+    /**
      * 清理过期的缓存
      *
      * @param $space
@@ -203,7 +205,7 @@ class fileCache extends Cache
      *
      * @return bool
      */
-    public function _delete_timeout( $space, $lifetime)
+    public function _delete_timeout($space, $lifetime)
     {
 
         $dir = __ROOT__ . parseDir(Config::config('app_dir'), Config::cache('cache_dir'), $space);
