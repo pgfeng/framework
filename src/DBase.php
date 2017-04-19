@@ -917,7 +917,7 @@ abstract class DBase
 			$this->lastSql = $sql;
 			$data = $this->_query ( $sql );
 			if ( $data === FALSE ) {
-				Log::log( $this->getError (),Log::SQL);
+                Debug::error($this->getError(),'DB');
 			}
 			if ( $data == NULL )         //防止直接返回Null
 				$data = [ ];
