@@ -12,7 +12,7 @@ use GFPHP\Exception;
 class mysqliDriver extends DBase
 {
     /**
-     * @var mysqli
+     * @var \mysqli
      */
     public $mysqli;
     private $configName = 'default';
@@ -27,7 +27,7 @@ class mysqliDriver extends DBase
         $config = Config::database($configName);
         //=====使用长连接
         $this->configName = $configName;
-        $mysqli = new \mysqli('p:' . $config['host'], $config['user'], $config['pass'], $config['name']);
+        $mysqli = new \mysqli($config['host'], $config['user'], $config['pass'], $config['name'],$config['port']);
         if ($mysqli->connect_error) {
             new Exception('连接数据库失败：' . $mysqli->connect_error);
         } else {
@@ -44,7 +44,12 @@ class mysqliDriver extends DBase
      */
     function real_escape_string($string)
     {
-        return mysqli_real_escape_string($this->mysqli, $string);
+        $string = mysqli_real_escape_string($this->mysqli, $string);
+        if(is_numeric($string)) {
+            return $string;
+        }else{
+            return '\''.$string.'\'';
+        }
     }
 
     /**
@@ -58,7 +63,7 @@ class mysqliDriver extends DBase
 
     /**
      * @param $sql
-     * @return array
+     * @return array | bool | \mysqli_result
      */
     function &_query($sql)
     {
@@ -85,7 +90,7 @@ class mysqliDriver extends DBase
 
     /**
      * @param $sql
-     * @return bool|mysqli_result
+     * @return bool| \mysqli_result
      */
     function _exec($sql)
     {

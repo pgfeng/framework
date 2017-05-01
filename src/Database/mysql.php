@@ -6,7 +6,10 @@ use GFPHP\Config, GFPHP\DBase;
 use GFPHP\DataObject;
 use GFPHP\Exception;
 
-
+/**
+ * Class mysql
+ * @package GFPHP\Database
+ */
 class mysql extends DBase
 {
     private $con = FALSE;
@@ -44,7 +47,12 @@ class mysql extends DBase
      */
     function real_escape_string($string)
     {
-        return mysql_real_escape_string($string, $this->con);
+        $string = mysql_real_escape_string($string, $this->con);
+        if(is_numeric($string)) {
+            return $string;
+        }else{
+            return '\''.$string.'\'';
+        }
     }
 
     /**
@@ -57,6 +65,10 @@ class mysql extends DBase
         return mysql_error($this->con);
     }
 
+    /**
+     * @param $sql
+     * @return array|bool
+     */
     function _query($sql)
     {
         $query = mysql_query($sql, $this->con);
@@ -72,6 +84,10 @@ class mysql extends DBase
         }
     }
 
+    /**
+     * @param $sql
+     * @return resource
+     */
     function _exec($sql)
     {
         return mysql_query($sql, $this->con);
