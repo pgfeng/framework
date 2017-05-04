@@ -67,7 +67,7 @@ class Router
             }
             return Router::runCallback($uri, $params);
         });
-        foreach (glob(BASE_PATH . "Router" . DIRECTORY_SEPARATOR . "*.php") as $filename) {
+        foreach (glob(BASE_PATH . "Router" . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . "*.php") as $filename) {
             include $filename;
         }
     }
