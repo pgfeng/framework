@@ -93,6 +93,37 @@ abstract class Model
     }
 
     /**
+     * 写法兼容
+     * @param string $field
+     * @return DataObject
+     */
+    public function find($field = '*')
+    {
+        return $this->getOne($field);
+    }
+
+    /**
+     * 写法兼容
+     * @param bool $sql
+     * @return DataObject|null|array
+     */
+    public function findAll($sql = false)
+    {
+        return $this->query($sql);
+    }
+
+    /**
+     * 写法兼容
+     * @param      $primary_value
+     * @param bool $primary_key
+     * @return DataObject
+     */
+    public function findByPk($primary_value,$primary_key=false){
+        !$primary_key && $primary_key = $this->primary_key;
+        return $this->where($primary_key,$primary_value)->getOne();
+    }
+
+    /**
      * 验证规则
      *
      * @var array
