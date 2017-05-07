@@ -290,7 +290,7 @@ abstract class Model
     {
         foreach ($data as $column => &$value) {
             if (isset($this->Column[$column])) {
-                if (is_object($this->Column[$column]['rule'])) {
+                if (is_callable($this->Column[$column]['rule'])) {
                     if ($res = $this->Column[$column]['rule']($this->Column[$column], $value)) {
                         if (isset($this->Column[$column]['msg']) && $this->Column[$column]['msg'] != '') {
                             return str_replace('%ColumnName%', $this->Column[$column]['ColumnName'], isset($this->validate[$this->Column[$column]['rule']]['msg']) ? $this->validate[$this->Column[$column]['rule']]['msg'] : '请输入正确的%ColumnName%');
@@ -300,7 +300,7 @@ abstract class Model
                     }
                 } else
                     if (isset($this->validate[$this->Column[$column]['rule']])) {
-                        if (is_object($this->validate[$this->Column[$column]['rule']]['rule'])) {
+                        if (is_callable($this->validate[$this->Column[$column]['rule']]['rule'])) {
                             if ($res = $this->validate[$this->Column[$column]['rule']]['rule']($this->Column[$column], $value)) {
                                 if (isset($this->validate[$this->Column[$column]['rule']]['msg']) && $this->validate[$this->Column[$column]['rule']]['msg'] != '') {
                                     return str_replace('%ColumnName%', $this->Column[$column]['ColumnName'], isset($this->validate[$this->Column[$column]['rule']]['msg']) ? $this->validate[$this->Column[$column]['rule']]['msg'] : '请输入正确的%ColumnName%');

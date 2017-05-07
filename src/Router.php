@@ -182,7 +182,7 @@ class Router
 
         $explode_str = '[ ROUTER _ _ PARAMS ]';
         foreach (self::$routes[$method] as $pattern => $callback) {
-            if (!is_object($callback)) {
+            if (!is_callable($callback)) {
                 $pattern_seg = preg_replace('#\(.+?\)#', $explode_str, $pattern);
                 $num = substr_count($pattern_seg, $explode_str);
                 if ($num != $params_count)
@@ -203,7 +203,7 @@ class Router
             }
         }
         foreach (self::$routes['ALL'] as $pattern => $callback) {
-            if (!is_object($callback)) {
+            if (!is_callable($callback)) {
                 $pattern_seg = preg_replace('#\(.+\)#', $explode_str, $pattern);
                 $num = substr_count($pattern_seg, $explode_str);
                 if ($num != $params_count)
@@ -240,7 +240,7 @@ class Router
      */
     public static function runCallBack($callback, $params)
     {
-        if (is_object($callback)) {
+        if (is_callable($callback)) {
             if (!$params) {
                 return call_user_func($callback);
             } else {
