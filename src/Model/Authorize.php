@@ -41,7 +41,12 @@ abstract class Authorize extends Model
      * 登陆校验的TOKEN名称
      * @var string
      */
-    protected $token_name = 'G_TOKEN';
+    protected $token_name = 'MEMBER_TOKEN';
+
+    /**
+     * 有效时间
+     * @var int
+     */
     protected $expire = 60*60*24*30;
 
     /**
@@ -101,7 +106,7 @@ abstract class Authorize extends Model
             return false;
         $token = explode(' || ', base64_decode($token));
         if (count($token) != 2) {
-            return $token;
+            return false;
         }
         $field_counter = 0;
         foreach ($this->account_field as $field) {
