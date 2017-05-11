@@ -15,7 +15,7 @@ use GFPHP\Model\filesModel;
  * 修改时间：2015-06-18 10:31 PGF            function __Clone(){}
  * 修改时间：2015-04-13 13:45 PGF            function Save(){}
  * 修改时间: 2016-08-01 08:42 PGF            Update PHPDOC
- *
+ * 修改时间: 2017-05-11 22:23 PGF            添加了直接主键操作的方法
  * @package Model
  *
  *
@@ -40,7 +40,9 @@ use GFPHP\Model\filesModel;
  * @method bool|int delete($table = '', $where = '', $orderby = '', $limit = '')
  * @method $this group($group = '')
  * @method DataObject|bool|array query($sql = '')
- * @method DataObject getOne($field = '*')
+ * @method DataObject|bool getOne($field = '*')
+ * @method DataObject|bool find($field = '*')
+ * @method DataObject|null|array findAll($field = '*')
  * @method string getField($column, $value)
  * @method string setField($column, $value)
  * @method DataObject paginate($page, $size)
@@ -94,26 +96,6 @@ abstract class Model
 
     /**
      * 写法兼容
-     * @param string $field
-     * @return DataObject
-     */
-    public function find($field = '*')
-    {
-        return $this->getOne($field);
-    }
-
-    /**
-     * 写法兼容
-     * @param bool $sql
-     * @return DataObject|null|array
-     */
-    public function findAll($sql = false)
-    {
-        return $this->query($sql);
-    }
-
-    /**
-     * 写法兼容
      * @param      $primary_value
      * @param bool $primary_key
      * @return DataObject
@@ -121,6 +103,18 @@ abstract class Model
     public function findByPk($primary_value,$primary_key=false){
         !$primary_key && $primary_key = $this->primary_key;
         return $this->where($primary_key,$primary_value)->getOne();
+    }
+
+
+    /**
+     * 写法兼容
+     * @param      $primary_value
+     * @param bool $primary_key
+     * @return bool|DataObject|int
+     */
+    public function deleteByPk($primary_value,$primary_key = false){
+        !$primary_key && $primary_key = $this->primary_key;
+        return $this->where($primary_key,$primary_value)->delete();
     }
 
     /**

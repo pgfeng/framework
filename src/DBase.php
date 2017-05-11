@@ -14,6 +14,7 @@ namespace GFPHP;
  * 修改时间：2015-06-14 11:02 PGF 修改select存在表名时自动加上表前缀
  * 修改时间：2016-04-16 10:20 PGF 自动解决注入问题，将不用再手动使用addslashes去做转义操作
  * 修改时间: 2016-06-28 21:03 PGF 为了程序安全,将错误屏蔽,并且将错误存放至日志
+ * 修改时间: 2017-05-11 22:23 PGF 添加了find和findAll方法
  */
 
 /**
@@ -109,16 +110,37 @@ abstract class DBase
 	 *
 	 * @param array|string $field
 	 *
-	 * @return DataObject||bool
-	 */
+	 * @return bool|DataObject
+     */
 	final public function getOne ( $field = '*' )
 	{
 		$this->select ( $field );
 		$this->limit ( 0, 1 );
 		$fetch = $this->query ();
-		if ( empty( $fetch ) ) return FALSE; else
+		if ( empty( $fetch ) )
+		    return false;
+		else
 			return $fetch[ 0 ];
 	}
+    /**
+     * 写法兼容
+     * @param string $field
+     * @return DataObject|bool
+     */
+    public function find($field = '*')
+    {
+        return $this->getOne($field);
+    }
+
+    /**
+     * 写法兼容
+     * @param bool $sql
+     * @return DataObject|null|array
+     */
+    public function findAll($sql = false)
+    {
+        return $this->query($sql);
+    }
 
 	/**
 	 * 设置字段值
