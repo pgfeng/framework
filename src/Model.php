@@ -226,7 +226,7 @@ abstract class Model
         ],
         #身份证
         'idCard' => [
-            'rule' => '/d{15}|d{18}/',
+            'rule' => '/^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/',
             'msg' => '请输入正确的%ColumnName%',
         ],
     ];
