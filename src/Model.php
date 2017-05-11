@@ -236,7 +236,7 @@ class Model
      * @param bool $model
      * @param      $configName
      */
-    public function __construct($model = FALSE, $configName = FALSE)
+    public function __construct($model = FALSE, $configName = 'default')
     {
         if ($configName == FALSE)
             $configName = $this->configName;
@@ -337,9 +337,8 @@ class Model
      * @param $configName
      *
      */
-    final private function database($configName)
+    final private function database($configName = 'default')
     {
-
         //--计算表名
         $tb_name = substr(get_class($this), 6);
         $class = substr($tb_name, (($start = strripos($tb_name, '\\')) > 0 ? $start + 1 : 0));
@@ -349,8 +348,24 @@ class Model
         } else {
             $table = substr($this->model, 0, strpos($this->model, 'Model'));
         }
-        $db = DB::table($table, $configName);
-        $this->db = $db;
+
+        $config = Config::database();
+        if(!isset($config[$configName])){
+            throw new \Exception('数据库配置 ['.$configName.'] 不存在!');
+        }
+        $driver = $config[$configName]['driver'];
+        $driver = '\\GFPHP\\Database\\'.$driver;
+        $db = new $driver;
+        $db->connect($configName);
+        if ( !$db ) {
+            throw new \Exception( '数据库配置有误!' );
+        }
+        if ( !$db ) {
+            throw new \Exception( '数据库配置有误!' );
+        }
+        $db->table = $table;
+        $db->_reset ();
+        return $this->db = $db;
     }
 
     //设置模型操作的表
@@ -385,7 +400,7 @@ class Model
      *
      * @param $func
      * @param $val
-     * @return mixed
+     * @return self
      */
     final public static function __callStatic($func, $val)
     {

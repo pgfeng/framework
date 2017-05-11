@@ -9,6 +9,11 @@
 namespace GFPHP;
 
 
+/**
+ * 这其实只是一个静态调用Model的简写形式
+ * Class DB
+ * @package GFPHP
+ */
 class DB
 {
     /**
@@ -17,9 +22,9 @@ class DB
      * @return Model
      * @throws \Exception
      */
-	public static function table ( $table_name, $config_name = 'default' )
-	{
-		return new Model($table_name,$config_name);
-	}
+    public static function table ( $table_name, $config_name = 'default' )
+    {
+        return new Model($table_name,$config_name);
+    }
 
 }
