@@ -368,7 +368,7 @@ abstract class Model
      */
     final public function table($table = '')
     {
-        $this->db->table = $this->db->config['table_pre'] . $table;
+        $this->db->table = $table;
         $this->db->_reset();
 
         return $this;
