@@ -95,7 +95,7 @@ class Debug
         if (Config::debug('debug'))                                                        //显示DEBUG信息
             Debug::message();
         if (extension_loaded('zlib') && Config::config('gzip')) @ob_end_flush();
-
+        exit;
     }
 
     static function getRuntime()
