@@ -1,7 +1,7 @@
 {
     "name": "gfphp/framework",
     "description": "gfphp/framework",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "PGF",
