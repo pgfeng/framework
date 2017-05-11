@@ -56,13 +56,13 @@ use GFPHP\Model\filesModel;
  * @method string version() 获取MYSQL版本
  * @method string lastSql() 获取最后执行的sql
  */
-abstract class Model
+class Model
 {
     /**
      * 默认的主键名
      * @var string
      */
-    protected $primary_key = 'id';
+    public $primary_key = 'id';
 
     /**
      * @var DBase
