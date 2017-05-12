@@ -151,7 +151,7 @@ class Model
         #数字
         'number' => [
             'rule' => '/^\d+$/',
-            'msg' => '请输入正确的%ColumnName%,只能输入数字%',
+            'msg' => '请输入正确的%ColumnName%,只能输入数字',
         ],
         #邮编
         'zip' => [
