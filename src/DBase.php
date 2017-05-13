@@ -958,16 +958,19 @@ abstract class DBase
 	}            //链接数据库方法
 
 	/**
-	 * 闭包执行事务
+	 * 闭包执行事务，返回事务执行的状态
 	 * @param \Closure $callback
+	 * @return bool
 	 */
 	final public function transaction(\Closure $callback){
 		try {
 			$this->beginTransaction();
 			$callback($this);
 			$this->commit();
+			return true;
 		}catch (\Exception $e){
 			$this->rollBack();
+			return false;
 		}
 	}
 

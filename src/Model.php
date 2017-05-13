@@ -51,7 +51,7 @@ use GFPHP\Model\filesModel;
  * @method int|bool setDnc($column, $num) 字段自减少
  * @method string compile()
  * @method bool beginTransaction() 开启事务
- * @method bool transaction(\Closure $callback) 闭包执行事务
+ * @method bool transaction(\Closure $callback) 闭包执行事务，返回事务执行的状态
  * @method bool commit() 结束事务
  * @method bool rollBack() 回滚事务
  * @method string version() 获取MYSQL版本
