@@ -1,7 +1,7 @@
 <?php
 namespace GFPHP\Database;
 use GFPHP\Config, GFPHP\DBase;
-use GFPHP\DataObject;
+use GFPHP\DataObject,\PDO;
 
 /**
  * Class PdoDriver
@@ -24,12 +24,17 @@ class PdoDriver extends DBase
 		$config = Config::database($configName);
 		$this->configName = $configName;
 		try {
-			$this->db = new \pdo('mysql:dbname='.$config['name'].';host='.$config['host'].';port='.$config['port'].';', $config[ 'user' ], $config[ 'pass' ] );
-			$this->db->setAttribute ( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
+			$this->db = new \pdo('mysql:dbname='.$config['name'].';host='.$config['host'].';port='.$config['port'].';', $config[ 'user' ], $config[ 'pass' ] ,[
+				PDO::ATTR_CASE => PDO::CASE_NATURAL,
+				PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+				PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL,
+				PDO::ATTR_STRINGIFY_FETCHES => false,
+				PDO::ATTR_EMULATE_PREPARES => false,
+			]);
 		} catch ( \PDOException $e ) {
 
-            new \Exception('连接数据库失败：' . $e->getMessage() ,0);
-			
+			new \Exception('连接数据库失败：' . $e->getMessage() ,0);
+
 		}
 		if ( !$this->db )
 			return FALSE;
@@ -60,11 +65,7 @@ class PdoDriver extends DBase
 	 */
 	public function _query ( $sql )
 	{
-		try {
-			$query = $this->db->query ( $sql );
-		} catch ( PDOException $e ) {
-			return FALSE;
-		}
+		$query = $this->db->query ( $sql );
 		if ( !$query )
 			return [ ];
 		$result = $query->fetchAll ( \PDO::FETCH_ASSOC );   //只获取键值
@@ -76,7 +77,7 @@ class PdoDriver extends DBase
 		return $result;
 
 	}
-	
+
 	/**
 	 * @param $string
 	 *
@@ -93,11 +94,7 @@ class PdoDriver extends DBase
 	 */
 	public function _exec ( $sql )
 	{
-		try {
-			return $this->db->exec ( $sql );
-		} catch ( \PDOException $e ) {
-			return FALSE;
-		}
+		return $this->db->exec ( $sql );
 	}
 
 	public function beginTransaction ()

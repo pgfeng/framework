@@ -111,36 +111,36 @@ abstract class DBase
 	 * @param array|string $field
 	 *
 	 * @return bool|DataObject
-     */
+	 */
 	final public function getOne ( $field = '*' )
 	{
 		$this->select ( $field );
 		$this->limit ( 0, 1 );
 		$fetch = $this->query ();
 		if ( empty( $fetch ) )
-		    return false;
+			return false;
 		else
 			return $fetch[ 0 ];
 	}
-    /**
-     * 写法兼容
-     * @param string $field
-     * @return DataObject|bool
-     */
-    public function find($field = '*')
-    {
-        return $this->getOne($field);
-    }
+	/**
+	 * 写法兼容
+	 * @param string $field
+	 * @return DataObject|bool
+	 */
+	public function find($field = '*')
+	{
+		return $this->getOne($field);
+	}
 
-    /**
-     * 写法兼容
-     * @param bool $sql
-     * @return DataObject|null|array
-     */
-    public function findAll($sql = false)
-    {
-        return $this->query($sql);
-    }
+	/**
+	 * 写法兼容
+	 * @param bool $sql
+	 * @return DataObject|null|array
+	 */
+	public function findAll($sql = false)
+	{
+		return $this->query($sql);
+	}
 
 	/**
 	 * 设置字段值
@@ -307,13 +307,13 @@ abstract class DBase
 	 */
 	final function in ( $field, $in )
 	{
-        if(is_array($in)) {
-            $pin = '\'';
-            $pin .= implode('\',\'', $in);
-            $pin .= '\'';
-        }else{
-            $pin = $in;
-        }
+		if(is_array($in)) {
+			$pin = '\'';
+			$pin .= implode('\',\'', $in);
+			$pin .= '\'';
+		}else{
+			$pin = $in;
+		}
 
 		return $this->where ( "{$field} IN ({$pin})" );
 	}
@@ -457,11 +457,11 @@ abstract class DBase
 			if ( func_num_args () == 2 ) {
 				$where = '' . $field . '=' . $this->addslashes ( func_get_arg ( 1 ) );
 			} elseif ( func_num_args () == 3 ) {
-                $where = func_get_arg ( 2 );
-                if ( is_array ( $where ) ) {
-                    $where = implode ( ',', $this->addslashes ( $where ) );
-                }
-                $where = '' . $field . ' ' . func_get_arg ( 1 ) . " '" . $where . "'";
+				$where = func_get_arg ( 2 );
+				if ( is_array ( $where ) ) {
+					$where = implode ( ',', $this->addslashes ( $where ) );
+				}
+				$where = '' . $field . ' ' . func_get_arg ( 1 ) . " '" . $where . "'";
 			}
 		}
 		if ( is_array ( $where ) )
@@ -614,7 +614,7 @@ abstract class DBase
 		if ( $res = $this->_exec ( $sql ) !== FALSE ) {
 			return $res;
 		} else {
-            Debug::error($this->getError(),'DB');
+			Debug::error($this->getError(),'DB');
 			return $res;
 		}
 	}
@@ -939,7 +939,7 @@ abstract class DBase
 			$this->lastSql = $sql;
 			$data = $this->_query ( $sql );
 			if ( $data === FALSE ) {
-                Debug::error($this->getError(),'DB');
+				Debug::error($this->getError(),'DB');
 			}
 			if ( $data == NULL )         //防止直接返回Null
 				$data = [ ];
@@ -957,6 +957,19 @@ abstract class DBase
 		return $data;
 	}            //链接数据库方法
 
+	/**
+	 * 闭包执行事务
+	 * @param \Closure $callback
+	 */
+	final public function transaction(\Closure $callback){
+		try {
+			$this->beginTransaction();
+			$callback($this);
+			$this->commit();
+		}catch (\Exception $e){
+			$this->rollBack();
+		}
+	}
 
 	/**
 	 * 转义函数
@@ -1020,11 +1033,11 @@ abstract class DBase
 
 	abstract function _query ( $sql );         //返回值是查询出的数组
 
-    /**
-     * @return string
-     */
+	/**
+	 * @return string
+	 */
 	abstract function getError ();            //返回上一个错误信息
-	
+
 	abstract function real_escape_string ( $string ); //特殊字符转义
 
 	/**
