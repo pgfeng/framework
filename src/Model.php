@@ -56,6 +56,7 @@ use GFPHP\Model\filesModel;
  * @method bool rollBack() 回滚事务
  * @method string version() 获取MYSQL版本
  * @method string lastSql() 获取最后执行的sql
+ * @method int|bool lastInsertId() 获取最后插入的自增ID
  */
 class Model
 {
@@ -355,7 +356,9 @@ class Model
 			throw new \Exception('数据库配置 ['.$configName.'] 不存在!');
 		}
 		$driver = $config[$configName]['driver'];
+
 		$driver = '\\GFPHP\\Database\\'.$driver;
+		/** @var DBase $db */
 		$db = new $driver;
 		$db->connect($configName);
 		if ( !$db ) {
