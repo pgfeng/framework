@@ -43,7 +43,7 @@ use GFPHP\Model\filesModel;
  * @method DataObject|bool getOne($field = '*')
  * @method DataObject|bool find($field = '*')
  * @method DataObject|null|array findAll($field = '*')
- * @method string getField($column, $value)
+ * @method string getField($column)
  * @method string setField($column, $value)
  * @method DataObject paginate($page, $size)
  * @method string get_table($table = FALSE)
