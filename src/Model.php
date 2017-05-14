@@ -107,7 +107,6 @@ class Model
 		return $this->where($primary_key,$primary_value)->getOne();
 	}
 
-
 	/**
 	 * 写法兼容
 	 * @param      $primary_value
@@ -404,13 +403,22 @@ class Model
 	 *
 	 * @param $func
 	 * @param $val
-	 * @return self
+	 * @return static
 	 */
 	final public static function __callStatic($func, $val)
 	{
 		$DataBase = new static();
 
 		return call_user_func_array([$DataBase, $func], $val);
+	}
+
+	/**
+	 * 静态调用model
+	 * 其实不调用也可以用，但是IDE有黄杠杠，强迫症不能忍
+	 * @return static
+	 */
+	public static  function model(){
+		return new static();
 	}
 
 	/**
