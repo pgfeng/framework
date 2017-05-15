@@ -45,7 +45,7 @@ use GFPHP\Model\filesModel;
  * @method DataObject|null|array findAll($field = '*')
  * @method string getField($column)
  * @method string setField($column, $value)
- * @method DataObject paginate($page, $size)
+ * @method DataObject paginate($size, $page)
  * @method string get_table($table = FALSE)
  * @method int|bool setInc($column, $num) 字段自增加
  * @method int|bool setDnc($column, $num) 字段自减少
@@ -102,9 +102,10 @@ class Model
 	 * @param bool $primary_key
 	 * @return DataObject
 	 */
-	public function findByPk($primary_value,$primary_key=false){
+	public function findByPk($primary_value, $primary_key = false)
+	{
 		!$primary_key && $primary_key = $this->primary_key;
-		return $this->where($primary_key,$primary_value)->getOne();
+		return $this->where($primary_key, $primary_value)->getOne();
 	}
 
 	/**
@@ -113,9 +114,10 @@ class Model
 	 * @param bool $primary_key
 	 * @return bool|DataObject|int
 	 */
-	public function deleteByPk($primary_value,$primary_key = false){
+	public function deleteByPk($primary_value, $primary_key = false)
+	{
 		!$primary_key && $primary_key = $this->primary_key;
-		return $this->where($primary_key,$primary_value)->delete();
+		return $this->where($primary_key, $primary_value)->delete();
 	}
 
 	/**
@@ -351,23 +353,23 @@ class Model
 		}
 
 		$config = Config::database();
-		if(!isset($config[$configName])){
-			throw new \Exception('数据库配置 ['.$configName.'] 不存在!');
+		if (!isset($config[$configName])) {
+			throw new \Exception('数据库配置 [' . $configName . '] 不存在!');
 		}
 		$driver = $config[$configName]['driver'];
 
-		$driver = '\\GFPHP\\Database\\'.$driver;
+		$driver = '\\GFPHP\\Database\\' . $driver;
 		/** @var DBase $db */
 		$db = new $driver;
 		$db->connect($configName);
-		if ( !$db ) {
-			throw new \Exception( '数据库配置有误!' );
+		if (!$db) {
+			throw new \Exception('数据库配置有误!');
 		}
-		if ( !$db ) {
-			throw new \Exception( '数据库配置有误!' );
+		if (!$db) {
+			throw new \Exception('数据库配置有误!');
 		}
 		$db->table = $table;
-		$db->_reset ();
+		$db->_reset();
 		return $this->db = $db;
 	}
 
@@ -417,7 +419,8 @@ class Model
 	 * 其实不调用也可以用，但是IDE有黄杠杠，强迫症不能忍
 	 * @return static
 	 */
-	public static  function model(){
+	public static function model()
+	{
 		return new static();
 	}
 
