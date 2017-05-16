@@ -16,6 +16,7 @@ namespace GFPHP;
  */
 class DB
 {
+	public static $DBC = false;
     /**
      * @param        $table_name
      * @param string $config_name

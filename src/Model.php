@@ -358,12 +358,15 @@ class Model
 		}
 		$driver = $config[$configName]['driver'];
 
-		$driver = '\\GFPHP\\Database\\' . $driver;
-		/** @var DBase $db */
-		$db = new $driver;
-		$db->connect($configName);
-		if (!$db) {
-			throw new \Exception('数据库配置有误!');
+		if(isset(DB::$DBC[$configName])){
+			$db = DB::$DBC[$configName];
+		}else {
+			$driver = '\\GFPHP\\Database\\' . $driver;
+			/** @var DBase $db */
+			$db = new $driver;
+			$db->connect($configName);
+			DB::$DBC[$configName] = clone $db;
+			Debug::add('链接数据库');
 		}
 		if (!$db) {
 			throw new \Exception('数据库配置有误!');
