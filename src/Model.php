@@ -45,7 +45,7 @@ use GFPHP\Model\filesModel;
  * @method DataObject|null|array findAll($field = '*')
  * @method string getField($column)
  * @method string setField($column, $value)
- * @method DataObject paginate($size, $page)
+ * @method DataObject paginate($size, $page=1)
  * @method string get_table($table = FALSE)
  * @method int|bool setInc($column, $num) 字段自增加
  * @method int|bool setDnc($column, $num) 字段自减少
