@@ -8,7 +8,6 @@
 
 namespace GFPHP;
 
-use PhpConsole;
 
 
 /**
@@ -24,12 +23,9 @@ class Debug
     static $msg = [];
     static $sqls = [];
     static $include = [];
+    static $debugs = [];
+    static $errors = [];
     static $length;
-    static $Connector;
-    /**
-     * @var bool| PhpConsole\Handler
-     */
-    static $Handler = false;
 
     //-------添加程序执行信息--------
     static function add($msg, $type = 0)
@@ -42,7 +38,7 @@ class Debug
                 self::$msg[] = $msg;                            //把运行信息添加进去
                 break;
             case '1':
-                self::$include[] = $msg;                        //把包含文件添加进去
+                self::$debugs[] = $msg;                        //把包含文件添加进去
                 break;
             case '2':
                 self::$sqls[] = $msg;                            //把sql语句添加进去
@@ -57,30 +53,12 @@ class Debug
         if (Config::config('gzip')) {
             ob_start('ob_gzhandler');
         }
-        $Connector = PhpConsole\Connector::getInstance();
-        $isActiveClient = $Connector->isActiveClient();
-        if ($isActiveClient) {
-            $Connector->setPassword(Config::debug('password'));
-            $Handler = PhpConsole\Handler::getInstance();
-            $Handler->start();
-            $Handler->checkFatalErrorOnShutDown();
-            self::$Connector = $Connector;
-            self::$Handler = $Handler;
-        }
         self::$startTime = microtime(TRUE);
     }
 
-    public static function debug($msg, $tag)
+    public static function debug($msg)
     {
-        if (self::$Handler)
-            self::$Handler->debug($msg, $tag, TRUE);
-    }
-
-    public static function error($msg, $tag)
-    {
-
-        if (self::$Handler)
-            self::$Handler->handleError($tag, $msg);
+        self::add($msg,1);
     }
 
     //在脚本结束处调用获取脚本结束时间的微秒值
@@ -91,9 +69,10 @@ class Debug
     static function stop()
     {
         self::$stopTime = microtime(TRUE);   //将获取的时间赋给成员属性$stopTime
-
-        if (Config::debug('debug'))                                                        //显示DEBUG信息
-            Debug::message();
+        if(Config::config('develop_mod')){
+            //如果是开发模式
+            include __DIR__.DIRECTORY_SEPARATOR.'debugbar.html';
+        }
         if (extension_loaded('zlib') && Config::config('gzip')) @ob_end_flush();
         exit;
     }
@@ -124,19 +103,10 @@ class Debug
         }
     }
 
-    static function message()
-    {
-        $runTime = self::spent();
-        self::debug($runTime, '运行耗时');
-        self::debug(number_format(1 / ($runTime == 0 ? 0.0001 : $runTime), 2) . 'rps/s', '吞吐率');
-        self::debug(round((memory_get_usage() / 1024), 4) . ' kb', '内存占用');
-        self::debug(self::$msg, '运行信息');
-        self::debug(get_included_files(), '包含文件');
-
-        IF (self::$sqls)
-            self::debug(self::$sqls, '运行SQL');
-    }
-
+    /**
+     * 计算执行时间
+     * @return float
+     */
     static function spent()
     {
 
