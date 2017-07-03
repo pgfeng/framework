@@ -1,0 +1,684 @@
+<?php if(!IS_AJAX){ ?>
+<style type="text/css">
+    #__gconsole {
+        color: #000;
+        font-size: 13px;
+        font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+        /* global */
+        /* compoment */
+    }
+
+    #__gconsole .vc-max-height {
+        max-height: 250px;
+    }
+
+    #__gconsole .vc-max-height-line {
+        max-height: 44px;
+    }
+
+    #__gconsole .vc-min-height {
+        min-height: 40px;
+    }
+
+    #__gconsole .gc-switch {
+        display: block;
+        position: fixed;
+        right: 10px;
+        bottom: 10px;
+        color: #FFF;
+        background-color: #04BE02;
+        line-height: 1;
+        font-size: 14px;
+        padding: 8px 16px;
+        z-index: 10000;
+        border-radius: 4px;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+    }
+
+    #__gconsole .vc-mask {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #000;
+        opacity: 0;
+        z-index: 10001;
+        transition: background .3s;
+        -webkit-tap-highlight-color: transparent;
+        overflow-y: scroll;
+    }
+
+    #__gconsole .vc-panel {
+        display: none;
+        position: fixed;
+        min-height: 65%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10002;
+        background-color: #EFEFF4;
+        -webkit-transition: -webkit-transform 0.3s;
+        transition: -webkit-transform 0.3s;
+        transition: transform .3s;
+        transition: transform 0.3s, -webkit-transform 0.3s;
+        -webkit-transform: translate(0, 100%);
+        transform: translate(0, 100%);
+    }
+
+    #__gconsole .vc-tabbar {
+        border-bottom: 1px solid #D9D9D9;
+        overflow-x: auto;
+        height: 39px;
+        width: auto;
+        white-space: nowrap;
+    }
+
+    #__gconsole .vc-tabbar .vc-tab {
+        display: inline-block;
+        line-height: 39px;
+        padding: 0 15px;
+        border-right: 1px solid #D9D9D9;
+        text-decoration: none;
+        color: #000;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+    }
+
+    #__gconsole .vc-tabbar .vc-tab:active {
+        background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    #__gconsole .vc-tabbar .vc-tab.vc-actived {
+        background-color: #FFF;
+    }
+
+    #__gconsole .vc-content {
+        background-color: #FFF;
+        overflow-x: hidden;
+        overflow-y: auto;
+        position: absolute;
+        top: 40px;
+        left: 0;
+        right: 0;
+        bottom: 40px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #__gconsole .vc-content.vc-has-topbar {
+        top: 32px;
+    }
+
+    #__gconsole .vc-topbar {
+        background-color: #FBF9FE;
+        display: flex;
+        display: -webkit-box;
+        flex-direction: row;
+        flex-wrap: wrap;
+        -webkit-box-direction: row;
+        -webkit-flex-wrap: wrap;
+        width: 100%;
+    }
+
+    #__gconsole .vc-topbar .vc-toptab {
+        display: none;
+        flex: 1;
+        -webkit-box-flex: 1;
+        line-height: 30px;
+        padding: 0 15px;
+        border-bottom: 1px solid #D9D9D9;
+        text-decoration: none;
+        text-align: center;
+        color: #000;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+    }
+
+    #__gconsole .vc-topbar .vc-toptab.vc-toggle {
+        display: block;
+    }
+
+    #__gconsole .vc-topbar .vc-toptab:active {
+        background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    #__gconsole .vc-topbar .vc-toptab.vc-actived {
+        border-bottom: 1px solid #3e82f7;
+    }
+
+    #__gconsole .vc-logbox {
+        display: none;
+        position: relative;
+        min-height: 100%;
+    }
+
+    #__gconsole .vc-logbox i {
+        font-style: normal;
+    }
+
+    #__gconsole .vc-logbox .vc-log {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    #__gconsole .vc-logbox .vc-log:empty:before {
+        content: "Empty";
+        color: #999;
+        position: absolute;
+        top: 45%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        font-size: 15px;
+        text-align: center;
+    }
+
+    #__gconsole .vc-logbox .vc-item {
+        margin: 0;
+        padding: 6px 8px;
+        overflow: hidden;
+        line-height: 1.3;
+        border-bottom: 1px solid #EEE;
+        word-break: break-word;
+    }
+
+    #__gconsole .vc-logbox .vc-item-info {
+        color: #6A5ACD;
+    }
+
+    #__gconsole .vc-logbox .vc-item-debug {
+        color: #DAA520;
+    }
+
+    #__gconsole .vc-logbox .vc-item-warn {
+        color: #FFA500;
+        border-color: #FFB930;
+        background-color: #FFFACD;
+    }
+
+    #__gconsole .vc-logbox .vc-item-error {
+        color: #DC143C;
+        border-color: #F4A0AB;
+        background-color: #FFE4E1;
+    }
+
+    #__gconsole .vc-logbox .vc-log.vc-log-partly .vc-item {
+        display: none;
+    }
+
+    #__gconsole .vc-logbox .vc-log.vc-log-partly-log .vc-item-log,
+    #__gconsole .vc-logbox .vc-log.vc-log-partly-info .vc-item-info,
+    #__gconsole .vc-logbox .vc-log.vc-log-partly-warn .vc-item-warn,
+    #__gconsole .vc-logbox .vc-log.vc-log-partly-error .vc-item-error {
+        display: block;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-item-content {
+        margin-right: 60px;
+        display: block;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-item-meta {
+        color: #888;
+        float: right;
+        width: 60px;
+        text-align: right;
+    }
+
+    #__gconsole .vc-logbox .vc-item.vc-item-nometa .vc-item-content {
+        margin-right: 0;
+    }
+
+    #__gconsole .vc-logbox .vc-item.vc-item-nometa .vc-item-meta {
+        display: none;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-item-code {
+        display: block;
+        white-space: pre-wrap;
+        overflow: auto;
+        position: relative;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-item-code.vc-item-code-input,
+    #__gconsole .vc-logbox .vc-item .vc-item-code.vc-item-code-output {
+        padding-left: 12px;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-item-code.vc-item-code-input:before,
+    #__gconsole .vc-logbox .vc-item .vc-item-code.vc-item-code-output:before {
+        content: "\203A";
+        position: absolute;
+        top: -3px;
+        left: 0;
+        font-size: 16px;
+        color: #6A5ACD;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-item-code.vc-item-code-output:before {
+        content: "\2039";
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-fold {
+        display: block;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-fold .vc-fold-outer {
+        display: block;
+        font-style: italic;
+        padding-left: 10px;
+        position: relative;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-fold .vc-fold-outer:active {
+        background-color: #E6E6E6;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-fold .vc-fold-outer:before {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 2px;
+        width: 0;
+        height: 0;
+        border: transparent solid 4px;
+        border-left-color: #000;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-fold .vc-fold-outer.vc-toggle:before {
+        top: 6px;
+        left: 0;
+        border-top-color: #000;
+        border-left-color: transparent;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-fold .vc-fold-inner {
+        display: none;
+        margin-left: 10px;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-fold .vc-fold-inner.vc-toggle {
+        display: block;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-fold .vc-fold-inner .vc-code-key {
+        margin-left: 10px;
+    }
+
+    #__gconsole .vc-logbox .vc-item .vc-fold .vc-fold-outer .vc-code-key {
+        margin-left: 0;
+    }
+
+    #__gconsole .vc-logbox .vc-code-key {
+        color: #905;
+    }
+
+    #__gconsole .vc-logbox .vc-code-private-key {
+        color: #D391B5;
+    }
+
+    #__gconsole .vc-logbox .vc-code-function {
+        color: #905;
+        font-style: italic;
+    }
+
+    #__gconsole .vc-logbox .vc-code-number,
+    #__gconsole .vc-logbox .vc-code-boolean {
+        color: #0086B3;
+    }
+
+    #__gconsole .vc-logbox .vc-code-string {
+        color: #183691;
+    }
+
+    #__gconsole .vc-logbox .vc-code-null,
+    #__gconsole .vc-logbox .vc-code-undefined {
+        color: #666;
+    }
+
+    #__gconsole .vc-logbox .vc-cmd {
+        position: absolute;
+        height: 40px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-top: 1px solid #D9D9D9;
+        display: block !important;
+    }
+
+    #__gconsole .vc-logbox .vc-cmd .vc-cmd-input-wrap {
+        display: block;
+        height: 28px;
+        margin-right: 40px;
+        padding: 6px 8px;
+    }
+
+    #__gconsole .vc-logbox .vc-cmd .vc-cmd-input {
+        width: 100%;
+        border: none;
+        resize: none;
+        outline: none;
+        padding: 0;
+        font-size: 12px;
+    }
+
+    #__gconsole .vc-logbox .vc-cmd .vc-cmd-input::-webkit-input-placeholder {
+        line-height: 28px;
+    }
+
+    #__gconsole .vc-logbox .vc-cmd .vc-cmd-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 40px;
+        border: none;
+        background-color: #EFEFF4;
+        outline: none;
+        -webkit-touch-callout: none;
+    }
+
+    #__gconsole .vc-logbox .vc-cmd .vc-cmd-btn:active {
+        background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    #__gconsole .vc-logbox .vc-group .vc-group-preview {
+        -webkit-touch-callout: none;
+    }
+
+    #__gconsole .vc-logbox .vc-group .vc-group-preview:active {
+        background-color: #E6E6E6;
+    }
+
+    #__gconsole .vc-logbox .vc-group .vc-group-detail {
+        display: none;
+        padding: 0 0 10px 20px;
+        border-bottom: 1px solid #EEE;
+    }
+
+    #__gconsole .vc-logbox .vc-group.vc-actived .vc-group-detail {
+        display: block;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-row {
+        display: flex;
+        display: -webkit-flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        -webkit-box-direction: row;
+        -webkit-flex-wrap: wrap;
+        overflow: hidden;
+        border-bottom: 1px solid #EEE;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-row.vc-left-border {
+        border-left: 1px solid #EEE;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-col {
+        flex: 1;
+        -webkit-box-flex: 1;
+        padding: 3px 4px;
+        border-left: 1px solid #EEE;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+        /*white-space: nowrap;
+              text-overflow: ellipsis;*/
+        -webkit-overflow-scrolling: touch;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-col:first-child {
+        border: none;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-small .vc-table-col {
+        padding: 0 4px;
+        font-size: 12px;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-col-2 {
+        flex: 2;
+        -webkit-box-flex: 2;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-col-3 {
+        flex: 3;
+        -webkit-box-flex: 3;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-col-4 {
+        flex: 4;
+        -webkit-box-flex: 4;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-col-5 {
+        flex: 5;
+        -webkit-box-flex: 5;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-col-6 {
+        flex: 6;
+        -webkit-box-flex: 6;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-row-error {
+        border-color: #F4A0AB;
+        background-color: #FFE4E1;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-row-error .vc-table-col {
+        color: #DC143C;
+        border-color: #F4A0AB;
+    }
+
+    #__gconsole .vc-logbox .vc-table .vc-table-col-title {
+        font-weight: bold;
+    }
+
+    #__gconsole .vc-logbox.vc-actived {
+        display: block;
+    }
+
+    #__gconsole .vc-toolbar {
+        border-top: 1px solid #D9D9D9;
+        line-height: 39px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        display: -webkit-box;
+        flex-direction: row;
+        -webkit-box-direction: row;
+    }
+
+    #__gconsole .vc-toolbar .vc-tool {
+        display: none;
+        text-decoration: none;
+        color: #000;
+        width: 50%;
+        flex: 1;
+        -webkit-box-flex: 1;
+        text-align: center;
+        position: relative;
+        -webkit-touch-callout: none;
+    }
+
+    #__gconsole .vc-toolbar .vc-tool.vc-toggle,
+    #__gconsole .vc-toolbar .vc-tool.vc-global-tool {
+        display: block;
+    }
+
+    #__gconsole .vc-toolbar .vc-tool:active {
+        background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    #__gconsole .vc-toolbar .vc-tool:after {
+        content: " ";
+        position: absolute;
+        top: 7px;
+        bottom: 7px;
+        right: 0;
+        border-left: 1px solid #D9D9D9;
+    }
+
+    #__gconsole .vc-toolbar .vc-tool-last:after {
+        border: none;
+    }
+
+    #__gconsole.vc-toggle .gc-switch {
+        display: none;
+    }
+
+    #__gconsole.vc-toggle .vc-mask {
+        background: rgba(0, 0, 0, 0.6);
+        display: block;
+    }
+
+    #__gconsole.vc-toggle .vc-panel {
+        -webkit-transform: translate(0, 0);
+        transform: translate(0, 0);
+    }
+    #__gconsole .vc-item{
+        display: none;
+    }
+</style>
+<div id="__gconsole">
+    <div class='gc-switch'>
+        GConsole
+    </div>
+    <div class="vc-mask vc-hide" style="display: none;"> </div>
+    <div class="vc-panel" style="display: block;">
+        <!--<div class="vc-tabbar"><a class="vc-tab vc-actived" data-tab="default" id="__vc_tab_default">Log</a><a-->
+                <!--class="vc-tab" data-tab="system" id="__vc_tab_system">System</a><a class="vc-tab" data-tab="network"-->
+                                                                                   <!--id="__vc_tab_network">Network</a>-->
+        <!--</div>-->
+        <div class="vc-topbar">
+            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-actived vc-toggle" data-type="run_msg">运行信息</a>
+            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-toggle" data-type="run_file">包含文件</a>
+            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-toggle" data-type="run_sql">运行SQL</a>
+            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-toggle" data-type="run_log">调试信息</a>
+        </div>
+
+        <div class="vc-content vc-has-topbar">
+            <div class="vc-logbox vc-actived" id="__vc_log_default">
+                <div>
+                    <div class="vc-log">
+                        <div class="vc-item vc-item-log vc-item-nometa run_msg">
+                            <div class="vc-item-content">
+                                运行耗时：<?php echo $runTime = \GFPHP\Debug::spent(); ?>
+                            </div>
+                        </div>
+                        <div class="vc-item vc-item-log vc-item-nometa run_msg">
+                            <div class="vc-item-content">
+                                吞吐率：<?php echo number_format(1 / ($runTime == 0 ? 0.0001 : $runTime), 2) . 'rps/s'; ?>
+                            </div>
+                        </div>
+                        <div class="vc-item vc-item-log vc-item-nometa run_msg">
+                            <div class="vc-item-content">
+                                内存占用：<?php echo round((memory_get_usage() / 1024), 4) . ' kb'; ?>
+                            </div>
+                        </div>
+                        <?php $msgs =\GFPHP\Debug::$msg;  foreach($msgs as $msg){ ?>
+                        <div class="vc-item vc-item-log vc-item-nometa run_msg">
+                            <div class="vc-item-content">
+                                <?php echo $msg;?>
+                            </div>
+                        </div>
+                        <?php } ?>
+                        <?php $files = get_included_files();$file_count = count($files); ?>
+
+                        <div class="vc-item vc-item-log vc-item-nometa run_file">
+                            <div class="vc-item-content">
+                                共加载执行了<?php echo $file_count; ?>个文件。
+                            </div>
+                        </div>
+
+                        <?php foreach($files as $msg){ ?>
+                        <div class="vc-item vc-item-log vc-item-nometa run_file">
+                            <div class="vc-item-content">
+                                <?php echo $msg;?>
+                            </div>
+                        </div>
+                        <?php } ?>
+
+
+                        <div class="vc-item vc-item-log vc-item-nometa run_sql">
+                            <div class="vc-item-content">
+                                共执行了<?php echo count(\GFPHP\Debug::$sqls); ?>个SQL语句。
+                            </div>
+                        </div>
+
+                        <?php foreach(\GFPHP\Debug::$sqls as $msg){ ?>
+                        <div class="vc-item vc-item-log vc-item-nometa run_sql">
+                            <div class="vc-item-content">
+                                <?php echo $msg;?>
+                            </div>
+                        </div>
+                        <?php } ?>
+
+                        <div class="vc-item vc-item-log vc-item-nometa run_log">
+                            <div class="vc-item-content">
+                                共有<?php echo count(\GFPHP\Debug::$debugs); ?>个调试信息。
+                            </div>
+                        </div>
+
+                        <?php foreach(\GFPHP\Debug::$debugs as $msg){ ?>
+                        <div class="vc-item vc-item-log vc-item-nometa run_log">
+                            <div class="vc-item-content">
+                                <?php echo $msg;?>
+                            </div>
+                        </div>
+                        <?php } ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="vc-toolbar"><a class="vc-tool vc-global-tool vc-tool-last vc-hide">关闭日志窗口</a>
+        </div>
+    </div>
+</div>
+<script>
+    var __init_gConsole = function () {
+        var switchPos={x:10,y:10,startX:0,startY:0,endX:0,endY:0};
+        $('#__gconsole .gc-switch').on('touchstart',function (e) {
+            console.log(e);
+        });
+        $('.vc-item.'+$('.vc-toptab.vc-actived').attr('data-type')).show();
+        $('.vc-toptab').click(function () {
+            $('.vc-toptab').removeClass('vc-actived');
+            $(this).addClass('vc-actived');
+            $('.vc-item').hide();
+            $('.vc-item.'+$('.vc-toptab.vc-actived').attr('data-type')).show();
+        });
+        $('#__gconsole .gc-switch').click(function () {
+            $('#__gconsole .vc-mask').show();
+            $('#__gconsole .vc-mask').animate({opacity:.2});
+            $('#__gconsole .vc-panel').animate({bottom:$('#__gconsole .vc-panel').height()});
+        });
+        $('#__gconsole .vc-hide').click(function () {
+            $('#__gconsole .vc-mask').animate({opacity:0},function () {
+                $('#__gconsole .vc-mask').hide();
+            });
+
+            $('#__gconsole .vc-panel').animate({bottom:0});
+        });
+    }
+    if (typeof $ != 'undefined') {
+        __init_gConsole();
+    } else {
+        var jquery_dom = document.createElement('script');
+        jquery_dom.type = 'text/javascript';
+        jquery_dom.async = true;
+        jquery_dom.src = '//code.jquery.com/jquery-1.12.4.min.js';
+        document.body.appendChild(jquery_dom);
+        jquery_dom.onload = function () {
+            __init_gConsole();
+        }
+    }
+</script>
+<?php } ?>
