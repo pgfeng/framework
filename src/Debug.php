@@ -78,10 +78,10 @@ class Debug
     static function stop()
     {
         self::$stopTime = microtime(TRUE);   //将获取的时间赋给成员属性$stopTime
-//        if (Config::config('develop_mod') && Config::debug('debugbar')) {
-//            //如果是开发模式并且已经开启debugbar
-//            include __DIR__ . DIRECTORY_SEPARATOR . 'debugbar.html';
-//        }
+        if (Config::config('develop_mod') && Config::debug('debugbar')) {
+            //如果是开发模式并且已经开启debugbar
+            include __DIR__ . DIRECTORY_SEPARATOR . 'debugbar.html';
+        }
         Logger::getInstance()->info('运行结束 ' . $_SERVER['REQUEST_METHOD'] . ' ' . $_SERVER['REQUEST_URI'] . ' 耗时:' . self::spent() . ' 内存:' . round((memory_get_usage() / 1024), 4) . ' kb');
         if (extension_loaded('zlib') && Config::config('gzip')) ob_end_flush();
     }
