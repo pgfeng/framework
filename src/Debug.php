@@ -8,6 +8,7 @@
 
 namespace GFPHP;
 
+use GFPHP\Router;
 
 
 /**
@@ -30,15 +31,19 @@ class Debug
     //-------添加程序执行信息--------
     static function add($msg, $type = 0)
     {
+
         switch ($type) {
             case 0:
                 self::$msg[] = $msg;                            //把运行信息添加进去
+                Logger::getInstance()->info($msg);
                 break;
             case '1':
-                self::$debugs[] = $msg;                        //把包含文件添加进去
+                self::$debugs[] = $msg;                        //调试信息
+                Logger::getInstance()->debug($msg);
                 break;
             case '2':
                 self::$sqls[] = $msg;                            //把sql语句添加进去
+                Logger::getInstance()->info('运行SQL ' . $msg);
         }
     }
 
@@ -50,12 +55,19 @@ class Debug
         if (Config::config('gzip')) {
             ob_start('ob_gzhandler');
         }
+        Logger::getInstance()->info('请求开始 ' . $_SERVER['REQUEST_METHOD'] . ' ' . $_SERVER['REQUEST_URI'] . ' ' . $_SERVER['SERVER_PROTOCOL']);
+        Logger::getInstance()->info('GET参数', (array)$_GET);
+        Logger::getInstance()->info('POST参数', (array)$_POST);
+        Logger::getInstance()->info('POST源数据', (array)file_get_contents('php://input'));
         self::$startTime = microtime(TRUE);
     }
 
+    /**
+     * @param $msg
+     */
     public static function debug($msg)
     {
-        self::add($msg,1);
+        self::add($msg, 1);
     }
 
     //在脚本结束处调用获取脚本结束时间的微秒值
@@ -66,10 +78,11 @@ class Debug
     static function stop()
     {
         self::$stopTime = microtime(TRUE);   //将获取的时间赋给成员属性$stopTime
-        if(Config::config('develop_mod') && Config::debug('debugbar')){
-            //如果是开发模式并且已经开启debugbar
-            include __DIR__.DIRECTORY_SEPARATOR.'debugbar.html';
-        }
+//        if (Config::config('develop_mod') && Config::debug('debugbar')) {
+//            //如果是开发模式并且已经开启debugbar
+//            include __DIR__ . DIRECTORY_SEPARATOR . 'debugbar.html';
+//        }
+        Logger::getInstance()->info('运行结束 ' . $_SERVER['REQUEST_METHOD'] . ' ' . $_SERVER['REQUEST_URI'] . ' 耗时:' . self::spent() . ' 内存:' . round((memory_get_usage() / 1024), 4) . ' kb');
         if (extension_loaded('zlib') && Config::config('gzip')) ob_end_flush();
     }
 

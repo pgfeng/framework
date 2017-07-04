@@ -247,6 +247,11 @@ class Router
             'callback' => $callback,
             'params' => $params,
         ];
+        if(!is_callable($callback)) {
+            Logger::getInstance()->info('路由调度 ' . $callback, $params);
+        }else{
+            Logger::getInstance()->info('路由调度 (Closure)'.closure_dump($callback),$params);
+        }
         if (is_callable($callback)) {
             if (!$params) {
                 return call_user_func($callback);

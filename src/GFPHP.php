@@ -20,6 +20,9 @@ class GFPHP
      */
     public static $app_name;
 
+    /**
+     * @param string $app_name
+     */
     public static function init($app_name = 'app')
     {
         if (!defined('BASE_PATH'))
@@ -57,10 +60,13 @@ class GFPHP
         self::$Template = new Template();
         if (Config::config('develop_mod')) {
             $whoops = new \Whoops\Run;
-            $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+            foreach (Config::debug('Whoops_handler') as $handler) {
+                $whoops->pushHandler($handler);
+            }
             $whoops->register();
         }
         Debug::start();
+
         self::$app_name = $app_name;
         Router::init();
     }

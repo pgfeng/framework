@@ -434,6 +434,25 @@ function remove_xss($string)
 }
 
 /**
+ * @param $closure
+ */
+function closure_dump($closure) {
+    try {
+        $func = new ReflectionFunction($closure);
+    } catch (ReflectionException $e) {
+        echo $e->getMessage();
+        return;
+    }
+
+    $start = $func->getStartLine() - 1;
+
+    $end =  $func->getEndLine() - 1;
+
+    $filename = $func->getFileName();
+
+    return implode("", array_slice(file($filename),$start, $end - $start + 1));
+}
+/**
  * 函数来源 ThinkPhp
  *
  * @param      $var

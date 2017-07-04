@@ -575,7 +575,7 @@
                         </div>
                         <div class="vc-item vc-item-log vc-item-nometa run_msg">
                             <div class="vc-item-content">
-                                路由调度：<?PHP echo (\GFPHP\Router::$router['callback']);?>
+                                路由调度：<?PHP echo (string)(\GFPHP\Router::$router['callback']);?>
                                 <?php
                                 \GFPHP\Router::$router['params'];
                                 ob_start();
