@@ -30,9 +30,6 @@ class Debug
     //-------添加程序执行信息--------
     static function add($msg, $type = 0)
     {
-
-        if (!Config::debug('debug'))
-            return;
         switch ($type) {
             case 0:
                 self::$msg[] = $msg;                            //把运行信息添加进去
@@ -69,12 +66,11 @@ class Debug
     static function stop()
     {
         self::$stopTime = microtime(TRUE);   //将获取的时间赋给成员属性$stopTime
-        if(Config::config('develop_mod')){
-            //如果是开发模式
+        if(Config::config('develop_mod') && Config::debug('debugbar')){
+            //如果是开发模式并且已经开启debugbar
             include __DIR__.DIRECTORY_SEPARATOR.'debugbar.html';
         }
-        if (extension_loaded('zlib') && Config::config('gzip')) @ob_end_flush();
-        exit;
+        if (extension_loaded('zlib') && Config::config('gzip')) ob_end_flush();
     }
 
     static function getRuntime()

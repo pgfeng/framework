@@ -552,21 +552,40 @@
     </div>
     <div class="vc-mask vc-hide" style="display: none;"> </div>
     <div class="vc-panel" style="display: block;">
-        <!--<div class="vc-tabbar"><a class="vc-tab vc-actived" data-tab="default" id="__vc_tab_default">Log</a><a-->
-                <!--class="vc-tab" data-tab="system" id="__vc_tab_system">System</a><a class="vc-tab" data-tab="network"-->
-                                                                                   <!--id="__vc_tab_network">Network</a>-->
-        <!--</div>-->
         <div class="vc-topbar">
-            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-actived vc-toggle" data-type="run_msg">运行信息</a>
-            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-toggle" data-type="run_file">包含文件</a>
-            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-toggle" data-type="run_sql">运行SQL</a>
-            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-toggle" data-type="run_log">调试信息</a>
+            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-actived vc-toggle" data-type="run_msg">基本</a>
+            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-toggle" data-type="run_file">文件</a>
+            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-toggle" data-type="run_sql">SQL</a>
+            <a href="javascript:;" class="vc-toptab vc-topbar-default vc-toggle" data-type="run_log">调试</a>
         </div>
 
         <div class="vc-content vc-has-topbar">
             <div class="vc-logbox vc-actived" id="__vc_log_default">
                 <div>
                     <div class="vc-log">
+                        <div class="vc-item vc-item-log vc-item-nometa run_msg">
+                            <div class="vc-item-content">
+                                请求头部：<?PHP echo $_SERVER['REQUEST_METHOD'] . ' ' . $_SERVER['REQUEST_URI'] . ' '.$_SERVER['SERVER_PROTOCOL'];?>
+                            </div>
+                        </div>
+                        <div class="vc-item vc-item-log vc-item-nometa run_msg">
+                            <div class="vc-item-content">
+                                客户端UA：<?PHP echo $_SERVER['HTTP_USER_AGENT'];?>
+                            </div>
+                        </div>
+                        <div class="vc-item vc-item-log vc-item-nometa run_msg">
+                            <div class="vc-item-content">
+                                路由调度：<?PHP echo (\GFPHP\Router::$router['callback']);?>
+                                <?php
+                                \GFPHP\Router::$router['params'];
+                                ob_start();
+                                print_r(\GFPHP\Router::$router['params']);
+                                $params = ob_get_clean();
+
+                                    echo '->('.$params.')';
+                                ?>
+                            </div>
+                        </div>
                         <div class="vc-item vc-item-log vc-item-nometa run_msg">
                             <div class="vc-item-content">
                                 运行耗时：<?php echo $runTime = \GFPHP\Debug::spent(); ?>
@@ -615,16 +634,11 @@
                         <?php foreach(\GFPHP\Debug::$sqls as $msg){ ?>
                         <div class="vc-item vc-item-log vc-item-nometa run_sql">
                             <div class="vc-item-content">
-                                <?php echo $msg;?>
+                                <?php echo SqlFormatter::format($msg);?>
                             </div>
                         </div>
                         <?php } ?>
 
-                        <div class="vc-item vc-item-log vc-item-nometa run_log">
-                            <div class="vc-item-content">
-                                共有<?php echo count(\GFPHP\Debug::$debugs); ?>个调试信息。
-                            </div>
-                        </div>
 
                         <?php foreach(\GFPHP\Debug::$debugs as $msg){ ?>
                         <div class="vc-item vc-item-log vc-item-nometa run_log">
@@ -638,13 +652,12 @@
                 </div>
             </div>
         </div>
-        <div class="vc-toolbar"><a class="vc-tool vc-global-tool vc-tool-last vc-hide">关闭日志窗口</a>
+        <div class="vc-toolbar"><a class="vc-tool vc-global-tool vc-tool-last vc-hide">关闭窗口</a>
         </div>
     </div>
 </div>
 <script>
     var __init_gConsole = function () {
-        var switchPos={x:10,y:10,startX:0,startY:0,endX:0,endY:0};
         $('#__gconsole .gc-switch').on('touchstart',function (e) {
             console.log(e);
         });

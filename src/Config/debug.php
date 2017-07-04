@@ -7,7 +7,5 @@
  */
 
 return [
-    'debug'          => TRUE,
-    //phpConsole密码
-    'password'  => '592472116'
+    'debugbar'          => true,
 ];
