@@ -10,7 +10,8 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "filp/whoops":"2.1.8"
+        "filp/whoops":"2.1.8",
+        "jdorn/sql-formatter":"v1.2.9"
     },
     "autoload": {
         "files": [
