@@ -27,6 +27,7 @@ return [
             \GFPHP\Debug::stop();
         })
     ],
+    //--日志记录处理
     'log_processor' => function ($record) {
         return $record;
     },
