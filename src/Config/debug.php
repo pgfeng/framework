@@ -12,7 +12,7 @@ return [
 
     //--日志
     'log_handler' => [
-        new \Monolog\Handler\StreamHandler(BASE_PATH . 'Log/' . date('Y-m-d') . '.log', \Monolog\Logger::DEBUG, true, null, false),
+        new \Monolog\Handler\StreamHandler(BASE_PATH . 'Log/' . \GFPHP\GFPHP::$app_name . date('Y-m-d') . '.log', \Monolog\Logger::DEBUG, true, null, false),
         new \Monolog\Handler\BrowserConsoleHandler(\Monolog\Logger::DEBUG, true)
     ],
     //--异常处理

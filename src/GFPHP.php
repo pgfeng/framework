@@ -27,6 +27,9 @@ class GFPHP
     {
         if (!defined('BASE_PATH'))
             exit('Not Define BASE_PATH');
+
+        self::$app_name = $app_name;
+
         //==当前时间
         define('__NOW__', $_SERVER['REQUEST_TIME']);
 
@@ -66,8 +69,6 @@ class GFPHP
             $whoops->register();
         }
         Debug::start();
-
-        self::$app_name = $app_name;
         Router::init();
     }
 
