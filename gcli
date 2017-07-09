@@ -1,0 +1,12 @@
+#!/usr/bin/php
+<?php
+/**
+ * Created by PhpStorm.
+ * User: PGF
+ * Date: 2017/7/0007
+ * Time: 下午 10:38
+ */
+require 'vendor/autoload.php';
+define('BASE_PATH',getcwd().DIRECTORY_SEPARATOR);
+$Command = new \GFPHP\Command();
+$Command->execute();
