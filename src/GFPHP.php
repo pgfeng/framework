@@ -27,9 +27,6 @@ class GFPHP
     {
         if (!defined('BASE_PATH'))
             exit('Not Define BASE_PATH');
-
-        self::$app_name = $app_name;
-
         //==当前时间
         define('__NOW__', $_SERVER['REQUEST_TIME']);
 
@@ -52,8 +49,13 @@ class GFPHP
         define('IS_AJAX', ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) ? true : false);
 
         session_start();
+
         date_default_timezone_set('PRC');
+
+        Debug::start();
+
         Cache::init();
+
         if (isset($_GET['_router'])) {
             define('__URI__', $_GET['_router']);
             unset($_GET['_router']);
@@ -68,7 +70,8 @@ class GFPHP
             }
             $whoops->register();
         }
-        Debug::start();
+
+        self::$app_name = $app_name;
         Router::init();
     }
 

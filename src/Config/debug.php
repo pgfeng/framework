@@ -7,15 +7,10 @@
  */
 
 return [
-    //--是否开启debugbar
-    'debugbar'  => false,
-
-    //--日志
     'log_handler' => [
-        new \Monolog\Handler\StreamHandler(BASE_PATH . 'Log/' . \GFPHP\GFPHP::$app_name . date('Y-m-d') . '.log', \Monolog\Logger::DEBUG, true, null, false),
+        new \Monolog\Handler\StreamHandler(BASE_PATH . 'Log/' . date('Y-m-d') . '.log', \Monolog\Logger::DEBUG, true, null, false),
         new \Monolog\Handler\BrowserConsoleHandler(\Monolog\Logger::DEBUG, true)
     ],
-    //--异常处理
     'Whoops_handler' => [
         new \Whoops\Handler\PrettyPageHandler,
         new Whoops\Handler\CallbackHandler(function ($exception, $inspector, $run) {
@@ -27,7 +22,6 @@ return [
             \GFPHP\Debug::stop();
         })
     ],
-    //--日志记录处理
     'log_processor' => function ($record) {
         return $record;
     },

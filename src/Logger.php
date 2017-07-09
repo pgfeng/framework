@@ -7,6 +7,7 @@
  */
 
 namespace GFPHP;
+
 use Monolog\Handler\BrowserConsoleHandler;
 use Monolog\Handler\ChromePHPHandler;
 use Monolog\Handler\ErrorLogHandler;
@@ -28,9 +29,9 @@ class Logger
      */
     public static function getInstance($name = 'GFPHP')
     {
-        if(isset(self::$monolog[$name])){
+        if (isset(self::$monolog[$name])) {
             return self::$monolog[$name];
-        }else{
+        } else {
             self::$monolog[$name] = new \Monolog\Logger($name);
             foreach (Config::debug('log_handler') as $handler) {
                 self::$monolog[$name]->pushHandler($handler);

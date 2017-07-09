@@ -25,6 +25,7 @@ namespace GFPHP;
  * @method static router($key = '')
  * @method static values($key = '')
  * @method static debug($key = '')
+ * @method static command($key = '')
  * @method static file($key = '')
  */
 class Config
@@ -35,11 +36,12 @@ class Config
     /**
      * 修改或者保存配置
      *
-     * @param  array   $config 数组格式配置
-     * @param string   $type 配置文件名称
-     * @param bool|int $save 修改后是否同时保存到配置文件
-     *
+     * @param  array $config 数组格式配置
+     * @param string $type 配置文件名称
      * @return bool|int
+     * @throws \Exception
+     * @internal param bool|int $save 修改后是否同时保存到配置文件
+     *
      */
     public static function set($config, $type = 'config')
     {
