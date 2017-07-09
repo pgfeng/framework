@@ -9,6 +9,7 @@
 namespace GFPHP;
 
 use GFPHP\Command\ColumnHandler;
+use GFPHP\Command\ControllerHandler;
 use GFPHP\Command\Handler;
 use GFPHP\Command\HandlerInterface;
 use GFPHP\Command\ModelHandler;
@@ -41,6 +42,7 @@ class Command
      */
     public function __construct()
     {
+        error_reporting(E_ALL ^ E_NOTICE);
         date_default_timezone_set("PRC");
         $this->stdout = fopen('php://stdout', 'w');
         $this->stdin = fopen('php://stdin', 'r');
@@ -49,6 +51,7 @@ class Command
         $this->argv = $_SERVER['argv'];
         $this->addHandler(new ModelHandler($this));
         $this->addHandler(new ColumnHandler($this));
+        $this->addHandler(new ControllerHandler($this));
         $Handlers = Config::command('CommandHandlers');
 
         /**
