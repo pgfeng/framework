@@ -81,7 +81,7 @@ class ModelHandler extends Handler
             if (!$this->tableExists(Config::database($config)['table_pre'] . $this->argv[0], $config)) {
                 $this->handler([]);
             }
-            $this->command->writeln(exec("gcli column ".$config." ".$this->argv[0]));
+            $this->command->Handler['column']->handler([$config,$this->argv[0]]);
             $fields = DB::table($this->argv[0], $config)->query('show keys from `' . Config::database($config)['table_pre'] . $this->argv[0] . '` where key_name="PRIMARY"');
             $primary_key = '';
             if ($fields) {
@@ -102,8 +102,14 @@ use GFPHP\Model;
  * Class {$this->argv[0]}Model
  * @package Model
  */
-class {$this->argv[0]}Model extends Model{
+class {$this->argv[0]}Model extends Model
+{
+    /**
+     * @var string primary_key
+     */
     public \$primary_key = '$primary_key';
+    protected \$Column = [];
+    
     /**
      * {$this->argv[0]}Model constructor.
      */
@@ -111,6 +117,7 @@ class {$this->argv[0]}Model extends Model{
     {
         parent::__construct(false, '$config');
     }
+    
 }
 MODEL;
             mkPathDir($modelPath);

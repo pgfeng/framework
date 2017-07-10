@@ -13,6 +13,7 @@ use GFPHP\Command\ControllerHandler;
 use GFPHP\Command\Handler;
 use GFPHP\Command\HandlerInterface;
 use GFPHP\Command\ModelHandler;
+use GFPHP\Command\ModuleHandler;
 
 /**
  * Class Console
@@ -35,7 +36,7 @@ class Command
     protected $stdin;
     protected $stderr;
     protected $argv;
-    private $Handler = [];
+    public $Handler = [];
 
     /**
      * Command constructor.
@@ -49,6 +50,7 @@ class Command
         $this->stderr = fopen('php://stderr', 'w');
         array_shift($_SERVER['argv']);
         $this->argv = $_SERVER['argv'];
+        $this->addHandler(new ModuleHandler($this));
         $this->addHandler(new ModelHandler($this));
         $this->addHandler(new ColumnHandler($this));
         $this->addHandler(new ControllerHandler($this));

@@ -9,6 +9,10 @@
 namespace GFPHP;
 
 
+/**
+ * Class GFPHP
+ * @package GFPHP
+ */
 class GFPHP
 {
     /**

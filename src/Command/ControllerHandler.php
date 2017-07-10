@@ -7,6 +7,7 @@
  */
 
 namespace GFPHP\Command;
+
 use GFPHP\Config;
 use GFPHP\Controller;
 
@@ -23,22 +24,25 @@ class ControllerHandler extends Handler
     /**
      * 获取控制器位置
      */
-    public function getControllerPath(){
-        return BASE_PATH.$this->argv[0].DIRECTORY_SEPARATOR.ucfirst($this->argv[1]).DIRECTORY_SEPARATOR.ucfirst($this->argv[2]).'Controller.php';
+    public function getControllerPath()
+    {
+        return BASE_PATH . $this->argv[0] . DIRECTORY_SEPARATOR . ucfirst($this->argv[1]) . DIRECTORY_SEPARATOR . ucfirst($this->argv[2]) . 'Controller.php';
     }
 
     /**
      * @return string
      */
-    public function getController(){
-        return ucfirst($this->argv[2]).'Controller';
+    public function getController()
+    {
+        return ucfirst($this->argv[2]) . 'Controller';
     }
 
     /**
      * 获取命名空间
      */
-    public function getNameSpace(){
-        return $this->argv[0].'\\'.ucfirst($this->argv[1]);
+    public function getNameSpace()
+    {
+        return $this->argv[0] . '\\' . ucfirst($this->argv[1]);
     }
 
     /**
@@ -63,7 +67,7 @@ class ControllerHandler extends Handler
             $this->argv[2] = $this->command->getStdin("请输入控制器名称:")[0];
             return $this->handler($this->argv);
         }
-        if(!isset($argv[3]) || $argv[3] == ''){
+        if (!isset($argv[3]) || $argv[3] == '') {
             $this->argv[3] = $this->command->getStdin("请输入行为名称逗号分隔:")[0];
             return $this->handler($this->argv);
         }
@@ -76,8 +80,8 @@ class ControllerHandler extends Handler
     public function buildController()
     {
         $controllerPath = $this->getControllerPath();
-        if(file_exists($controllerPath)){
-            if(!preg_match('/yes/i',$this->command->getStdin('控制器已存在是否覆盖[yes or no]:')[0])){
+        if (file_exists($controllerPath)) {
+            if (!preg_match('/yes/i', $this->command->getStdin('控制器已存在是否覆盖[yes or no]:')[0])) {
                 return;
             }
         }
@@ -105,23 +109,29 @@ use GFPHP\Controller;
 $actions
 }
 CONTROLLER;
-        file_put_contents($controllerPath,$ControllerContent);
-        $this->command->writeln('控制器'.$controllerPath.'生成成功!');
+        mkPathDir($controllerPath);
+        file_put_contents($controllerPath, $ControllerContent);
+        $this->command->writeln('控制器' . $controllerPath . '生成成功!');
     }
 
     /**
      * 获取Action方法
      */
-    public function getActions(){
-        $actions = array_unique(array_filter(explode(',',$this->argv[3])));
-        if(!$actions){
+    public function getActions()
+    {
+        $actions = array_filter(explode(',', $this->argv[3]));
+        foreach ($actions as &$action) {
+            $action = strtolower($action);
+        }
+        unset($action);
+        $actions = array_unique($actions);
+        if (!$actions) {
             unset($this->argv[3]);
             return $this->handler($this->argv);
         }
         $actionContent = '';
         $methodSuffix = Config::router('methodSuffix');
-        foreach ($actions as $action){
-            $action = strtolower($action);
+        foreach ($actions as $action) {
             $actionContent .= <<<ACTION
 
     /**
@@ -138,6 +148,7 @@ ACTION;
         }
         return $actionContent;
     }
+
     /**
      * @return mixed
      */
