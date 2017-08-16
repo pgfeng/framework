@@ -66,60 +66,63 @@ class filesModel extends Model
     {
         //--如果没有设置允许格式,将使用默认允许的格式
         $allow_type = !empty($allow_type) ? $allow_type : Config::file('allow_type');
+        foreach ($allow_type as &$type) {
+            $type = strtolower($type);
+        }
         $file = $field_file;
         if (!isset($file['error'])) {
             return [
                 'status' => 'false',
-                'msg'    => '传入参数有误,请检查代码!',
+                'msg' => '传入参数有误,请检查代码!',
             ];
         }
         if (is_array($file['error'])) {
             $files = [];
             foreach ($file['error'] as $key => $error) {
                 $f = [];
-                if ($error == 0 && $file['size'][ $key ] != 0) {
-                    $md5 = md5_file($file['tmp_name'][ $key ]);
+                if ($error == 0 && $file['size'][$key] != 0) {
+                    $md5 = md5_file($file['tmp_name'][$key]);
                     if ($rfile = $this->getFileByMd5($md5)) {
                         $f = [
                             'status' => 'true',
-                            'path'   => $rfile['file_path'],
-                            'msg'    => '上传成功！！',
+                            'path' => $rfile['file_path'],
+                            'msg' => '上传成功！！',
                         ];
                     } else {
                         $allow_size = Config::file('allow_size');
-                        if ($allow_size < $file['size'][ $key ]) {
+                        if ($allow_size < $file['size'][$key]) {
                             $f = [
                                 'status' => 'false',
-                                'msg'    => '文件超过系统所允许的大小！',
+                                'msg' => '文件超过系统所允许的大小！',
                             ];
                         } else {
-                            $ext = explode('.', $file['name'][ $key ]);
+                            $ext = explode('.', $file['name'][$key]);
                             $ext = end($ext);
-                            if (in_array($ext, $allow_type)) {
+                            if (in_array(strtolower($ext), $allow_type)) {
                                 $path = Config::file('upload_path') . date("Ymd") . '/' . time() . random(10) . '.' . $ext;
                                 $full_path = $path;
                                 mkPathDir($full_path);
-                                if (@move_uploaded_file($file['tmp_name'][ $key ], $full_path)) {
+                                if (@move_uploaded_file($file['tmp_name'][$key], $full_path)) {
                                     $this->Insert([
-                                        'file_name' => $file['name'][ $key ],
-                                        'file_size' => $file['size'][ $key ],
-                                        'file_ext'  => $ext,
-                                        'file_type' => $file['type'][ $key ],
-                                        'file_md5'  => $md5,
+                                        'file_name' => $file['name'][$key],
+                                        'file_size' => $file['size'][$key],
+                                        'file_ext' => $ext,
+                                        'file_type' => $file['type'][$key],
+                                        'file_md5' => $md5,
                                         'file_time' => time(),
                                         'file_path' => $path,
                                     ]);
                                     $f = [
                                         'status' => 'true',
-                                        'path'   => $path,
-                                        'msg'    => '上传成功',
+                                        'path' => $path,
+                                        'msg' => '上传成功',
                                     ];
                                 }
                             } else {
 
                                 $f = [
                                     'status' => 'false',
-                                    'msg'    => '只允许上传' . implode('|', $allow_type) . '格式！',
+                                    'msg' => '只允许上传' . implode('|', $allow_type) . '格式！',
                                 ];
                             }
                         }
@@ -127,7 +130,7 @@ class filesModel extends Model
                 } else {
                     $f = [
                         'status' => 'false',
-                        'msg'    => $this->getErrorMsg($error),
+                        'msg' => $this->getErrorMsg($error),
                     ];
                 }
                 $files[] = $f;
@@ -140,20 +143,20 @@ class filesModel extends Model
                 if ($rfile = $this->getFileByMd5($md5)) {
                     return [
                         'status' => 'true',
-                        'path'   => $rfile['file_path'],
-                        'msg'    => '上传成功！！',
+                        'path' => $rfile['file_path'],
+                        'msg' => '上传成功！！',
                     ];
                 } else {
                     $allow_size = Config::file('allow_size');
                     if ($allow_size < $file['size']) {
                         return [
                             'status' => 'false',
-                            'msg'    => '超过系统所允许的大小！',
+                            'msg' => '超过系统所允许的大小！',
                         ];
                     }
                     $ext = explode('.', $file['name']);
                     $ext = end($ext);
-                    if (in_array($ext, $allow_type)) {
+                    if (in_array(strtolower($ext), $allow_type)) {
                         $path = Config::file('upload_path') . date("Ymd") . '/' . time() . random(10) . '.' . $ext;
                         $full_path = $path;
                         mkPathDir($full_path);
@@ -161,37 +164,37 @@ class filesModel extends Model
                             $this->Insert([
                                 'file_name' => $file['name'],
                                 'file_size' => $file['size'],
-                                'file_ext'  => $ext,
+                                'file_ext' => $ext,
                                 'file_type' => $file['type'],
-                                'file_md5'  => $md5,
+                                'file_md5' => $md5,
                                 'file_time' => time(),
                                 'file_path' => $path,
                             ]);
 
                             return [
                                 'status' => 'true',
-                                'path'   => $path,
-                                'msg'    => '上传成功',
+                                'path' => $path,
+                                'msg' => '上传成功',
                             ];
                         }
                     } else {
                         return [
                             'status' => 'false',
-                            'msg'    => '只允许上传' . implode('|', $allow_type) . '格式！',
+                            'msg' => '只允许上传' . implode('|', $allow_type) . '格式！',
                         ];
                     }
                 }
             } else {
                 return [
                     'status' => 'false',
-                    'msg'    => $this->getErrorMsg($file['error']),
+                    'msg' => $this->getErrorMsg($file['error']),
                 ];
             }
         }
 
         return [
             'status' => 'false',
-            'msg'    => '异常错误！！！',
+            'msg' => '异常错误！！！',
         ];
     }
 
