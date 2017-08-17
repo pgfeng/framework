@@ -628,7 +628,7 @@ abstract class DBase
         if ($res = $this->_exec($sql) !== FALSE) {
             return $res;
         } else {
-            Debug::error($this->getError(), 'DB');
+            new Exception($this->getError());
             return $res;
         }
     }
@@ -953,7 +953,7 @@ abstract class DBase
             $this->lastSql = $sql;
             $data = $this->_query($sql);
             if ($data === FALSE) {
-                Debug::error($this->getError(), 'DB');
+                new Exception($this->getError());
             }
             if ($data == NULL)         //防止直接返回Null
                 $data = [];
