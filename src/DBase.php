@@ -346,12 +346,14 @@ abstract class DBase
                 new Exception('Where 字段目前不能同时包含&和|');
             }
             if (func_num_args() == 2) {
-                $value = $this->addslashes(func_get_arg(1));
+                $value = func_get_arg(1);
                 if ($hasOr) {
                     $wheres = [];
                     foreach ($fieldOr as $f) {
                         if (is_array($value))
-                            $value = implode(' or ' . $f . '=', $value);
+                            $value = implode(' or ' . $f . '=', $this->addslashes($value));
+                        else
+                            $value = $this->addslashes($value);
                         $wheres[] = '' . $f . '=' . $value;
                     }
                     $where = implode(' or ', $wheres);
@@ -360,14 +362,18 @@ abstract class DBase
                     $wheres = [];
                     foreach ($fieldAnd as $f) {
                         if (is_array($value))
-                            $value = implode(' or ' . $f . '=', $value);
+                            $value = implode(' or ' . $f . '=', $this->addslashes($value));
+                        else
+                            $value = $this->addslashes($value);
                         $wheres[] = '' . $f . '=' . $value;
                     }
                     $where = implode(' and ', $wheres);
                     unset($wheres);
                 } else {
-                    if (is_array($value))
-                        $value = implode(' or ' . $field . '=', $value);
+                    if (is_array($value)) {
+                        $value = implode(' or ' . $field . '=', $this->addslashes($value));
+                    }else
+                        $value = $this->addslashes($value);
                     $where = '' . $field . '=' . $value;
                 }
             } elseif (func_num_args() == 3) {
@@ -995,7 +1001,7 @@ abstract class DBase
     {
         if (is_array($var)) {
             foreach ($var as $k => &$v) {
-                $this->addslashes($v);
+                $v = $this->addslashes($v);
             }
         } else {
             $var = $this->real_escape_string($var);
