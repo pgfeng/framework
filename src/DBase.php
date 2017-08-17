@@ -372,7 +372,7 @@ abstract class DBase
                 } else {
                     if (is_array($value)) {
                         $value = implode(' or ' . $field . '=', $this->addslashes($value));
-                    }else
+                    } else
                         $value = $this->addslashes($value);
                     $where = '' . $field . '=' . $value;
                 }
@@ -400,9 +400,9 @@ abstract class DBase
         if (is_array($where))
             $where = implode(' and ', $where);
         if (isset($this->section['where']) && !empty($this->section['where']))
-            $this->section['where'] .= ' and ' . $where;
+            $this->section['where'] .= ' and ' . '(' . $where . ')';
         else
-            $this->section['where'] = $where;
+            $this->section['where'] = '(' . $where . ')';
 
         return $this;
     }
