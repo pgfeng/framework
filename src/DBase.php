@@ -377,7 +377,7 @@ abstract class DBase
                     $where = '' . $field . '=' . $value;
                 }
             } elseif (func_num_args() == 3) {
-
+                $value = func_get_arg(2);
                 if ($hasOr) {
                     $wheres = [];
                     foreach ($fieldOr as $f) {
@@ -393,7 +393,11 @@ abstract class DBase
                     $where = implode(' and ', $wheres);
                     unset($wheres);
                 } else {
-                    $where = '' . $field . ' ' . func_get_arg(1) . ' ' . $this->addslashes(func_get_arg(2));
+                    if (is_array($value)) {
+                        $value = implode(' or ' . $field . ' ' . func_get_arg(1), $this->addslashes($value));
+                    } else
+                        $value = $this->addslashes($value);
+                    $where = '' . $field . ' ' . func_get_arg(1) . ' ' . $value;
                 }
             }
         }
