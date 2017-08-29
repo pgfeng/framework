@@ -472,22 +472,76 @@ abstract class DBase
             if (strpos($field, '.') !== FALSE) {
                 $field = $this->config ['table_pre'] . $field;
             }
+            $fieldAnd = explode('&', $field);
+            $hasAnd = count($fieldAnd) > 1 ? TRUE : FALSE;
+            $fieldOr = explode('|', $field);
+            $hasOr = count($fieldOr) > 1 ? TRUE : FALSE;
+            if ($hasAnd && $hasOr) {
+                //TODO 待解决 同时处理OR和AND
+                new Exception('Where 字段目前不能同时包含&和|');
+            }
             if (func_num_args() == 2) {
-                $where = '' . $field . '=' . $this->addslashes(func_get_arg(1));
-            } elseif (func_num_args() == 3) {
-                $where = func_get_arg(2);
-                if (is_array($where)) {
-                    $where = implode(',', $this->addslashes($where));
+                $value = func_get_arg(1);
+                if ($hasOr) {
+                    $wheres = [];
+                    foreach ($fieldOr as $f) {
+                        if (is_array($value))
+                            $value = implode(' or ' . $f . '=', $this->addslashes($value));
+                        else
+                            $value = $this->addslashes($value);
+                        $wheres[] = '' . $f . '=' . $value;
+                    }
+                    $where = implode(' or ', $wheres);
+                    unset($wheres);
+                } elseif ($hasAnd) {
+                    $wheres = [];
+                    foreach ($fieldAnd as $f) {
+                        if (is_array($value))
+                            $value = implode(' or ' . $f . '=', $this->addslashes($value));
+                        else
+                            $value = $this->addslashes($value);
+                        $wheres[] = '' . $f . '=' . $value;
+                    }
+                    $where = implode(' and ', $wheres);
+                    unset($wheres);
+                } else {
+                    if (is_array($value)) {
+                        $value = implode(' or ' . $field . '=', $this->addslashes($value));
+                    } else
+                        $value = $this->addslashes($value);
+                    $where = '' . $field . '=' . $value;
                 }
-                $where = '' . $field . ' ' . func_get_arg(1) . " '" . $where . "'";
+            } elseif (func_num_args() == 3) {
+                $value = func_get_arg(2);
+                if ($hasOr) {
+                    $wheres = [];
+                    foreach ($fieldOr as $f) {
+                        $wheres[] = '' . $f . ' ' . func_get_arg(1) . ' ' . $this->addslashes(func_get_arg(2));
+                    }
+                    $where = implode(' or ', $wheres);
+                    unset($wheres);
+                } elseif ($hasAnd) {
+                    $wheres = [];
+                    foreach ($fieldAnd as $f) {
+                        $wheres[] = '' . $f . ' ' . func_get_arg(1) . ' ' . $this->addslashes(func_get_arg(2));
+                    }
+                    $where = implode(' and ', $wheres);
+                    unset($wheres);
+                } else {
+                    if (is_array($value)) {
+                        $value = implode(' or ' . $field . ' ' . func_get_arg(1), $this->addslashes($value));
+                    } else
+                        $value = $this->addslashes($value);
+                    $where = '' . $field . ' ' . func_get_arg(1) . ' ' . $value;
+                }
             }
         }
         if (is_array($where))
             $where = implode(' or ', $where);
         if (isset($this->section['where']) && !empty($this->section['where']))
-            $this->section['where'] .= ' or ' . $where;
+            $this->section['where'] .= ' or ' . '(' . $where . ')';
         else
-            $this->section['where'] = $where;
+            $this->section['where'] = '(' . $where . ')';
 
         return $this;
     }
