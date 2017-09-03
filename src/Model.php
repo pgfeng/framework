@@ -125,7 +125,7 @@ class Model
      *
      * @var array
      */
-    private $validate = [
+    public $validate = [
         #不能为空
         'require' => [
             'rule' => '/.+/',
