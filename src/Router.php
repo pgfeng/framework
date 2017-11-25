@@ -157,7 +157,12 @@ class Router
     {
         $uri = $old_uri = parse_uri($uri);
         $uris = explode('/', $uri);
-        $uris = array_filter($uris);
+        $uris = array_filter($uris, function ($v) {
+            if ($v === '') {
+                return 0;
+            } else
+                return 1;
+        });
         $count = count($uris);
         switch ($count) {
             case 0:
@@ -180,13 +185,19 @@ class Router
                 $uri = ucfirst($uris[0]) . '/' . ucfirst($uris[1]) . '@' . $uris[2];
                 $params = array_slice($uris, 3);
         }
-        $params = array_filter($params);
+        $params = array_filter($params, function ($v) {
+            if ($v === '') {
+                return 0;
+            } else
+                return 1;
+        });
         $params_count = count($params);
 
         $explode_str = '[ ROUTER _ _ PARAMS ]';
+
         foreach (self::$routes[$method] as $pattern => $callback) {
             if (!is_callable($callback)) {
-                $pattern_seg = preg_replace('#\(.+?\)#', $explode_str, $pattern);
+                $pattern_seg = preg_replace('#\(.*?\)#', $explode_str, $pattern);
                 $num = substr_count($pattern_seg, $explode_str);
                 if ($num != $params_count)
                     continue;
@@ -207,7 +218,7 @@ class Router
         }
         foreach (self::$routes['ALL'] as $pattern => $callback) {
             if (!is_callable($callback)) {
-                $pattern_seg = preg_replace('#\(.+\)#', $explode_str, $pattern);
+                $pattern_seg = preg_replace('#\(.*?\)#', $explode_str, $pattern);
                 $num = substr_count($pattern_seg, $explode_str);
                 if ($num != $params_count)
                     continue;
@@ -247,10 +258,10 @@ class Router
             'callback' => $callback,
             'params' => $params,
         ];
-        if(!is_callable($callback)) {
+        if (!is_callable($callback)) {
             Logger::getInstance()->info('路由调度 ' . $callback, $params);
-        }else{
-            Logger::getInstance()->info('路由调度 (Closure)'.closure_dump($callback),$params);
+        } else {
+            Logger::getInstance()->info('路由调度 (Closure)' . closure_dump($callback), $params);
         }
         if (is_callable($callback)) {
             if (!$params) {
