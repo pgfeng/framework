@@ -95,12 +95,52 @@ abstract class DBase
     }
 
     /**
+     * 获取完整字段
+     * @param $field
+     * @return string
+     */
+    final private function _Field($field)
+    {
+        if (strpos($field, '.') !== FALSE)
+            $field = $this->config ['table_pre'] . $field;
+        return $field;
+    }
+
+
+    /**
+     * 获取最大值
+     * @param $field
+     * @return int
+     */
+    final function max($field)
+    {
+        $field = $this->_Field($field);
+        $max = $this->getOne('max(' . $field . ')');
+        return isset($max['max(' . $field . ')']) ? $max['max(' . $field . ')'] : 0;
+    }
+
+    /**
+     * 获取最小值
+     * @param $field
+     * @return int
+     */
+    final function min($field)
+    {
+        $field = $this->_Field($field);
+        $max = $this->getOne('min(' . $field . ')');
+        return isset($max['min(' . $field . ')']) ? $max['min(' . $field . ')'] : 0;
+    }
+
+    /**
+     * 有多少条数据
+     *
      * @param $field
      *
      * @return int    获取到的数量
      */
     final public function Count($field = '*')
     {
+        $field = $this->_Field($field);
         $count = $this->getOne('count(' . $field . ')');
 
         return isset($count['count(' . $field . ')']) ? $count['count(' . $field . ')'] : 0;
@@ -154,6 +194,7 @@ abstract class DBase
      */
     final public function setField($field_name, $field_value)
     {
+        $field_name = $this->_Field($field_name);
         return $this->update([
             $field_name => $field_value,
         ]);
@@ -174,7 +215,6 @@ abstract class DBase
         if (empty($fetch)) return FALSE; else
             return $fetch[0][$field_name];
     }
-
 
     /**
      * 设置查询
@@ -220,18 +260,9 @@ abstract class DBase
                 $allField = '';
                 foreach ($select as $field) {
                     if ($allField == '') {
-                        if (strpos($field, '.') !== FALSE) {
-                            //==自动加上表名前缀
-                            $allField = $this->config ['table_pre'] . $field;
-                        } else {
-                            $allField = $field;
-                        }
+                        $allField = $this->_Field($field);
                     } else
-                        if (strpos($field, '.') !== FALSE) {
-                            $allField .= ',' . $this->config ['table_pre'] . $field;
-                        } else {
-                            $allField .= ',' . $field;
-                        }
+                        $allField .= ',' . $this->_Field($field);
                 }
                 $this->_set($allField, 'select');
             } else {
@@ -309,6 +340,7 @@ abstract class DBase
      */
     final function in($field, $in)
     {
+        $field = $this->_Field($field);
         if (is_array($in)) {
             $pin = '\'';
             $pin .= implode('\',\'', $in);
@@ -334,9 +366,7 @@ abstract class DBase
     {
         if (func_num_args() > 1) {
             $field = func_get_arg(0);
-            if (strpos($field, '.') !== FALSE) {
-                $field = $this->config ['table_pre'] . $field;
-            }
+            $this->_Field($field);
             $fieldAnd = explode('&', $field);
             $hasAnd = count($fieldAnd) > 1 ? TRUE : FALSE;
             $fieldOr = explode('|', $field);
@@ -424,18 +454,9 @@ abstract class DBase
             $order = '';
             foreach ($orderby as $field) {
                 if ($order == '') {
-                    if (strpos($field, '.') !== FALSE) {
-                        //==自动加上表名前缀
-                        $order = $this->config ['table_pre'] . $field;
-                    } else {
-                        $order = $field;
-                    }
+                    $order = $this->_Field($field);
                 } else
-                    if (strpos($field, '.') !== FALSE) {
-                        $order .= ',' . $this->config ['table_pre'] . $field;
-                    } else {
-                        $order .= ',' . $field;
-                    }
+                    $order .= ',' . $this->_Field($field);
             }
             $this->section['orderby'] = $order;
         } else {
@@ -469,9 +490,7 @@ abstract class DBase
     {
         if (func_num_args() > 1) {
             $field = func_get_arg(0);
-            if (strpos($field, '.') !== FALSE) {
-                $field = $this->config ['table_pre'] . $field;
-            }
+            $field = $this->_Field($field);
             $fieldAnd = explode('&', $field);
             $hasAnd = count($fieldAnd) > 1 ? TRUE : FALSE;
             $fieldOr = explode('|', $field);

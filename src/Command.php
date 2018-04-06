@@ -123,7 +123,7 @@ class Command
     {
         if (!is_string($message))
             $message = var_export($message, true);
-        if (DIRECTORY_SEPARATOR == '\\') {
+        if (strtoupper(substr(PHP_OS,0,3))==='WIN') {
             if (mb_detect_encoding($message, 'UTF-8', true))
                 $message = mb_convert_encoding($message, "GBK", "UTF-8");
         }

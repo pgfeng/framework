@@ -24,7 +24,7 @@ use GFPHP\Model\filesModel;
  * @method $this notBetween(string $field, string $Between)
  * @method $this in(string $field, string $in)
  * @method $this where(string $field, string $comPar = '', string $val = '')
- * @method $this orderBy(string $orderby = '')
+ * @method $this orderBy(string $field = '',$orderBy='desc')
  * @method $this limit(string $limit)
  * @method $this orWhere(string $field, string $comPar = '', string $val = '')
  * @method bool|int update(array $update)
