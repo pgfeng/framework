@@ -366,7 +366,7 @@ abstract class DBase
     {
         if (func_num_args() > 1) {
             $field = func_get_arg(0);
-            $this->_Field($field);
+            $field = $this->_Field($field);
             $fieldAnd = explode('&', $field);
             $hasAnd = count($fieldAnd) > 1 ? TRUE : FALSE;
             $fieldOr = explode('|', $field);
