@@ -20,6 +20,8 @@ use GFPHP\Model\filesModel;
  *
  *
  * @method $this select(string $field = '')
+ * @method int max(string $field = '')
+ * @method int min(string $field = '')
  * @method $this between(string $field, string $Between)
  * @method $this notBetween(string $field, string $Between)
  * @method $this in(string $field, string $in)
