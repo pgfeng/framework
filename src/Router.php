@@ -93,6 +93,7 @@ class Router
 
     /**
      * @return mixed
+     * @throws \Exception
      */
     public static function run()
     {

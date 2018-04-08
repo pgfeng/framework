@@ -49,11 +49,12 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 		$this->model = $model;
 	}
 
-	/**
-	 * @param string $primary_key 主键字段名
-	 *
-	 * @return Bool|int
-	 */
+    /**
+     * @param string $primary_key 主键字段名
+     *
+     * @return Bool|int
+     * @throws \Exception
+     */
 	public function save($primary_key='id'){
 		if(!$this->is_row && $this->table=='Data'){
 			new Exception("数据不是单行数据库数据!");
@@ -63,13 +64,14 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 		}
 	}
 
-	/**
-	 * 删除此条数据
-	 *
-	 * @param string $primary_key
-	 *
-	 * @return bool|int
-	 */
+    /**
+     * 删除此条数据
+     *
+     * @param string $primary_key
+     *
+     * @return bool|int
+     * @throws \Exception
+     */
 	public function delete($primary_key='id'){
 		if(!$this->is_row && $this->table=='Data'){
 			new Exception("数据不是单行数据库数据!");

@@ -130,9 +130,9 @@ class GFPHP
         //** 引入CSS标签
         $str = preg_replace_callback("/" . $leftDelim . "includeStyle\s+['|\"](.+?)['|\"]" . $rightDelim . "/i", function ($matches) {
             $css = trim($matches[1]);
-            $cssarray = explode(',', $css);
+            $cssArray = explode(',', $css);
             $css = '';
-            foreach ($cssarray as $c) {
+            foreach ($cssArray as $c) {
                 if (preg_match('/^https?:\/\//i', $c))
                     $css .= '<link href="' . $c . '" type="text/css" rel="stylesheet">';
                 else
@@ -153,9 +153,9 @@ class GFPHP
         //** 引用js标签
         $str = preg_replace_callback("/" . $leftDelim . "includeScript\s+['|\"](.+?)['|\"]" . $rightDelim . "/i", function ($matches) {
             $js = trim($matches[1]);
-            $jsarray = explode(',', $js);
+            $jsArray = explode(',', $js);
             $js = '';
-            foreach ($jsarray as $j) {
+            foreach ($jsArray as $j) {
                 $js .= '<script type="text/javascript" src="' . Config::template('js_path') . $j . '"></script>';
             }
 

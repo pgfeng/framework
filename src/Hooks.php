@@ -25,7 +25,7 @@ class Hooks
         'template_filter' => [
             [
                 'Hooks' => '/GFPHP/Hooks/GFPHP',
-                'Func'  => 'template_parse',
+                'Func' => 'template_parse',
             ],
         ],
     ];
@@ -45,8 +45,8 @@ class Hooks
      */
     public static function call($name, $params = [])
     {
-        if (isset(self::$Hooks[ $name ])) {
-            $act = end(self::$Hooks[ $name ]);
+        if (isset(self::$Hooks[$name])) {
+            $act = end(self::$Hooks[$name]);
             if (!isset($act['Hooks'])) {
                 Debug::add('Hooks: 钩子配置错误,数组必须包含`Hooks`');
             } else {
@@ -73,8 +73,8 @@ class Hooks
      */
     public static function listen($name, $params = [])
     {
-        if (isset(self::$Hooks[ $name ])) {
-            foreach (self::$Hooks[ $name ] as $act) {
+        if (isset(self::$Hooks[$name])) {
+            foreach (self::$Hooks[$name] as $act) {
                 if (!isset($act['Hooks'])) {
                     Debug::add('Hooks: 钩子配置错误,数组必须包含`Hooks`');
                 } else {
@@ -100,12 +100,12 @@ class Hooks
      */
     public static function filter($name, $params)
     {
-        if (isset(self::$Hooks[ $name ])) {
-            foreach (self::$Hooks[ $name ] as $act) {
+        if (isset(self::$Hooks[$name])) {
+            foreach (self::$Hooks[$name] as $act) {
                 if (!isset($act['Hooks'])) {
                     Debug::add('Hooks: 钩子配置错误,数组必须包含`Hooks`');
                 } else {
-                    $hooks = str_replace('/','\\',$act['Hooks']);
+                    $hooks = str_replace('/', '\\', $act['Hooks']);
                     $hooks = new $hooks;
                     $func = isset($act['Func']) ? $act['Func'] : Config::Hooks('DefaultFunc');
                     if (method_exists($hooks, $func)) {
@@ -135,14 +135,14 @@ class Hooks
      */
     public static function add($HooksName, $Class, $Func = '')
     {
-        if (!isset(self::$Hooks[ $HooksName ]))
-            self::$Hooks[ $HooksName ] = [];
+        if (!isset(self::$Hooks[$HooksName]))
+            self::$Hooks[$HooksName] = [];
         $hooks = [
             'Hooks' => $Class,
-            'Func'  => $Func,
+            'Func' => $Func,
         ];
-        if (!in_array($hooks, self::$Hooks[ $HooksName ])) {
-            self::$Hooks[ $HooksName ][] = $hooks;
+        if (!in_array($hooks, self::$Hooks[$HooksName])) {
+            self::$Hooks[$HooksName][] = $hooks;
 
             return TRUE;
         }

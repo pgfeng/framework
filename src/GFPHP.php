@@ -79,14 +79,24 @@ class GFPHP
         Router::init();
     }
 
+    /**
+     * @return bool
+     */
     public static function run()
     {
-        $response = Router::run();
-        if (is_array($response)) {
-            echo response_json($response);
-        } else {
-            echo $response;
+        try {
+            $response = Router::run();
+            if (is_array($response)) {
+                echo response_json($response);
+            } else {
+                echo $response;
+            }
+            Debug::stop();
+        } catch (\Exception $e) {
+            echo response_json([
+                'status' => false,
+                'msg'    => 'Bad Request!',
+            ]);
         }
-        Debug::stop();
     }
 }

@@ -165,9 +165,10 @@ class Template
      * 引用模板
      *
      * @param $template
-     * @param $cacheTime
-     * @param $cacheKey
+     * @param bool $cacheTime
+     * @param bool $cacheKey
      * @return mixed|String
+     * @throws Exception
      */
     public function display($template, $cacheTime = FALSE, $cacheKey = FALSE)
     {

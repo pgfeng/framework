@@ -20,6 +20,11 @@ use GFPHP\Model;
 abstract class Authorize extends Model
 {
     /**
+     * @var bool | array
+     */
+    protected $account = false;
+
+    /**
      * 账户名字段,用于登陆校验,可是多个字段
      * @var array
      */
@@ -32,27 +37,15 @@ abstract class Authorize extends Model
     protected $password_field = 'user_password';
 
     /**
-     * 登陆存储TOKEN类型
-     * @var string  SESSION,COOKIE
-     */
-    protected $token_type = 'SESSION';
-
-    /**
      * 登陆校验的TOKEN名称
      * @var string
      */
     protected $token_name = 'MEMBER_TOKEN';
 
     /**
-     * 有效时间
-     * @var int
-     */
-    protected $expire = 60*60*24*30;
-
-    /**
      * 重写保存
      * @param array $data
-     * @param bool  $primary_key
+     * @param bool $primary_key
      * @return bool|int|array
      */
     public function save($data, $primary_key = false)
@@ -63,60 +56,59 @@ abstract class Authorize extends Model
     }
 
     /**
-     * 登陆验证
-     * @param string $account
-     * @param string $password
-     * @return bool|DataObject|string
+     * @param $account
+     * @return bool|DataObject
      */
-    public function login($account, $password)
+    public function getAccount($account_name)
     {
         $field_counter = 0;
         foreach ($this->account_field as $field) {
             if ($field_counter == 0)
-                $this->where($field, $account);
+                $this->where($field, $account_name);
             else
-                $this->orWhere($field, $account);
+                $this->orWhere($field, $account_name);
             $field_counter++;
         }
-        $account = $this->getOne();
+        return $this->getOne();
+    }
+
+    /**
+     * 根据用户账号和密码登陆
+     * @param string $account
+     * @param string $password
+     * @return array|boolean
+     */
+    public function getToken($account, $password)
+    {
+        $account = $this->getAccount($account);
+        if (!$account)
+            return false;
         $hash_password = $account[$this->password_field];
-        if(password_verify($password,$hash_password)){
-            $token = $account.' || '.md5($hash_password);
-            if ($this->token_type == 'SESSION')
-                $_SESSION[$this->token_name] = $token;
-            else
-                setcookie($this->token_name,$token,$this->expire,'/');
-            return $account;
-        }else{
+        if (password_verify($password, $hash_password)) {
+            $token = $account . ' || ' . md5($hash_password);
+            return $token;
+        } else {
             return false;
         }
     }
 
     /**
-     * 登陆效验,成功返回用户信息
+     * 验证token是否正确,正确返回账户信息,否则返回false
+     * @param string|bool $token
      * @return array|DataObject|bool
      */
-    public function checkLogin()
+    public function checkToken($token)
     {
-        if ($this->token_type == 'SESSION')
-            $token = SESSION($this->token_name);
-        else
-            $token = COOKIE($this->token_name);
         if (!$token)
             return false;
         $token = explode(' || ', base64_decode($token));
         if (count($token) != 2) {
             return false;
         }
-        $field_counter = 0;
-        foreach ($this->account_field as $field) {
-            if ($field_counter == 0)
-                $this->where($field, $token[0]);
-            else
-                $this->orWhere($field, $token[0]);
-            $field_counter++;
-        }
-        $account = $this->getOne();
+        //-- 获取账户信息
+        $account = $this->getAccount($token[0]);
+        if (!$account)
+            return false;
         if ($account) {
             $hash_password = md5($account[$this->password_field]);
             if ($hash_password == $token[1]) {
