@@ -80,23 +80,17 @@ class GFPHP
     }
 
     /**
-     * @return bool
+     * @return void
+     * @throws \Exception
      */
     public static function run()
     {
-        try {
-            $response = Router::run();
-            if (is_array($response)) {
-                echo response_json($response);
-            } else {
-                echo $response;
-            }
-            Debug::stop();
-        } catch (\Exception $e) {
-            echo response_json([
-                'status' => false,
-                'msg'    => 'Bad Request!',
-            ]);
+        $response = Router::run();
+        if (is_array($response)) {
+            echo response_json($response);
+        } else {
+            echo $response;
         }
+        Debug::stop();
     }
 }
