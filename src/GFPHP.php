@@ -31,6 +31,10 @@ class GFPHP
     {
         if (!defined('BASE_PATH'))
             exit('Not Define BASE_PATH');
+
+        //==项目网址根目录
+        define('ROOT_URL',( isset( $_SERVER[ 'HTTPS' ] ) && $_SERVER[ 'HTTPS' ] == 'on' ) ? 'https:' : 'http:' . '//' . $_SERVER[ 'SERVER_NAME' ] . ( $_SERVER[ "SERVER_PORT" ] == '80' ? '' : ':' . $_SERVER[ "SERVER_PORT" ] ));
+
         //==当前时间
         define('__NOW__', $_SERVER['REQUEST_TIME']);
 
