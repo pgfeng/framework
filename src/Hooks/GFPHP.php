@@ -63,7 +63,7 @@ class GFPHP
 
         //当为空时只需
         $patterns[] = "/" . $leftDelim . "elseLoop" . $rightDelim . "/i";
-        $replaces[] = "<?php } else { ?>";
+        $replaces[] = "<?php } \\n else { ?>";
 
 
         $patterns[] = "/" . $leftDelim . "elseif\s+(.+?)" . $rightDelim . "/";
@@ -116,6 +116,7 @@ class GFPHP
 
             return str_replace("\\\"", "\"", preg_replace("/\[([a-zA-Z0-9_\-\.\x7f-\xff]+)\]/s", "['\\1']", $match));
         }, $str);
+
         // 解析用.链接的变量
         $str = preg_replace_callback("/" . $leftDelim . "\\$([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff.?]*)" . $rightDelim . "/", function ($matchs) {
             $v = $matchs[1];
