@@ -84,18 +84,18 @@ class GFPHP
         $replaces[] = "<?php } ?>";
 
         //==== 赋值
-        $patterns[] = "/" . $leftDelim . "(.+?)=(.+?)" . $rightDelim . "/";
-        $replaces[] = "<?php $\\1=='\\2'; ?>";
-
-        //==== ++ --
-        $patterns[] = "/" . $leftDelim . "\+\+(.+?)" . $rightDelim . "/";
-        $replaces[] = "<?php ++$\\1; ?>";
-        $patterns[] = "/" . $leftDelim . "\-\-(.+?)" . $rightDelim . "/";
-        $replaces[] = "<?php --$\\1; ?>";
-        $patterns[] = "/" . $leftDelim . "(.+?)\-\-" . $rightDelim . "/";
-        $replaces[] = "<?php $\\1--; ?>";
-        $patterns[] = "/" . $leftDelim . "(.+?)\+\+" . $rightDelim . "/";
-        $replaces[] = "<?php $\\1++; ?>";
+//        $patterns[] = "/" . $leftDelim . "(.+?)=(.+?)" . $rightDelim . "/";
+/*        $replaces[] = "<?php $\\1=='\\2'; ?>";*/
+//
+//        //==== ++ --
+//        $patterns[] = "/" . $leftDelim . "\+\+(.+?)" . $rightDelim . "/";
+/*        $replaces[] = "<?php ++$\\1; ?>";*/
+//        $patterns[] = "/" . $leftDelim . "\-\-(.+?)" . $rightDelim . "/";
+/*        $replaces[] = "<?php --$\\1; ?>";*/
+//        $patterns[] = "/" . $leftDelim . "(.+?)\-\-" . $rightDelim . "/";
+/*        $replaces[] = "<?php $\\1--; ?>";*/
+//        $patterns[] = "/" . $leftDelim . "(.+?)\+\+" . $rightDelim . "/";
+/*        $replaces[] = "<?php $\\1++; ?>";*/
 
         //== LOOP循环 相当于foreach 去掉as去掉括号
         $patterns[] = "/" . $leftDelim . "loop\s+(\S+)\s+(\S+)" . $rightDelim . "/i";
