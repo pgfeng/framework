@@ -83,26 +83,30 @@ class GFPHP
         $patterns[] = "/" . $leftDelim . "\/for" . $rightDelim . "/i";
         $replaces[] = "<?php } ?>";
 
+        //==== 赋值
+        $patterns[] = "/" . $leftDelim . "(.+?)=(.+?)" . $rightDelim . "/";
+        $replaces[] = "<?php $\\1=='\\2'; ?>";
+
         //==== ++ --
         $patterns[] = "/" . $leftDelim . "\+\+(.+?)" . $rightDelim . "/";
-        $replaces[] = "<?php ++\\1; ?>";
+        $replaces[] = "<?php ++$\\1; ?>";
         $patterns[] = "/" . $leftDelim . "\-\-(.+?)" . $rightDelim . "/";
-        $replaces[] = "<?php --\\1; ?>";
+        $replaces[] = "<?php --$\\1; ?>";
         $patterns[] = "/" . $leftDelim . "(.+?)\-\-" . $rightDelim . "/";
-        $replaces[] = "<?php \\1--; ?>";
+        $replaces[] = "<?php $\\1--; ?>";
         $patterns[] = "/" . $leftDelim . "(.+?)\+\+" . $rightDelim . "/";
-        $replaces[] = "<?php \\1++; ?>";
+        $replaces[] = "<?php $\\1++; ?>";
         //== LOOP循环 相当于Foreach 去掉as去掉括号
 
 //        {loop $all $item}
 //        {elseLoop}
 //        {/loop}
         $patterns[] = "/" . $leftDelim . "loop\s+(\S+)\s+(\S+)" . $rightDelim . "/i";
-        $replaces[] = "<?php if((is_array( \\1 ) && !empty( \\1 )) || (\\1 instanceof \\Traversable)) foreach(\\1 AS \\2) { ?>";
+        $replaces[] = "<?php if(((is_array( \\1 ) && !empty( \\1 )) || (\\1 instanceof \\Traversable)) && \$i=0) foreach(\\1 AS \\2) { ?>";
         $patterns[] = "/" . $leftDelim . "loop\s+(\S+)\s+(\S+)\s+(\S+)" . $rightDelim . "/i";
-        $replaces[] = "<?php if((is_array( \\1 ) && !empty( \\1 )) || (\\1 instanceof \\Traversable)) foreach(\\1 AS \\2 => \\3) { ?>";
+        $replaces[] = "<?php if(((is_array( \\1 ) && !empty( \\1 )) || (\\1 instanceof \\Traversable)) && \$i=0) foreach(\\1 AS \\2 => \\3) { ?>";
         $patterns[] = "/" . $leftDelim . "\/loop" . $rightDelim . "/i";
-        $replaces[] = "<?php } ?>";
+        $replaces[] = "<?php \$i++;} ?>";
 
         $patterns[] = "/" . $leftDelim . "([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff:]*\(([^{}]*)\))" . $rightDelim . "/";
         $replaces[] = "<?php echo \\1;?>";
