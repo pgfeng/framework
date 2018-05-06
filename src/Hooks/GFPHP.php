@@ -63,8 +63,7 @@ class GFPHP
 
         //当为空时只需
         $patterns[] = "/" . $leftDelim . "elseLoop" . $rightDelim . "/i";
-        $replaces[] = "<?php }
-        else { ?>";
+        $replaces[] = "<?php } else { ?>";
 
 
         $patterns[] = "/" . $leftDelim . "elseif\s+(.+?)" . $rightDelim . "/";
