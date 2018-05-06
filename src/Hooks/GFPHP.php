@@ -102,11 +102,11 @@ class GFPHP
 //        {elseLoop}
 //        {/loop}
         $patterns[] = "/" . $leftDelim . "loop\s+(\S+)\s+(\S+)" . $rightDelim . "/i";
-        $replaces[] = "<?php if(((is_array( \\1 ) && !empty( \\1 )) || (\\1 instanceof \\Traversable)) && \$i=0) foreach(\\1 AS \\2) { ?>";
+        $replaces[] = "<?php if(((is_array( \\1 ) && !empty( \\1 )) || (\\1 instanceof \\Traversable)) && \$loop_index=0) foreach(\\1 AS \\2) { ?>";
         $patterns[] = "/" . $leftDelim . "loop\s+(\S+)\s+(\S+)\s+(\S+)" . $rightDelim . "/i";
-        $replaces[] = "<?php if(((is_array( \\1 ) && !empty( \\1 )) || (\\1 instanceof \\Traversable)) && \$i=0) foreach(\\1 AS \\2 => \\3) { ?>";
+        $replaces[] = "<?php if(((is_array( \\1 ) && !empty( \\1 )) || (\\1 instanceof \\Traversable)) && \$loop_index=0) foreach(\\1 AS \\2 => \\3) { ?>";
         $patterns[] = "/" . $leftDelim . "\/loop" . $rightDelim . "/i";
-        $replaces[] = "<?php \$i++;} ?>";
+        $replaces[] = '<?php $loop_index++;} ?>';
 
         $patterns[] = "/" . $leftDelim . "([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff:]*\(([^{}]*)\))" . $rightDelim . "/";
         $replaces[] = "<?php echo \\1;?>";
