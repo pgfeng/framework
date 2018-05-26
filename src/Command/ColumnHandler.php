@@ -13,6 +13,7 @@ use GFPHP\DB;
 
 
 /**
+ * 模型字段帮助生成
  * Class ColumnHandler
  * @package GFPHP\Command
  */
