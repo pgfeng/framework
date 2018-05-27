@@ -158,9 +158,11 @@ class GFPHP
             $jsArray = explode(',', $js);
             $js = '';
             foreach ($jsArray as $j) {
-                $js .= '<script type="text/javascript" src="' . Config::template('js_path') . $j . '"></script>';
+                if (preg_match('/^https?:\/\//i', $j))
+                    $js .= '<script type="text/javascript" src="' . $j . '"></script>';
+                else
+                    $js .= '<script type="text/javascript" src="' . Config::template('js_path') . $j . '"></script>';
             }
-
             return $js;
         }, $str);
         $str = preg_replace('/' . $leftDelim . 'JS_PATH' . $rightDelim . '/i', Config::template('js_path'), $str);
