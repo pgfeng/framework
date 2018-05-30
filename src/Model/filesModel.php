@@ -10,6 +10,7 @@ namespace GFPHP\Model;
 
 use GFPHP\Config;
 use GFPHP\Model;
+use Dflydev\ApacheMimeTypes\PhpRepository;
 
 /**
  * 数据库结构
@@ -53,6 +54,59 @@ class filesModel extends Model
             }
         } else {
             return TRUE;
+        }
+    }
+
+    /**
+     *
+     */
+    public function base64_upload($base64_data, $allow_type = [])
+    {
+        //--如果没有设置允许格式,将使用默认允许的格式
+        $allow_type = !empty($allow_type) ? $allow_type : Config::file('allow_type');
+        foreach ($allow_type as &$type) {
+            $type = strtolower($type);
+        }
+        preg_match('/data:(.*);/iUs', $base64_data, $type);
+        $mime = $type[1];
+        $repository = new Dflydev\ApacheMimeTypes\JsonRepository;
+        $extensions = $repository->findExtensions($mime);
+        $data = base64_decode($base64_data);
+        $ext = $extensions[0];
+        if (in_array(strtolower($ext), $allow_type)) {
+            $md5 = md5($data);
+            if ($rfile = $this->getFileByMd5($md5)) {
+                return [
+                    'status' => 'true',
+                    'path' => $rfile['file_path'],
+                    'msg' => '上传成功！！',
+                ];
+            } else {
+                $path = Config::file('upload_path') . date("Ymd") . '/' . time() . random(10) . '.' . $ext;
+                $full_path = $path;
+                mkPathDir($full_path);
+                if (file_put_contents($full_path, $data)) {
+                    $this->Insert([
+                        'file_name' => time(),
+                        'file_size' => strlen($data),
+                        'file_ext' => $ext,
+                        'file_type' => $mime,
+                        'file_md5' => $md5,
+                        'file_time' => time(),
+                        'file_path' => $path,
+                    ]);
+                    $f = [
+                        'status' => 'true',
+                        'path' => $path,
+                        'msg' => '上传成功',
+                    ];
+                }
+            }
+        } else {
+            return [
+                'status' => 'false',
+                'msg' => '只允许上传' . implode('|', $allow_type) . '格式！',
+            ];
         }
     }
 

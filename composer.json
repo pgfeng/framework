@@ -1,25 +1,26 @@
 {
-    "name": "gfphp/framework",
-    "description": "gfphp/framework",
-    "license": "Apache-2.0",
-    "authors": [
-        {
-            "name": "PGF",
-            "email": "592472116@qq.com"
-        }
-    ],
-    "require": {
-        "php": ">=5.5.9",
-        "filp/whoops":"2.1.8",
-        "jdorn/sql-formatter":"v1.2.9",
-        "monolog/monolog":"1.23.0"
-    },
-    "autoload": {
-        "files": [
-            "src/Helper/Base.php"
-        ],
-        "psr-4": {
-            "GFPHP\\": "src/"
-        }
+  "name": "gfphp/framework",
+  "description": "gfphp/framework",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "PGF",
+      "email": "592472116@qq.com"
     }
+  ],
+  "require": {
+    "php": ">=5.5.9",
+    "filp/whoops": "2.1.8",
+    "jdorn/sql-formatter": "v1.2.9",
+    "monolog/monolog": "1.23.0",
+    "dflydev/apache-mime-types": "v1.0.1"
+  },
+  "autoload": {
+    "files": [
+      "src/Helper/Base.php"
+    ],
+    "psr-4": {
+      "GFPHP\\": "src/"
+    }
+  }
 }
