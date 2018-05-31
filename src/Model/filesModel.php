@@ -8,6 +8,7 @@
 
 namespace GFPHP\Model;
 
+use Dflydev\ApacheMimeTypes\JsonRepository;
 use GFPHP\Config;
 use GFPHP\Model;
 use Dflydev\ApacheMimeTypes\PhpRepository;
@@ -69,9 +70,9 @@ class filesModel extends Model
         }
         preg_match('/data:(.*);/iUs', $base64_data, $type);
         $mime = $type[1];
-        $repository = new Dflydev\ApacheMimeTypes\JsonRepository;
+        $repository = new JsonRepository();
         $extensions = $repository->findExtensions($mime);
-        $data = base64_decode($base64_data);
+        $data = base64_decode(explode('base64,',$base64_data)[1]);
         $ext = $extensions[0];
         if (in_array(strtolower($ext), $allow_type)) {
             $md5 = md5($data);
@@ -95,7 +96,7 @@ class filesModel extends Model
                         'file_time' => time(),
                         'file_path' => $path,
                     ]);
-                    $f = [
+                    return [
                         'status' => 'true',
                         'path' => $path,
                         'msg' => '上传成功',
