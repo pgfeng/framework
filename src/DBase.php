@@ -1067,10 +1067,11 @@ abstract class DBase
             if ($data === FALSE) {
                 new Exception($this->getError());
             }
+            $data = $this->stripslashes($data);
             if ($data == NULL)         //防止直接返回Null
                 $data = [];
-            $data = $this->stripslashes($data);
-            $data = new DataObject($data);
+            else
+                $data = new DataObject($data);
             $this->set_cache($sql, $data);
         }
         return $data;
@@ -1151,7 +1152,7 @@ abstract class DBase
      *
      * @param $sql
      *
-     * @return array|null|bool
+     * @return
      */
 
     abstract function _query($sql);         //返回值是查询出的数组
