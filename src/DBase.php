@@ -44,7 +44,7 @@ abstract class DBase
         'orderby' => '',
         'limit' => '',
     ];
-    public $data = [];
+    public static $cache_data = [];
     /**
      * @var string $sql
      */
@@ -666,7 +666,47 @@ abstract class DBase
      */
     final function clear_cache()
     {
-        return Cache::flush($this->config ['cache_dir'] . '/' . $this->get_table());
+        if ($this->get_table() != $this->config ['table_pre'] && $this->config['cache'] == true) {
+            unset(DBase::$cache_data[$this->get_table()]);
+            return Cache::flush($this->config ['cache_dir'] . '/' . $this->get_table());
+        } else
+            return true;
+    }
+
+    /**
+     * 获取缓存
+     * @param $sql
+     * @return bool|mixed
+     */
+    final function get_cache($sql)
+    {
+        if ($this->get_table() != $this->config ['table_pre'] && $this->config['cache'] == true) {
+            $sqlMd5 = md5($sql);
+            if (isset(DBase::$cache_data[$this->get_table()][$sqlMd5])) {
+                Debug::add('从内存读取 ' . $sql, 2);
+                return DBase::$cache_data[$this->get_table()][$sqlMd5];
+            } else {
+                if(Cache::is_cache($sqlMd5,$this->config ['cache_dir'] . '/' . $this->get_table())){
+                    Debug::add('从缓存读取 ' . $sql, 2);
+                    return DBase::$cache_data[$this->get_table()][$sqlMd5] = unserialize(Cache::get($sqlMd5, $this->config ['cache_dir'] . '/' . $this->get_table()));
+                }else{
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
+    final function set_cache($sql, $data)
+    {
+        if ($this->get_table() != $this->config ['table_pre'] && $this->config['cache'] == true) {
+            $sqlMd5 = md5($sql);
+            DBase::$cache_data[$this->get_table()][$sqlMd5] = $data;
+            return Cache::set($sqlMd5, serialize($data), $this->config ['cache_dir'] . '/' . $this->get_table());
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -691,6 +731,7 @@ abstract class DBase
      */
     final function exec($sql = FALSE)
     {
+        $this->clear_cache();
         if (!$sql)
             $this->compile();
         $sql = $sql ? $sql : $this->sql;
@@ -700,8 +741,8 @@ abstract class DBase
         $this->lastSql = $sql;
         Debug::add($sql, 2);
         $this->_reset();
-        if (isset($this->data[$this->table]))
-            unset($this->data[$this->table]);
+        if (isset(DBase::$cache_data[$this->table]))
+            unset(DBase::$cache_data[$this->table]);
         if ($res = $this->_exec($sql) !== FALSE) {
             return $res;
         } else {
@@ -1014,17 +1055,11 @@ abstract class DBase
         if (!$sql) {
             $this->compile();
         }
-
         $sql = $sql ? $sql : $this->sql;
         $this->parseTablePre($sql);
-        $sqlMd5 = md5($sql);
         $this->lastSql = $sql;
-        if (isset($this->data[$this->table][$sqlMd5])) {
-            Debug::add('从内存读取' . $this->sql, 2);
-            $this->_reset();
-
-            $data = $this->data[$this->table][$sqlMd5];
-        } else {
+        $data = $this->get_cache($sql);
+        if ($data==false) {
             Debug::add($sql, 2);
             $this->_reset();
             $this->lastSql = $sql;
@@ -1034,16 +1069,10 @@ abstract class DBase
             }
             if ($data == NULL)         //防止直接返回Null
                 $data = [];
+            if (!empty($data))
+                $data = new DataObject($data);
             $data = $this->stripslashes($data);
-
-            if (!isset($sqlMd5))
-                $sqlMd5 = md5($sql);
-            $this->data[$this->table][$sqlMd5] = $data;
-        }
-        if (!empty($data)) {
-            $data = new DataObject($data);
-        } else {
-            $data = [];
+            $this->set_cache($sql, $data);
         }
         return $data;
     }            //链接数据库方法
@@ -1072,7 +1101,7 @@ abstract class DBase
      *
      * @param string $var
      *
-     * @return array
+     * @return string | array
      */
     public function addslashes($var)
     {

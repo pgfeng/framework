@@ -173,7 +173,7 @@ class fileCache extends Cache
      */
     public function _flush($space)
     {
-        $dir = __ROOT__ . parseDir(Config::config('app_dir'), Config::cache('cache_dir'), $space);
+        $dir = BASE_PATH . parseDir(Config::config('app_dir'), Config::cache('cache_dir'), $space);
         if (!file_exists($dir))
             return TRUE;
         $dh = opendir($dir);
@@ -208,7 +208,7 @@ class fileCache extends Cache
     public function _delete_timeout($space, $lifetime)
     {
 
-        $dir = __ROOT__ . parseDir(Config::config('app_dir'), Config::cache('cache_dir'), $space);
+        $dir = BASE_PATH . parseDir(Config::config('app_dir'), Config::cache('cache_dir'), $space);
         if (!file_exists($dir))
             return TRUE;
 

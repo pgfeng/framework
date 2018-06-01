@@ -14,22 +14,24 @@
 return [
     'default' => [
         //--IP
-        'host'      => '127.0.0.1',
+        'host' => '127.0.0.1',
         //-- 端口
-        'port'      => '3306',
+        'port' => '3306',
         //--驱动
-        'driver'    => 'PdoDriver',     //参考drives/databases目录下文件
-        //'driver' => 'MysqliDriver',
-//    'driver' => 'mysql',
+        'driver' => 'PdoDriver',     //参考drives/databases目录下文件
         //--库名
-        'name'      => 'g-cmf',
+        'name' => 'test',
         //--用户名
-        'user'      => 'root',
+        'user' => 'root',
         //--表名前缀
         'table_pre' => 'p_',
         //--密码
-        'pass'      => 'root',
+        'pass' => 'root',
         //--编码
-        'charset'   => 'utf8',
+        'charset' => 'utf8',
+        //--缓存是否打开,运营过程中数据库表记录多,打开有明显提升
+        'cache' => true,
+        //--数据库缓存
+        'cache_dir' => 'database',
     ],
 ];
