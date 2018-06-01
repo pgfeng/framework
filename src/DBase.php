@@ -1069,8 +1069,7 @@ abstract class DBase
             }
             if ($data == NULL)         //防止直接返回Null
                 $data = [];
-            if (!empty($data))
-                $data = new DataObject($data);
+            $data = new DataObject($data);
             $data = $this->stripslashes($data);
             $this->set_cache($sql, $data);
         }
