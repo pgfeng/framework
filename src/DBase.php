@@ -823,6 +823,11 @@ abstract class DBase
 
             return $this->exec();
         } else {
+            foreach ($insert as $key => $value){
+                if(!$value){
+                    unset($insert[$key]);
+                }
+            }
             foreach ($insert as $key => $value) {
                 $insert[$key] = is_array($value) ? $this->addslashes(json_encode($value, JSON_UNESCAPED_UNICODE)) : (is_object($value) ? $this->addslashes(serialize($value)) : $this->addslashes($value));
             }
