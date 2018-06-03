@@ -780,7 +780,6 @@ abstract class DBase
 
             return FALSE;
         }
-
         return FALSE;
     }
 
@@ -1055,13 +1054,13 @@ abstract class DBase
         if (!$sql) {
             $this->compile();
         }
+        $this->_reset();
         $sql = $sql ? $sql : $this->sql;
         $this->parseTablePre($sql);
         $this->lastSql = $sql;
         $data = $this->get_cache($sql);
         if ($data==false) {
             Debug::add($sql, 2);
-            $this->_reset();
             $this->lastSql = $sql;
             $data = $this->_query($sql);
             if ($data === FALSE) {
