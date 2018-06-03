@@ -823,7 +823,7 @@ abstract class DBase
 
             return $this->exec();
         } else {
-            //--强制开发者使用默认值,添加不可以设置空值,杜绝因为开发者表单没输入而没有使用数据库默认值
+            //--强制开发者使用默认值,添加不可以设置空值,杜绝因为运营人员表单没输入而没有使用数据库默认值
             foreach ($insert as $key => $value) {
                 if ($value==='') {
                     unset($insert[$key]);
