@@ -1054,8 +1054,8 @@ abstract class DBase
         if (!$sql) {
             $this->compile();
         }
-        $this->_reset();
         $sql = $sql ? $sql : $this->sql;
+        $this->_reset();
         $this->parseTablePre($sql);
         $this->lastSql = $sql;
         $data = $this->get_cache($sql);
