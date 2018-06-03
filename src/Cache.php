@@ -101,7 +101,7 @@ abstract class Cache
     {
         if ($space == FALSE)
             $space = self::$cache->config['default_space'];
-        $res = self::$cache->flush($space);
+        $res = self::$cache->_flush($space);
         if ($res) {
             Debug::add('Cache:缓存空间 ' . $space . ' 清空成功.', 0);
         } else {

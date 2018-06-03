@@ -44,7 +44,7 @@ abstract class DBase
         'orderby' => '',
         'limit' => '',
     ];
-
+    public static $cache_data = [];
     /**
      * @var string $sql
      */
@@ -667,6 +667,7 @@ abstract class DBase
     final function clear_cache()
     {
         if ($this->get_table() != $this->config ['table_pre'] && $this->config['cache'] == true) {
+            unset(DBase::$cache_data[$this->get_table()]);
             return Cache::flush($this->config ['cache_dir'] . '/' . $this->get_table());
         } else
             return true;
@@ -681,11 +682,16 @@ abstract class DBase
     {
         if ($this->get_table() != $this->config ['table_pre'] && $this->config['cache'] == true) {
             $sqlMd5 = md5($sql);
-            if (Cache::is_cache($sqlMd5, $this->config ['cache_dir'] . '/' . $this->get_table())) {
-                Debug::add('从缓存读取 ' . $sql, 2);
-                return unserialize(Cache::get($sqlMd5, $this->config ['cache_dir'] . '/' . $this->get_table()));
+            if (isset(DBase::$cache_data[$this->get_table()][$sqlMd5])) {
+                Debug::add('从内存读取 ' . $sql, 2);
+                return DBase::$cache_data[$this->get_table()][$sqlMd5];
             } else {
-                return false;
+                if (Cache::is_cache($sqlMd5, $this->config ['cache_dir'] . '/' . $this->get_table())) {
+                    Debug::add('从缓存读取 ' . $sql, 2);
+                    return DBase::$cache_data[$this->get_table()][$sqlMd5] = unserialize(Cache::get($sqlMd5, $this->config ['cache_dir'] . '/' . $this->get_table()));
+                } else {
+                    return false;
+                }
             }
         } else {
             return false;
@@ -696,6 +702,7 @@ abstract class DBase
     {
         if ($this->get_table() != $this->config ['table_pre'] && $this->config['cache'] == true) {
             $sqlMd5 = md5($sql);
+            DBase::$cache_data[$this->get_table()][$sqlMd5] = $data;
             return Cache::set($sqlMd5, serialize($data), $this->config ['cache_dir'] . '/' . $this->get_table());
         } else {
             return false;
@@ -734,6 +741,8 @@ abstract class DBase
         $this->lastSql = $sql;
         Debug::add($sql, 2);
         $this->_reset();
+        if (isset(DBase::$cache_data[$this->table]))
+            unset(DBase::$cache_data[$this->table]);
         if ($res = $this->_exec($sql) !== FALSE) {
             return $res;
         } else {
