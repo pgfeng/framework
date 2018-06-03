@@ -686,10 +686,10 @@ abstract class DBase
                 Debug::add('从内存读取 ' . $sql, 2);
                 return DBase::$cache_data[$this->get_table()][$sqlMd5];
             } else {
-                if(Cache::is_cache($sqlMd5,$this->config ['cache_dir'] . '/' . $this->get_table())){
+                if (Cache::is_cache($sqlMd5, $this->config ['cache_dir'] . '/' . $this->get_table())) {
                     Debug::add('从缓存读取 ' . $sql, 2);
                     return DBase::$cache_data[$this->get_table()][$sqlMd5] = unserialize(Cache::get($sqlMd5, $this->config ['cache_dir'] . '/' . $this->get_table()));
-                }else{
+                } else {
                     return false;
                 }
             }
@@ -823,8 +823,9 @@ abstract class DBase
 
             return $this->exec();
         } else {
-            foreach ($insert as $key => $value){
-                if(!$value){
+            //--强制开发者使用默认值,添加不可以设置空值,杜绝因为开发者表单没输入而没有使用数据库默认值
+            foreach ($insert as $key => $value) {
+                if (!$value) {
                     unset($insert[$key]);
                 }
             }
@@ -1064,7 +1065,7 @@ abstract class DBase
         $this->parseTablePre($sql);
         $this->lastSql = $sql;
         $data = $this->get_cache($sql);
-        if ($data==false) {
+        if ($data == false) {
             Debug::add($sql, 2);
             $this->lastSql = $sql;
             $data = $this->_query($sql);
