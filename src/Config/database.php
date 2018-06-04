@@ -31,7 +31,7 @@ return [
         'charset' => 'utf8',
         //--缓存是否打开,运营过程中数据库表记录多,打开有明显提升
         'cache' => true,
-        //--数据库缓存
+//        --数据库缓存
         'cache_dir' => 'database',
     ],
 ];
