@@ -44,7 +44,6 @@ abstract class DBase
         'orderby' => '',
         'limit' => '',
     ];
-    public static $cache_data = [];
     /**
      * @var string $sql
      */
@@ -658,56 +657,6 @@ abstract class DBase
         }
     }
 
-    /**
-     * 清理缓存
-     * 由于目前没有找到好的数据库缓存方法,不再使用 [PGF]
-     *
-     * @return mixed
-     */
-    final function clear_cache()
-    {
-        if ($this->get_table() != $this->config ['table_pre'] && $this->config['cache'] == true) {
-            unset(DBase::$cache_data[$this->get_table()]);
-            return Cache::flush($this->config ['cache_dir'] . '/' . $this->get_table());
-        } else
-            return true;
-    }
-
-    /**
-     * 获取缓存
-     * @param $sql
-     * @return bool|mixed
-     */
-    final function get_cache($sql)
-    {
-        if ($this->get_table() != $this->config ['table_pre'] && $this->config['cache'] == true) {
-            $sqlMd5 = md5($sql);
-            if (isset(DBase::$cache_data[$this->get_table()][$sqlMd5])) {
-                Debug::add('从内存读取 ' . $sql, 2);
-                return DBase::$cache_data[$this->get_table()][$sqlMd5];
-            } else {
-                if (Cache::is_cache($sqlMd5, $this->config ['cache_dir'] . '/' . $this->get_table())) {
-                    Debug::add('从缓存读取 ' . $sql, 2);
-                    return DBase::$cache_data[$this->get_table()][$sqlMd5] = unserialize(Cache::get($sqlMd5, $this->config ['cache_dir'] . '/' . $this->get_table()));
-                } else {
-                    return false;
-                }
-            }
-        } else {
-            return false;
-        }
-    }
-
-    final function set_cache($sql, $data)
-    {
-        if ($this->get_table() != $this->config ['table_pre'] && $this->config['cache'] == true) {
-            $sqlMd5 = md5($sql);
-            DBase::$cache_data[$this->get_table()][$sqlMd5] = $data;
-            return Cache::set($sqlMd5, serialize($data), $this->config ['cache_dir'] . '/' . $this->get_table());
-        } else {
-            return false;
-        }
-    }
 
     /**
      * 获取表名
@@ -731,7 +680,6 @@ abstract class DBase
      */
     final function exec($sql = FALSE)
     {
-        $this->clear_cache();
         if (!$sql)
             $this->compile();
         $sql = $sql ? $sql : $this->sql;
@@ -741,8 +689,6 @@ abstract class DBase
         $this->lastSql = $sql;
         Debug::add($sql, 2);
         $this->_reset();
-        if (isset(DBase::$cache_data[$this->table]))
-            unset(DBase::$cache_data[$this->table]);
         if ($res = $this->_exec($sql) !== FALSE) {
             return $res;
         } else {
@@ -825,7 +771,7 @@ abstract class DBase
         } else {
             //--强制开发者使用默认值,添加不可以设置空值,杜绝因为运营人员表单没输入而没有使用数据库默认值
             foreach ($insert as $key => $value) {
-                if ($value==='') {
+                if ($value === '') {
                     unset($insert[$key]);
                 }
             }
@@ -967,7 +913,6 @@ abstract class DBase
     final function delete($delete = FALSE)
     {
         $this->section['handle'] = 'delete';
-        //$this->clear_cache();
         $arg_num = func_num_args();
         $arg_list = func_get_args();
         $arg_num = $arg_num > 4 ? 4 : $arg_num;
@@ -1064,21 +1009,17 @@ abstract class DBase
         $this->_reset();
         $this->parseTablePre($sql);
         $this->lastSql = $sql;
-        $data = $this->get_cache($sql);
-        if ($data == false) {
-            Debug::add($sql, 2);
-            $this->lastSql = $sql;
-            $data = $this->_query($sql);
-            if ($data === FALSE) {
-                new Exception($this->getError());
-            }
-            $data = $this->stripslashes($data);
-            if ($data == NULL)         //防止直接返回Null
-                $data = [];
-            else
-                $data = new DataObject($data);
-            $this->set_cache($sql, $data);
+        Debug::add($sql, 2);
+        $this->lastSql = $sql;
+        $data = $this->_query($sql);
+        if ($data === FALSE) {
+            new Exception($this->getError());
         }
+        $data = $this->stripslashes($data);
+        if ($data == NULL)         //防止直接返回Null
+            $data = [];
+        else
+            $data = new DataObject($data);
         return $data;
     }            //链接数据库方法
 
