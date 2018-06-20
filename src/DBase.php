@@ -352,6 +352,17 @@ abstract class DBase
     }
 
     /**
+     * 搜索查询
+     * @param $field
+     * @param $value
+     * @return DBase
+     */
+    final function like($field, $value)
+    {
+        return $this->where($field, 'like', $value);
+    }
+
+    /**
      * 设置条件
      * 当参数是两个，第一个为字段名，第二个为值
      * 当参数为三个,第一个为字段名,第二个为逻辑字符,第三个为值

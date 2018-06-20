@@ -59,6 +59,7 @@ use GFPHP\Model\filesModel;
  * @method string version() 获取MYSQL版本
  * @method string lastSql() 获取最后执行的sql
  * @method int|bool lastInsertId() 获取最后插入的自增ID
+ * @method $this like(\string $field, \string $value) 搜索查询
  */
 class Model
 {
