@@ -24,7 +24,7 @@ class Hooks
     public static $Hooks = [
         'template_filter' => [
             [
-                'Hooks' => '/GFPHP/Hooks/GFPHP',
+                'Hooks' => \GFPHP\Hooks\GFPHP::class,
                 'Func' => 'template_parse',
             ],
         ],
