@@ -38,6 +38,12 @@ class Router
     ];
     public static $router = [];
 
+    public static $module_name = '';
+
+    public static $controller_name = '';
+
+    public static $action_name = '';
+
     /**
      * 初始化路由
      */
@@ -279,9 +285,9 @@ class Router
             if (count($seg) != 2) {
                 throw new \Exception('传入的控制器必须两层结构!');
             }
-            define('MODULE_NAME', ucfirst(strtolower($seg[0])));
-            define('CONTROLLER_NAME', ucfirst(strtolower($seg[1])));
-            define('METHOD_NAME', strtolower($segments[1]));
+            define('MODULE_NAME', self::$module_name = ucfirst(strtolower($seg[0])));
+            define('CONTROLLER_NAME', self::$controller_name = ucfirst(strtolower($seg[1])));
+            define('METHOD_NAME', self::$action_name = strtolower($segments[1]));
             $controllerName = GFPHP::$app_name . '\\' . MODULE_NAME . '\\' . CONTROLLER_NAME . Config::router('controllerSuffix');
 
             /** @var Controller $controller */

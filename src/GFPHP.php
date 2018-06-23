@@ -64,6 +64,8 @@ class GFPHP
 
         Cache::init();
 
+        Hooks::init();
+
         if (isset($_GET['_router'])) {
             define('__URI__', $_GET['_router']);
             unset($_GET['_router']);
