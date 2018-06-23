@@ -4,11 +4,8 @@ namespace GFPHP;
 
 /**
  * 模板引擎
- * 创建时间：2014-08-11 10:16 PGF 把以前写好的搬了过来，使模板可以使用静态缓存
- * 修改时间：2014-10-02 10:25 PGF 根据修改的缓存做出修改
- * 修改时间：2015-05-18 14:34 PGF 增加编译功能
- * 修改时间: 2016-03-20 11:09 PGF 添加fetch方法
- * 修改时间： 2017-01-26 19:19 PGF 修改继承模板是否需要编译的判断
+ * Class Template
+ * @package GFPHP
  */
 class Template
 {
@@ -20,7 +17,11 @@ class Template
     public $var = ['_router' => __URI__,];
     private $literal;
     private $blacks = [];
-
+    /**
+     * 是否有布局
+     * @var string|bool
+     */
+    public static $layout = false;
 
     /**
      * 将默认的模板数据填充进去
@@ -39,7 +40,7 @@ class Template
      *
      * @param      $template
      *
-     * @param int  $template_changeTime
+     * @param int $template_changeTime
      *
      * @param bool $is_layout
      * @return bool
@@ -172,7 +173,13 @@ class Template
      */
     public function display($template, $cacheTime = FALSE, $cacheKey = FALSE)
     {
-        return $this->fetchTemplate($template, $cacheTime, $cacheKey);
+        if (Template::$layout) {
+            $content = $this->fetchTemplate($template, $cacheTime, $cacheKey);
+            $layout_content = $this->fetchTemplate(Template::$layout, $cacheTime, $cacheKey);
+            return str_replace('[ _ _ _ CONTENT _ _ _ ]', $layout_content, $content);
+        } else {
+            return $this->fetchTemplate($template, $cacheTime, $cacheKey);
+        }
     }
 
     /**
@@ -180,7 +187,7 @@ class Template
      *
      * @param        $templateName
      * @param string $type
-     * @param bool   $key KEY
+     * @param bool $key KEY
      *
      * @return String
      */
