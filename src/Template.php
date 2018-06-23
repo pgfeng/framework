@@ -176,7 +176,7 @@ class Template
         if (Template::$layout) {
             $content = $this->fetchTemplate($template, $cacheTime, $cacheKey);
             $layout_content = $this->fetchTemplate(Template::$layout, $cacheTime, $cacheKey);
-            return str_replace('[ _ _ _ CONTENT _ _ _ ]', $layout_content, $content);
+            return str_replace('[ _ _ _ CONTENT _ _ _ ]', $content, $layout_content);
         } else {
             return $this->fetchTemplate($template, $cacheTime, $cacheKey);
         }
