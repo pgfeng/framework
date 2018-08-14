@@ -47,6 +47,7 @@ class Router
 
     /**
      * 初始化路由
+     * @throws \ReflectionException
      */
     public static function init()
     {
@@ -85,8 +86,9 @@ class Router
                 $methods = $ref->getMethods();
                 foreach ($methods as $item) {
                     $route = $ref->getMethod($item->name)->getAnnotation('Route');
+                    $class_map = explode('\\',$class);
                     if ($route && substr($item->name, -6) == 'Action') {
-                        $Router_Content .= "\GFPHP\Router::all('{$route}', 'System/Index@" . str_replace('Action', '', $item->name) . "');\n";
+                        $Router_Content .= "\GFPHP\Router::all('{$route}', '{$class_map[1]}/".str_replace('Controller','',$class_map[2])."@" . str_replace('Action', '', $item->name) . "');\n";
                     }
                 }
             }
