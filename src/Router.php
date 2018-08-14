@@ -8,6 +8,7 @@
 
 namespace GFPHP;
 
+use Nette\Reflection\ClassType;
 
 /**
  * Class Router
@@ -76,6 +77,22 @@ class Router
             }
             return Router::runCallback($uri, $params);
         });
+        if (Config::config('develop_mod')) {
+            $paths = str_replace([BASE_PATH, '.php', '/'], ['', '', '\\'], glob(BASE_PATH . GFPHP::$app_name . '/*/*Controller.php'));
+            $Router_Content = "<?php\n/**\n * Created by GFPHP.\n * BuildTime: " . date('Y-m-d H:i:s') . "\n */\n";
+            foreach ($paths as $class) {
+                $ref = new ClassType($class);
+                $methods = $ref->getMethods();
+                foreach ($methods as $item) {
+                    $route = $ref->getMethod($item->name)->getAnnotation('Route');
+                    if ($route && substr($item->name, -6) == 'Action') {
+                        $Router_Content .= "\GFPHP\Router::all('{$route}', 'System/Index@" . str_replace('Action', '', $item->name) . "');\n";
+                    }
+                }
+            }
+            mkPathDir(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR);
+            file_put_contents(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . 'Annotation.php', $Router_Content);
+        }
         foreach (glob(BASE_PATH . "Router" . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . "*.php") as $filename) {
             include $filename;
         }
