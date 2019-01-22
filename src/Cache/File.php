@@ -110,7 +110,8 @@ class file extends Cache
     private function check_time($key, $space = '')
     {
         $time_path = $this->toTimePath($key, $space);
-        if (file_exists($time_path) && (((int)$this->_time($key, $space) + (int)$this->read($time_path)) < time())) {
+        $expiration = $this->read($time_path);
+        if ((int)$expiration > 0 && file_exists($time_path) && (((int)$this->_time($key, $space) + (int)$this->read($time_path)) < time())) {
             $this->_delete($key, $space);
         }
         return true;
