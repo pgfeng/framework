@@ -16,7 +16,7 @@ use GFPHP\Model;
  * 根据行为获取网址
  *
  * @param string $uri
- * @param array  $get
+ * @param array $get
  * @param string $method
  * @return String
  * @internal param string $action
@@ -36,6 +36,7 @@ function url($uri = '', $get = [], $method = 'GET')
  * 展示错误信息
  *
  * @param $msg
+ * @return false|string
  */
 function show_error($msg = '未知错误')
 {
@@ -63,11 +64,12 @@ function is_cache($name, $space = '')
  *
  * @param string $table
  *
- * @param        $configName
+ * @param bool $configName
  *
- * @return \GFPHP\DBase
+ * @return Model
+ * @throws Exception
  */
-function model($table = '', $configName = FALSE)
+function model($table = '', $configName = false)
 {
     return \GFPHP\DB::table($table, $configName);
 }
@@ -77,11 +79,12 @@ function model($table = '', $configName = FALSE)
  * 编译视图
  *
  * @param        $name
- * @param bool   $data
- * @param int    $cacheTime
+ * @param bool $data
+ * @param int $cacheTime
  * @param string $cacheKey
  *
  * @return bool
+ * @throws \GFPHP\Exception
  */
 function view($name, $data = FALSE, $cacheTime = 0, $cacheKey = '')
 {
@@ -94,10 +97,10 @@ function view($name, $data = FALSE, $cacheTime = 0, $cacheKey = '')
  * 钩子监听
  *
  * @param        $Hooks_name
- * @param array  $params
+ * @param array $params
  * @param string $type 类型
  *
- * @return array|mixed|void
+ * @return array|mixed|string
  */
 function hooks($Hooks_name, $params, $type = 'call')
 {
@@ -202,12 +205,12 @@ function mkPathDir($path, $mode = 0777)
 /**
  * 获取数组内数据，如果不存在则返回空值
  *
- * @param bool  $params
+ * @param bool $params
  * @param array $array
  *
  * @return array|bool|null
  */
-function getValue($params = FALSE, $array)
+function getValue($params, $array)
 {
     if ($params == FALSE) {
         return $array;
@@ -435,8 +438,10 @@ function remove_xss($string)
 
 /**
  * @param $closure
+ * @return string|void
  */
-function closure_dump($closure) {
+function closure_dump($closure)
+{
     try {
         $func = new ReflectionFunction($closure);
     } catch (ReflectionException $e) {
@@ -446,12 +451,13 @@ function closure_dump($closure) {
 
     $start = $func->getStartLine() - 1;
 
-    $end =  $func->getEndLine() - 1;
+    $end = $func->getEndLine() - 1;
 
     $filename = $func->getFileName();
 
-    return implode("", array_slice(file($filename),$start, $end - $start + 1));
+    return implode("", array_slice(file($filename), $start, $end - $start + 1));
 }
+
 /**
  * 函数来源 ThinkPhp
  *
@@ -543,8 +549,9 @@ function isAjax()
  * 输出JSON信息
  *
  * @param        $msg
- * @param string $status true|false
- * @param array  $data
+ * @param bool|string $status
+ * @param array $data
+ * @return false|string
  */
 function echo_json($msg, $status = true, $data = [])
 {
@@ -562,6 +569,7 @@ function echo_json($msg, $status = true, $data = [])
  * 输出JSON信息
  *
  * @param $data
+ * @return false|string
  */
 function response_json($data)
 {
@@ -633,7 +641,7 @@ function isPost($param = [])
 /**
  * 产生随机字符串
  *
- * @param    int    $length 输出长度
+ * @param    int $length 输出长度
  * @param    string $chars 可选的 ，默认为 0123456789
  *
  * @return   string     字符串
@@ -654,22 +662,24 @@ function random($length, $chars = '0123456789')
  * @param $uri
  * @return string
  */
-function parse_uri($uri){
-    $NM = strpos ( $uri, '#' );
-    if ( $NM === 0 )          //没有填写 MODULE_NAME
-        $uri = MODULE_NAME . '/' . substr ( $uri, 1 );
+function parse_uri($uri)
+{
+    $NM = strpos($uri, '#');
+    if ($NM === 0)          //没有填写 MODULE_NAME
+        $uri = MODULE_NAME . '/' . substr($uri, 1);
     else {
-        $NC = strpos ( $uri, '@' );
-        if ( $NC === 0 ) {    //没有填写 MODULE_NAME 和 CONTROLLER_NAME
-            $uri = MODULE_NAME . '/' . CONTROLLER_NAME . '/' . substr ( $uri, 1 );
+        $NC = strpos($uri, '@');
+        if ($NC === 0) {    //没有填写 MODULE_NAME 和 CONTROLLER_NAME
+            $uri = MODULE_NAME . '/' . CONTROLLER_NAME . '/' . substr($uri, 1);
         }
     }
     return $uri;
 }
+
 /**
  * XML编码
  *
- * @param mixed  $data 数据
+ * @param mixed $data 数据
  * @param string $root 根节点名
  * @param string $item 数字索引的子节点名
  * @param string $attr 根节点属性
@@ -700,7 +710,7 @@ function xml_encode($data, $root = 'root', $item = 'item', $attr = '', $id = 'id
 /**
  * 数据XML编码
  *
- * @param mixed  $data 数据
+ * @param mixed $data 数据
  * @param string $item 数字索引时的节点名称
  * @param string $id 数字索引key转换为的属性名
  *

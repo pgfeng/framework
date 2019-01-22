@@ -314,7 +314,6 @@ class Template
         } else {
             return FALSE;
         }
-//		exit;
     }
 
     /**

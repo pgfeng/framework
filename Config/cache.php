@@ -10,8 +10,8 @@ return array(
 //    'driver' => \GFPHP\Cache\memcached::class,
 //    'driver' => \GFPHP\Cache\DB::class,
 //
-//    'driver' => \GFPHP\Cache\File::class,
-    'driver' => \GFPHP\Cache\redis::class,
+    'driver' => \GFPHP\Cache\File::class,
+//    'driver' => \GFPHP\Cache\redis::class,
 
     //======= CACHE DRIVER CONFIG OVER  =====//
 

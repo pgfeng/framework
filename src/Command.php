@@ -11,7 +11,6 @@ namespace GFPHP;
 use GFPHP\Command\ColumnHandler;
 use GFPHP\Command\ControllerHandler;
 use GFPHP\Command\Handler;
-use GFPHP\Command\HandlerInterface;
 use GFPHP\Command\ModelHandler;
 use GFPHP\Command\ModuleHandler;
 

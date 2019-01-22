@@ -28,6 +28,13 @@ class Controller
     {
     }
 
+    /**
+     * @param $template
+     * @param bool $cacheTime
+     * @param bool $cacheKey
+     * @return String
+     * @throws Exception
+     */
     final public function fetchTemplate($template, $cacheTime = FALSE, $cacheKey = FALSE)
     {
         return $content = GFPHP::$Template->fetchTemplate($template, $cacheTime, $cacheKey);
@@ -43,6 +50,7 @@ class Controller
         return $content = GFPHP::$Template->fetch($templateCon);
     }
     //-----给模板赋值变量
+
     /**
      * 当为一个参数时,必须为数组形式
      * @param string|array $key
@@ -62,11 +70,12 @@ class Controller
      * @param bool $cacheTime
      * @param bool $cacheKey
      * @return mixed|String
+     * @throws Exception
      */
     final function display($cacheTime = FALSE, $cacheKey = FALSE)
     {
-        $this->Assign('_ACT', ['module_name'=>MODULE_NAME, 'controller_name' => CONTROLLER_NAME, 'method_name' => METHOD_NAME]);
+        $this->Assign('_ACT', ['module_name' => MODULE_NAME, 'controller_name' => CONTROLLER_NAME, 'method_name' => METHOD_NAME]);
         /** @var string $template */
-        return GFPHP::$Template->display('@'.METHOD_NAME, $cacheTime, $cacheKey);
+        return GFPHP::$Template->display('@' . METHOD_NAME, $cacheTime, $cacheKey);
     }
 }

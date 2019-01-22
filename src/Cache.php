@@ -88,7 +88,6 @@ abstract class Cache
 
     /**
      * 清空一个缓存空间
-     * @param bool $space 缓存空间
      * @return bool
      */
     public static function flush()

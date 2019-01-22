@@ -165,14 +165,6 @@ class Router
     }
 
     /**
-     * 清空路由缓存
-     */
-    public function clearCache()
-    {
-        return Cache::flush('GFPHP/Router');
-    }
-
-    /**
      * 生成链接,路由反查返回
      * @param string $uri
      * @param array $get

@@ -41,7 +41,7 @@ class Hooks
      *
      * @param $name
      * @param array $params
-     * @return mixed
+     * @return mixed | array | string
      */
     public static function call($name, $params = [])
     {
@@ -70,6 +70,7 @@ class Hooks
      *
      * @param $name
      * @param array $params
+     * @return void
      */
     public static function listen($name, $params = [])
     {
@@ -96,7 +97,7 @@ class Hooks
      *
      * @param $name
      * @param $params
-     * @return array
+     * @return array|string
      */
     public static function filter($name, $params)
     {
