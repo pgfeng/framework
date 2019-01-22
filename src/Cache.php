@@ -91,15 +91,13 @@ abstract class Cache
      * @param bool $space 缓存空间
      * @return bool
      */
-    public static function flush($space = FALSE)
+    public static function flush()
     {
-        if ($space == FALSE)
-            $space = self::$cache->config['default_space'];
-        $res = self::$cache->_flush($space);
+        $res = self::$cache->_flush();
         if ($res) {
-            Debug::add('Cache:缓存空间 ' . $space . ' 清空成功.', 0);
+            Debug::add('Cache:缓存清空成功.', 0);
         } else {
-            Debug::add('Cache:缓存空间 ' . $space . ' 清空失败.', 0);
+            Debug::add('Cache:缓存清空失败.', 0);
         }
 
         return $res;

@@ -195,11 +195,13 @@ class file extends Cache
      * 清空指定文件夹的缓存
      *
      *
+     * @param string $dir
      * @return bool|mixed
      */
-    public function _flush()
+    public function _flush($dir = '')
     {
-        $dir = BASE_PATH . parseDir(Config::config('app_dir'), Config::cache('cache_dir'));
+        if (!$dir)
+            $dir = BASE_PATH . parseDir(Config::config('app_dir'), Config::cache('cache_dir'));
         if (!file_exists($dir))
             return TRUE;
         $dh = opendir($dir);
@@ -209,11 +211,10 @@ class file extends Cache
                 if (!is_dir($fullPath)) {
                     @unlink($fullPath);
                 } else {
-                    $this->flush($file);
+                    $this->_flush($fullPath);
                 }
             }
         }
-
         closedir($dh);
         //删除当前文件夹：
         if (rmdir($dir)) {
