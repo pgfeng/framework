@@ -1,5 +1,8 @@
 <?php
+
 namespace GFPHP;
+
+use Monolog\Handler\IFTTTHandler;
 
 /**
  * 缓存类
@@ -17,11 +20,14 @@ abstract class Cache
 
     /**
      * 初始化Cache
+     * @param string $cache_driver
      */
-    public static function init()
+    public static function init($cache_driver = '')
     {
         $config = Config::cache();
-        $cache_driver = 'GFPHP\\Cache\\'.$config['driver'];
+        if (!$cache_driver) {
+            $cache_driver = $config['driver'];
+        }
         self::$cache = new $cache_driver($config);
     }
 
@@ -34,19 +40,7 @@ abstract class Cache
     public static function get($name, $space = FALSE)
     {
         Debug::add('Cache:' . $space . DIRECTORY_SEPARATOR . $name . ' 读取成功.', 0);
-
         return self::$cache->_get($name, $space);
-    }
-
-    /**
-     * 获取缓存最后更新的时间
-     * @param string $name
-     * @param bool $space
-     * @return int       返回Unix时间戳
-     */
-    public static function time($name, $space = FALSE)
-    {
-        return self::$cache->_time($name, $space);
     }
 
     /**
@@ -54,13 +48,13 @@ abstract class Cache
      * @param $name
      * @param $con
      * @param bool $space 缓存空间
+     * @param int $expiration
      * @return mixed
      */
-    public static function set($name, $con, $space = FALSE)
+    public static function set($name, $con, $space = FALSE, $expiration = 0)
     {
         Debug::add('Cache:' . $space . DIRECTORY_SEPARATOR . $name . ' 更新成功.', 0);
-
-        return self::$cache->_set($name, $con, $space);
+        return self::$cache->_set($name, $con, $space, $expiration);
     }
 
     /**
@@ -112,22 +106,6 @@ abstract class Cache
     }
 
     /**
-     * 删除过期的缓存 需要在程序上处理
-     * @param bool $space 缓存空间
-     * @param bool $lifetime 生存时间,如果缓存时间没有设置,将会使用配置默认的生存时间
-     * @return mixed
-     */
-    public static function delete_timeout($space = FALSE, $lifetime = FALSE)
-    {
-        if ($space == FALSE)
-            $space = self::$cache->config['default_space'];
-        if ($lifetime == FALSE)
-            $lifetime = Config::cache('lifetime');
-
-        return self::$cache->_delete_timeout($space, $lifetime);
-    }
-
-    /**
      * @param $name
      * @param $space
      * @return mixed
@@ -137,10 +115,11 @@ abstract class Cache
     /**
      * @param $name
      * @param $con
+     * @param $expiration
      * @param $space
      * @return mixed
      */
-    abstract function _set($name, $con, $space);
+    abstract function _set($name, $con, $space, $expiration);
 
     /**
      * @param $name
@@ -154,25 +133,10 @@ abstract class Cache
      * @param $space
      * @return mixed
      */
-    abstract function _time($name, $space);
-
-    /**
-     * @param $name
-     * @param $space
-     * @return mixed
-     */
     abstract function _delete($name, $space);
 
     /**
-     * @param $space
      * @return mixed
      */
-    abstract function _flush($space);
-
-    /**
-     * @param $space
-     * @param $lifetime
-     * @return mixed
-     */
-    abstract function _delete_timeout($space, $lifetime);
+    abstract function _flush();
 }

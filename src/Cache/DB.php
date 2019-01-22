@@ -11,7 +11,7 @@ use GFPHP\DBase;
  * 创建时间：2014-8-24 10:20 PGF
  * 更新时间：2015-7-18 10:35 PGF 实现数据库缓存
  */
-class dbCache extends Cache
+class DB extends Cache
 {
 
     /**

@@ -6,11 +6,11 @@ use GFPHP\Config, GFPHP\Cache;
 
 
 /**
- * fileSystem缓存操作
+ * fileSystem缓存操作   不支持自动删除缓存
  * 实现文件方式缓存
  * 创建时间：2014-09-19 07:40 PGF
  */
-class fileCache extends Cache
+class file extends Cache
 {
 
     public $config = [
@@ -41,8 +41,8 @@ class fileCache extends Cache
      */
     public function _get($key, $space = '')
     {
+        $this->check_time($key, $space);
         $path = $this->toPath($key, $space);
-
         return $this->read($path);
     }
 
@@ -58,8 +58,18 @@ class fileCache extends Cache
     {
 
         if (!$dir) $dir = $this->config['default_space'];
-
         return BASE_PATH . Config::cache('cache_dir') . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $key . '.php';
+    }
+
+    /**
+     * @param $key
+     * @param bool $dir
+     * @return string
+     */
+    private function toTimePath($key, $dir = false)
+    {
+        if (!$dir) $dir = $this->config['default_space'];
+        return BASE_PATH . Config::cache('cache_dir') . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . '__file_time__' . DIRECTORY_SEPARATOR . $key . '.php';
     }
 
     /**
@@ -87,9 +97,23 @@ class fileCache extends Cache
      */
     public function _is_cache($key, $space = '')
     {
+        $this->check_time($key, $space);
         $path = $this->toPath($key, $space);
-
         return file_exists($path);
+    }
+
+    /**
+     * @param $key
+     * @param string $space
+     * @return bool
+     */
+    private function check_time($key, $space = '')
+    {
+        $time_path = $this->toTimePath($key, $space);
+        if (file_exists($time_path) && (((int)$this->_time($key, $space) + (int)$this->read($time_path)) < time())) {
+            $this->_delete($key, $space);
+        }
+        return true;
     }
 
     /**
@@ -113,17 +137,18 @@ class fileCache extends Cache
     /**
      * 设置内容
      * 不存在就添加，存在就修改
-     *
      * @param        $key
      * @param        $content
      * @param string $space
      *
+     * @param int $expiration
      * @return bool|mixed
      */
-    public function _set($key, $content, $space = '')
+    public function _set($key, $content, $space = '', $expiration = 0)
     {
         $path = $this->toPath($key, $space);
-        if ($this->write($path, $content))
+        $timePath = $this->toTimePath($key, $space);
+        if ($this->write($path, $content) && $this->write($timePath, $expiration))
             return TRUE;
         else
             return FALSE;
@@ -160,20 +185,20 @@ class fileCache extends Cache
     public function _delete($key, $space)
     {
         $path = $this->toPath($key, $space);
-
+        $timePath = $this->toTimePath($key, $space);
+        @unlink($timePath);
         return @unlink($path);
     }
 
     /**
      * 清空指定文件夹的缓存
      *
-     * @param $space
      *
      * @return bool|mixed
      */
-    public function _flush($space)
+    public function _flush()
     {
-        $dir = BASE_PATH . parseDir(Config::config('app_dir'), Config::cache('cache_dir'), $space);
+        $dir = BASE_PATH . parseDir(Config::config('app_dir'), Config::cache('cache_dir'));
         if (!file_exists($dir))
             return TRUE;
         $dh = opendir($dir);
@@ -183,7 +208,7 @@ class fileCache extends Cache
                 if (!is_dir($fullPath)) {
                     @unlink($fullPath);
                 } else {
-                    $this->flush($space . '/' . $file);
+                    $this->flush($file);
                 }
             }
         }
@@ -195,29 +220,5 @@ class fileCache extends Cache
         } else {
             return FALSE;
         }
-    }
-
-    /**
-     * 清理过期的缓存
-     *
-     * @param $space
-     * @param $lifetime
-     *
-     * @return bool
-     */
-    public function _delete_timeout($space, $lifetime)
-    {
-
-        $dir = BASE_PATH . parseDir(Config::config('app_dir'), Config::cache('cache_dir'), $space);
-        if (!file_exists($dir))
-            return TRUE;
-
-        foreach (glob($dir . '*') as $v) {
-            $time = $lifetime + filemtime($v);
-            if ($time < time())
-                @unlink($v);
-        }
-
-        return TRUE;
     }
 }
