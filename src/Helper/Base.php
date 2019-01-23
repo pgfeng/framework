@@ -31,6 +31,22 @@ function url($uri = '', $get = [], $method = 'GET')
     return Router::url($uri, $get, $method);
 }
 
+/**
+ * 根据行为获取网址
+ *
+ * @param string $uri
+ * @param array $get
+ * @param string $method
+ * @return String
+ * @internal param string $action
+ * @internal param $String
+ * @internal param $String
+ */
+function U($uri = '', $get = [], $method = 'GET')
+{
+    return url($uri, $get, $method);
+}
+
 
 /**
  * 展示错误信息
