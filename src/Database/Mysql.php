@@ -10,7 +10,7 @@ use GFPHP\Exception;
  * Class mysql
  * @package GFPHP\Database
  */
-class mysql extends DBase
+class Mysql extends DBase
 {
     private $con = FALSE;
     private $configName = 'default';

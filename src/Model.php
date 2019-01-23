@@ -78,7 +78,7 @@ class Model
      * Column Example
      *
      * @var array
-    protected $Column = array(
+     * protected $Column = array(
      * 'member_name' => array(
      * 'rule'  => 'require',
      * 'ColumnName' => '用户名'
@@ -365,7 +365,6 @@ class Model
         if (isset(DB::$DBC[$configName])) {
             $db = clone DB::$DBC[$configName];
         } else {
-            $driver = '\\GFPHP\\Database\\' . $driver;
             /** @var DBase $db */
             $db = new $driver;
             $db->connect($configName);

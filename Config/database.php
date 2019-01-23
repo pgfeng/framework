@@ -18,7 +18,7 @@ return [
         //-- 端口
         'port' => '3306',
         //--驱动
-        'driver' => 'PdoDriver',     //参考drives/databases目录下文件
+        'driver' => \GFPHP\Database\PDO::class,     //参考drives/databases目录下文件
         //--库名
         'name' => 'test',
         //--用户名

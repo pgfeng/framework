@@ -9,7 +9,7 @@ use GFPHP\Exception;
 /**
  * Class mysqliDriver
  */
-class mysqliDriver extends DBase
+class Mysqli extends DBase
 {
     /**
      * @var \mysqli
@@ -27,7 +27,7 @@ class mysqliDriver extends DBase
         $config = Config::database($configName);
         //=====使用长连接
         $this->configName = $configName;
-        $mysqli = new \mysqli($config['host'], $config['user'], $config['pass'], $config['name'],$config['port']);
+        $mysqli = new \mysqli($config['host'], $config['user'], $config['pass'], $config['name'], $config['port']);
         if ($mysqli->connect_error) {
             new Exception('连接数据库失败：' . $mysqli->connect_error);
         } else {
@@ -45,10 +45,10 @@ class mysqliDriver extends DBase
     function real_escape_string($string)
     {
         $string = mysqli_real_escape_string($this->mysqli, $string);
-        if(is_numeric($string)) {
+        if (is_numeric($string)) {
             return $string;
-        }else{
-            return '\''.$string.'\'';
+        } else {
+            return '\'' . $string . '\'';
         }
     }
 
