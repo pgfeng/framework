@@ -59,7 +59,10 @@ class filesModel extends Model
     }
 
     /**
-     *
+     * 以base64格式上传
+     * @param $base64_data
+     * @param array $allow_type
+     * @return array
      */
     public function base64_upload($base64_data, $allow_type = [])
     {

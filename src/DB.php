@@ -21,7 +21,6 @@ class DB
      * @param        $table_name
      * @param string $config_name
      * @return Model
-     * @throws \Exception
      */
     public static function table ( $table_name, $config_name = 'default' )
     {

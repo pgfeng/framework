@@ -86,13 +86,43 @@ class Router
                 $methods = $ref->getMethods();
                 foreach ($methods as $item) {
                     $route = $ref->getMethod($item->name)->getAnnotation('Route');
-                    $class_map = explode('\\',$class);
+                    $class_map = explode('\\', $class);
                     if ($route && substr($item->name, -6) == 'Action') {
-                        $Router_Content .= "\GFPHP\Router::all('{$route}', '{$class_map[1]}/".str_replace('Controller','',$class_map[2])."@" . str_replace('Action', '', $item->name) . "');\n";
+                        $Annotations = $ref->getMethod($item->name)->getAnnotations();
+                        $route = explode(' ', $route);
+                        $request_type = 'all';
+                        if (count($route) > 1) {
+                            if (in_array($route[0], [
+                                'GET',
+                                'POST',
+                                'PUT',
+                                'DELETE',
+                                'OPTIONS',
+                                'HEAD',
+                                'ALL',
+                            ])) {
+                                $request_type = strtolower($route[0]);
+                                $route = $route[1];
+                            }
+                        } else {
+                            $route = $route[0];
+                        }
+                        $annotation = "\n/**\n";
+                        foreach ($Annotations as $key => $value) {
+                            foreach ($value as $k => $v) {
+                                if ($key == 'description') {
+                                    $annotation .= ' * ' . $v . "\n";
+                                } else {
+                                    $annotation .= ' * @' . $key . ' ' . $v . "\n";
+                                }
+                            }
+                        }
+                        $annotation .= " */\n";
+                        $Router_Content .= $annotation . "\GFPHP\Router::" . $request_type . "('{$route}', '{$class_map[1]}/" . str_replace('Controller', '', $class_map[2]) . "@" . str_replace('Action', '', $item->name) . "');\n";
                     }
                 }
             }
-            mkPathDir(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR);
+            mkPathDir(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . 'Annotation.php', 0777);
             file_put_contents(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . 'Annotation.php', $Router_Content);
         }
         foreach (glob(BASE_PATH . "Router" . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . "*.php") as $filename) {

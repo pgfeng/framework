@@ -241,7 +241,6 @@ class Model
      *
      * @param bool $model
      * @param string $configName
-     * @throws \Exception
      */
     public function __construct($model = FALSE, $configName = 'default')
     {
@@ -342,7 +341,6 @@ class Model
      * database 加载数据库
      * @param string $configName
      * @return DBase
-     * @throws \Exception
      */
     final private function database($configName = 'default')
     {
@@ -379,9 +377,8 @@ class Model
         return $this->db = $db;
     }
 
-    //设置模型操作的表
-
     /**
+     * 设置模型操作的表
      * @param string $table
      *
      * @return $this
@@ -412,7 +409,6 @@ class Model
      * @param $func
      * @param $val
      * @return static
-     * @throws \Exception
      */
     final public static function __callStatic($func, $val)
     {
@@ -425,7 +421,6 @@ class Model
      * 静态调用model
      * 其实不调用也可以用，但是IDE有黄杠杠，强迫症不能忍
      * @return static
-     * @throws \Exception
      */
     public static function model()
     {

@@ -33,7 +33,6 @@ class Controller
      * @param bool $cacheTime
      * @param bool $cacheKey
      * @return String
-     * @throws Exception
      */
     final public function fetchTemplate($template, $cacheTime = FALSE, $cacheKey = FALSE)
     {
@@ -70,7 +69,6 @@ class Controller
      * @param bool $cacheTime
      * @param bool $cacheKey
      * @return mixed|String
-     * @throws Exception
      */
     final function display($cacheTime = FALSE, $cacheKey = FALSE)
     {
