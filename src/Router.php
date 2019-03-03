@@ -47,7 +47,6 @@ class Router
 
     /**
      * 初始化路由
-     * @throws \ReflectionException
      */
     public static function init()
     {
