@@ -88,9 +88,11 @@ class Router
                     $class_map = explode('\\', $class);
                     if ($route && substr($item->name, -6) == 'Action') {
                         $Annotations = $ref->getMethod($item->name)->getAnnotations();
+                        $route = preg_replace("/\s+/is", " ", $route);
                         $route = explode(' ', $route);
                         $request_type = 'all';
                         if (count($route) > 1) {
+                            $route[0] = trim($route[0]);
                             if (in_array($route[0], [
                                 'GET',
                                 'POST',
@@ -118,8 +120,8 @@ class Router
                         }
                         $annotation .= " */\n";
                         $router_code = '';
-                        foreach ($route as $r) {
-                            $router_code .= "\GFPHP\Router::" . $request_type . "('{$r}', '{$class_map[1]}/" . str_replace('Controller', '', $class_map[2]) . "@" . str_replace('Action', '', $item->name) . "');\n";
+                        foreach ($route as $rule) {
+                            $router_code .= "\GFPHP\Router::" . $request_type . "('{$rule}' , '{$class_map[1]}/" . str_replace('Controller', '', $class_map[2]) . "@" . str_replace('Action', '', $item->name) . "');\n";
                         }
                         $Router_Content .= $annotation . $router_code;
                     }
