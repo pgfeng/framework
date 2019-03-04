@@ -101,11 +101,11 @@ class Router
                                 'ALL',
                             ])) {
                                 $request_type = strtolower($route[0]);
-                                $route = $route[1];
+                                array_shift($route);
                             }
-                        } else {
-                            $route = $route[0];
                         }
+                        if (!count($route))
+                            break;
                         $annotation = "\n/**\n";
                         foreach ($Annotations as $key => $value) {
                             foreach ($value as $k => $v) {
@@ -117,7 +117,11 @@ class Router
                             }
                         }
                         $annotation .= " */\n";
-                        $Router_Content .= $annotation . "\GFPHP\Router::" . $request_type . "('{$route}', '{$class_map[1]}/" . str_replace('Controller', '', $class_map[2]) . "@" . str_replace('Action', '', $item->name) . "');\n";
+                        $router_code = '';
+                        foreach ($route as $r) {
+                            $router_code .= "\GFPHP\Router::" . $request_type . "('{$r}', '{$class_map[1]}/" . str_replace('Controller', '', $class_map[2]) . "@" . str_replace('Action', '', $item->name) . "');\n";
+                        }
+                        $Router_Content .= $annotation . $router_code;
                     }
                 }
             }
