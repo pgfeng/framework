@@ -10,7 +10,6 @@ namespace GFPHP\Model;
 
 
 use GFPHP\Exception;
-use Whoops\Exception\ErrorException;
 
 /**
  * 分表模型 自动分表处理
@@ -46,6 +45,7 @@ abstract class Partition extends \GFPHP\Model
 
     /**
      * @return \GFPHP\Model
+     * @throws Exception
      */
     public function where()
     {
@@ -67,6 +67,7 @@ abstract class Partition extends \GFPHP\Model
      * 添加数据
      * @param array $insert
      * @return bool|int
+     * @throws Exception
      */
     public function insert(array $insert)
     {
@@ -85,6 +86,7 @@ abstract class Partition extends \GFPHP\Model
      * @param String $primary_key
      *
      * @return  Bool|int
+     * @throws Exception
      */
     final public function save($data, $primary_key = '')
     {
