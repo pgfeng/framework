@@ -28,7 +28,6 @@ class GFPHP
 
     /**
      * @param string $app_name
-     * @throws \ReflectionException
      */
     public static function init($app_name = 'app')
     {
@@ -61,7 +60,11 @@ class GFPHP
 
         session_start();
 
-        date_default_timezone_set('PRC');
+        $time_zone = Config::config('time_zone');
+
+        $time_zone = $time_zone ? $time_zone : 'PRC';
+
+        date_default_timezone_set($time_zone);
 
         Debug::start();
 
