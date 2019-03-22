@@ -109,6 +109,7 @@ class Router
                         if (!count($route))
                             break;
                         $annotation = "\n/**\n";
+                        $annotation .= " * @var {$class}\n";
                         foreach ($Annotations as $key => $value) {
                             foreach ($value as $k => $v) {
                                 if ($key == 'description') {
