@@ -129,7 +129,7 @@ class Router
                 }
             }
             mkPathDir(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . 'Annotation.php', 0777);
-            file_put_contents(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . 'Annotation.php', $Router_Content);
+            file_put_contents(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . 'Annotation.php', $Router_Content, LOCK_EX);
         }
         foreach (glob(BASE_PATH . "Router" . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . "*.php") as $filename) {
             include $filename;
