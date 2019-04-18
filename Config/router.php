@@ -25,6 +25,9 @@ return [
         return \GFPHP\GFPHP::$Template->display('@' . METHOD_NAME);
     },
 
+    //-- 自动根据注释更新
+    'auto_build' => true,
+    
     //--控制器后缀
     'controllerSuffix' => 'Controller',
 
