@@ -77,63 +77,68 @@ class Router
             }
             return Router::runCallback($uri, $params);
         });
-        if (Config::config('develop_mod')) {
-            $paths = str_replace([BASE_PATH, '.php', '/'], ['', '', '\\'], glob(BASE_PATH . GFPHP::$app_name . '/*/*Controller.php'));
-            $Router_Content = "<?php\n/**\n * Created by GFPHP.\n * BuildTime: " . date('Y-m-d H:i:s') . "\n */\n";
-            foreach ($paths as $class) {
-                $ref = new ClassType($class);
-                $methods = $ref->getMethods();
-                foreach ($methods as $item) {
-                    $route = $ref->getMethod($item->name)->getAnnotation('Route');
-                    $class_map = explode('\\', $class);
-                    if ($route && substr($item->name, -6) == 'Action') {
-                        $Annotations = $ref->getMethod($item->name)->getAnnotations();
-                        $route = preg_replace("/\s+/is", " ", $route);
-                        $route = explode(' ', $route);
-                        $request_type = 'all';
-                        if (count($route) > 1) {
-                            $route[0] = trim($route[0]);
-                            if (in_array($route[0], [
-                                'GET',
-                                'POST',
-                                'PUT',
-                                'DELETE',
-                                'OPTIONS',
-                                'HEAD',
-                                'ALL',
-                            ])) {
-                                $request_type = strtolower($route[0]);
-                                array_shift($route);
-                            }
-                        }
-                        if (!count($route))
-                            break;
-                        $annotation = "\n/**\n";
-                        $annotation .= " * @var {$class}\n";
-                        foreach ($Annotations as $key => $value) {
-                            foreach ($value as $k => $v) {
-                                if ($key == 'description') {
-                                    $annotation .= ' * ' . $v . "\n";
-                                } else {
-                                    $annotation .= ' * @' . $key . ' ' . $v . "\n";
-                                }
-                            }
-                        }
-                        $annotation .= " */\n";
-                        $router_code = '';
-                        foreach ($route as $rule) {
-                            $router_code .= "\GFPHP\Router::" . $request_type . "('{$rule}' , '{$class_map[1]}/" . str_replace('Controller', '', $class_map[2]) . "@" . str_replace('Action', '', $item->name) . "');\n";
-                        }
-                        $Router_Content .= $annotation . $router_code;
-                    }
-                }
-            }
-            mkPathDir(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . 'Annotation.php', 0777);
-            file_put_contents(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . 'Annotation.php', $Router_Content, LOCK_EX);
+        if (Config::router('auto_build')) {
+            self::buildAnnotation(GFPHP::$app_name);
         }
         foreach (glob(BASE_PATH . "Router" . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . "*.php") as $filename) {
             include $filename;
         }
+    }
+
+    public static function buildAnnotation($app_name)
+    {
+        $paths = str_replace([BASE_PATH, '.php', '/'], ['', '', '\\'], glob(BASE_PATH . $app_name . '/*/*Controller.php'));
+        $Router_Content = "<?php\n/**\n * Created by GFPHP.\n * BuildTime: " . date('Y-m-d H:i:s') . "\n */\n";
+        foreach ($paths as $class) {
+            $ref = new ClassType($class);
+            $methods = $ref->getMethods();
+            foreach ($methods as $item) {
+                $route = $ref->getMethod($item->name)->getAnnotation('Route');
+                $class_map = explode('\\', $class);
+                if ($route && substr($item->name, -6) == 'Action') {
+                    $Annotations = $ref->getMethod($item->name)->getAnnotations();
+                    $route = preg_replace("/\s+/is", " ", $route);
+                    $route = explode(' ', $route);
+                    $request_type = 'all';
+                    if (count($route) > 1) {
+                        $route[0] = trim($route[0]);
+                        if (in_array($route[0], [
+                            'GET',
+                            'POST',
+                            'PUT',
+                            'DELETE',
+                            'OPTIONS',
+                            'HEAD',
+                            'ALL',
+                        ])) {
+                            $request_type = strtolower($route[0]);
+                            array_shift($route);
+                        }
+                    }
+                    if (!count($route))
+                        break;
+                    $annotation = "\n/**\n";
+                    $annotation .= " * @var {$class}\n";
+                    foreach ($Annotations as $key => $value) {
+                        foreach ($value as $k => $v) {
+                            if ($key == 'description') {
+                                $annotation .= ' * ' . $v . "\n";
+                            } else {
+                                $annotation .= ' * @' . $key . ' ' . $v . "\n";
+                            }
+                        }
+                    }
+                    $annotation .= " */\n";
+                    $router_code = '';
+                    foreach ($route as $rule) {
+                        $router_code .= "\GFPHP\Router::" . $request_type . "('{$rule}' , '{$class_map[1]}/" . str_replace('Controller', '', $class_map[2]) . "@" . str_replace('Action', '', $item->name) . "');\n";
+                    }
+                    $Router_Content .= $annotation . $router_code;
+                }
+            }
+        }
+        mkPathDir(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . $app_name . DIRECTORY_SEPARATOR . 'Annotation.php', 0777);
+        file_put_contents(BASE_PATH . 'Router' . DIRECTORY_SEPARATOR . $app_name . DIRECTORY_SEPARATOR . 'Annotation.php', $Router_Content, LOCK_EX);
     }
 
     /**

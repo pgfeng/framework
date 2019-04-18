@@ -13,6 +13,7 @@ use GFPHP\Command\ControllerHandler;
 use GFPHP\Command\Handler;
 use GFPHP\Command\ModelHandler;
 use GFPHP\Command\ModuleHandler;
+use GFPHP\Command\RouterHandler;
 
 /**
  * Class Console
@@ -53,6 +54,7 @@ class Command
         $this->addHandler(new ModelHandler($this));
         $this->addHandler(new ColumnHandler($this));
         $this->addHandler(new ControllerHandler($this));
+        $this->addHandler(new RouterHandler($this));
         $Handlers = Config::command('CommandHandlers');
 
         /**
