@@ -6,6 +6,6 @@
  * Time: 下午 10:38
  */
 define('BASE_PATH',getcwd().DIRECTORY_SEPARATOR);
-require BASE_PATH.’vendor/autoload.php';
+require BASE_PATH.'vendor/autoload.php';
 $Command = new \GFPHP\Command();
 $Command->execute();
