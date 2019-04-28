@@ -376,7 +376,7 @@ abstract class DBase
     {
         if (func_num_args() > 1) {
             $field = func_get_arg(0);
-            $field = $this->_Field($field);
+//            $field = $this->_Field($field);
             $fieldAnd = explode('&', $field);
             $hasAnd = count($fieldAnd) > 1 ? TRUE : FALSE;
             $fieldOr = explode('|', $field);
@@ -389,27 +389,28 @@ abstract class DBase
                 $value = func_get_arg(1);
                 if ($hasOr) {
                     $wheres = [];
+                    $value = $this->addslashes($value);
                     foreach ($fieldOr as $f) {
+                        $f = $this->_Field($f);
                         if (is_array($value))
-                            $value = implode(' or ' . $f . '=', $this->addslashes($value));
-                        else
-                            $value = $this->addslashes($value);
+                            $value = implode(' or ' . $f . '=', $value);
                         $wheres[] = '' . $f . '=' . $value;
                     }
                     $where = implode(' or ', $wheres);
                     unset($wheres);
                 } elseif ($hasAnd) {
                     $wheres = [];
+                    $value = $this->addslashes($value);
                     foreach ($fieldAnd as $f) {
+                        $f = $this->_Field($f);
                         if (is_array($value))
-                            $value = implode(' or ' . $f . '=', $this->addslashes($value));
-                        else
-                            $value = $this->addslashes($value);
+                            $value = implode(' or ' . $f . '=', $value);
                         $wheres[] = '' . $f . '=' . $value;
                     }
                     $where = implode(' and ', $wheres);
                     unset($wheres);
                 } else {
+                    $field = $this->_Field($field);
                     if (is_array($value)) {
                         $value = implode(' or ' . $field . '=', $this->addslashes($value));
                     } else
@@ -417,22 +418,24 @@ abstract class DBase
                     $where = '' . $field . '=' . $value;
                 }
             } elseif (func_num_args() == 3) {
-                $value = func_get_arg(2);
                 if ($hasOr) {
                     $wheres = [];
                     foreach ($fieldOr as $f) {
+                        $f = $this->_Field($f);
                         $wheres[] = '' . $f . ' ' . func_get_arg(1) . ' ' . $this->addslashes(func_get_arg(2));
                     }
                     $where = implode(' or ', $wheres);
                     unset($wheres);
                 } elseif ($hasAnd) {
                     $wheres = [];
+                    $field = $this->_Field($field);
                     foreach ($fieldAnd as $f) {
                         $wheres[] = '' . $f . ' ' . func_get_arg(1) . ' ' . $this->addslashes(func_get_arg(2));
                     }
                     $where = implode(' and ', $wheres);
                     unset($wheres);
                 } else {
+                    $field = $this->_Field($field);
                     if (is_array($value)) {
                         $value = implode(' or ' . $field . ' ' . func_get_arg(1), $this->addslashes($value));
                     } else
@@ -1109,7 +1112,7 @@ abstract class DBase
      *
      * @param $sql
      *
-     * @return
+     * @return array
      */
 
     abstract function _query($sql);         //返回值是查询出的数组
