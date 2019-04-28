@@ -436,6 +436,7 @@ abstract class DBase
                     unset($wheres);
                 } else {
                     $field = $this->_Field($field);
+                    $value = func_get_arg(2);
                     if (is_array($value)) {
                         $value = implode(' or ' . $field . ' ' . func_get_arg(1), $this->addslashes($value));
                     } else
