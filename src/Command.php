@@ -14,6 +14,7 @@ use GFPHP\Command\Handler;
 use GFPHP\Command\ModelHandler;
 use GFPHP\Command\ModuleHandler;
 use GFPHP\Command\RouterHandler;
+use League\CLImate\CLImate;
 
 /**
  * Class Console
@@ -36,6 +37,10 @@ class Command
     protected $stdin;
     protected $stderr;
     protected $argv;
+    /**
+     * @var CLImate
+     */
+    protected $cli;
     public $Handler = [];
 
     /**
@@ -48,6 +53,7 @@ class Command
         $this->stdout = fopen('php://stdout', 'w');
         $this->stdin = fopen('php://stdin', 'r');
         $this->stderr = fopen('php://stderr', 'w');
+        $this->cli = new CLImate();
         array_shift($_SERVER['argv']);
         $this->argv = $_SERVER['argv'];
         $this->addHandler(new ModuleHandler($this));
