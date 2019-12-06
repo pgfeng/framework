@@ -40,7 +40,7 @@ class Command
     /**
      * @var CLImate
      */
-    protected $cli;
+    public $cli;
     public $Handler = [];
 
     /**
