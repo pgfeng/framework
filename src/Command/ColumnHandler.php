@@ -75,7 +75,7 @@ class ColumnHandler extends Handler
                 $this->argv[1] = $this->choseTable($this->argv[0]);
             }
         }
-        $this->buildColumn();
+        return $this->buildColumn();
         return;
     }
 
@@ -126,7 +126,7 @@ class ColumnHandler extends Handler
         } elseif (isset($this->argv[0]) && !isset($this->argv[1])) {
             $this->buildDatabaseColumn($this->argv[0], $this->getNameSpace($this->argv[0]));
         } elseif (isset($this->argv[0]) && isset($this->argv[1])) {
-            $this->buildTableColumn($this->argv[1], $this->argv[0], $this->getNameSpace($this->argv[0]), $this->getColumnPath($this->argv[0], $this->argv[1]));
+            return $this->buildTableColumn($this->argv[1], $this->argv[0], $this->getNameSpace($this->argv[0]), $this->getColumnPath($this->argv[0], $this->argv[1]));
         }
     }
 
@@ -192,6 +192,7 @@ Column;
         mkPathDir($columnPath);
         file_put_contents($columnPath, $ColumnContent);
         $this->command->writeln($nameSpace . '\\' . $table . 'Column生成成功!');
+        return $nameSpace . '\\' . $table;
     }
 
     /**

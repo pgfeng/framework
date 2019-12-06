@@ -9,12 +9,13 @@
     }
   ],
   "require": {
-    "php": ">=5.5.9",
+    "php": ">=7.1",
     "filp/whoops": "2.1.8",
     "jdorn/sql-formatter": "v1.2.9",
     "monolog/monolog": "1.23.0",
     "dflydev/apache-mime-types": "v1.0.1",
-    "nette/reflection": "^2.4"
+    "nette/reflection": "^2.4",
+    "league/climate": "^3.5"
   },
   "autoload": {
     "files": [

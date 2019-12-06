@@ -25,6 +25,8 @@ class ModelHandler extends Handler
      */
     private function tableExists($table, $config_name)
     {
+        echo $table;
+        echo $config_name;
         if (!DB::table('', $config_name)->query('show tables like "' . $table . '"')) {
             $this->command->writeln("数据库不存在此表!");
             return false;
@@ -55,7 +57,7 @@ class ModelHandler extends Handler
                 $this->handler($argv);
                 return;
             } else {
-                $this->buildModel($this->getNameSpace($argv[1]), $this->getDir($argv[1]), $this->getModelPath($argv[0], $argv[1]));
+                return $this->buildModel($this->getNameSpace($argv[1]), $this->getDir($argv[1]), $this->getModelPath($argv[0], $argv[1]));
             }
         }
         return;
@@ -71,9 +73,11 @@ class ModelHandler extends Handler
     {
         $to_build = true;
         if (file_exists($modelPath)) {
-            $res = $this->command->getStdin('模型已经存在是否重新生成[yes or no]:')[0];
+            $res = $this->command->getStdin('模型已经存在是否重新生成,字段都会重复生成[yes or no]:')[0];
             if (!preg_match('/yes/i', $res)) {
                 $to_build = false;
+            }else{
+                $to_build = true;
             }
         }
         if ($to_build) {
@@ -81,13 +85,14 @@ class ModelHandler extends Handler
             if (!$this->tableExists(Config::database($config)['table_pre'] . $this->argv[0], $config)) {
                 $this->handler([]);
             }
-            $this->command->Handler['column']->handler([$config,$this->argv[0]]);
+            $column_class = $this->command->Handler['column']->handler([$config, $this->argv[0]]);
             $fields = DB::table($this->argv[0], $config)->query('show keys from `' . Config::database($config)['table_pre'] . $this->argv[0] . '` where key_name="PRIMARY"');
             $primary_key = '';
             if ($fields) {
                 $primary_key = $fields[0]['Column_name'];
             }
             $date = date('Y-m-d H:i:s', time());
+            $baseModel = $this->argv[3]?$this->argv[3]:'GFPHP\Model';
             $modelContent = <<<MODEL
 <?php
 /**
@@ -96,7 +101,7 @@ class ModelHandler extends Handler
  */
 
 namespace $nameSpace;
-use GFPHP\Model;
+use $baseModel;
 
 /**
  * Class {$this->argv[0]}Model
@@ -123,18 +128,12 @@ MODEL;
             mkPathDir($modelPath);
             file_put_contents($modelPath, $modelContent);
             $this->command->writeln($nameSpace . '\\' . $this->argv[0] . 'Model生成成功!');
+            return $column_class;
         } else {
+            $column_class = $this->command->Handler['column']->handler([$config, $this->argv[0]]);
             $this->command->writeln("已取消生成{$modelPath}!");
+            return $column_class;
         }
-    }
-
-    /**
-     * @param $config
-     * @param $table
-     */
-    protected function buildTrait($config, $table)
-    {
-
     }
 
     /**
@@ -153,7 +152,7 @@ MODEL;
         }
         if (!Config::database($config)) {
             unset($this->argv[2]);
-            return $this->choseConfig('请输入正确的配置名称:');
+            return $this->choseConfig('请输入正确的配置名称'.implode(',',array_keys(Config::database())).':');
         } else {
             return $config;
         }
