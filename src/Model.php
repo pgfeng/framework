@@ -19,38 +19,39 @@ use GFPHP\Model\filesModel;
  * @package Model
  *
  *
- * @method $this select(\string $field = '')
- * @method bool|int max(\string $field = '')
- * @method bool|int min(\string $field = '')
- * @method $this between(\string $field, \string $Between)
- * @method $this notBetween(\string $field, \string $Between)
- * @method $this in(\string $field, \string $in)
- * @method $this where(\string $field, \string $comPar = '', \string $val = '')
- * @method $this orderBy(\string $field = '')
- * @method $this limit(\string $limit)
- * @method $this orWhere(\string $field, \string $comPar = '', \string $val = '')
+ * @method $this select(string|array $field = '')
+ * @method bool|int max(string $field = '')
+ * @method bool|int min(string $field = '')
+ * @method $this between(string $field, array $Between)
+ * @method $this notBetween(string $field, array $Between)
+ * @method $this in(string $field, array $in)
+ * @method $this where(string|array $field, string $comPar = '', string $val = '')
+ * @method $this orderBy(string|array $field = '', string $by = '')
+ * @method $this limit(int $offset, int $size = '')
+ * @method $this orWhere(string $field, string $comPar = '', string $val = '')
  * @method bool|int update(array $update)
- * @method bool|int exec(\string $sql = '')
- * @method bool|int count(\string $field = '*')
+ * @method bool|int exec(string $sql = '')
+ * @method bool|int count(string $field = '*')
+ * @method bool|int sum(string $field)
  * @method bool|int insert(array $insert)
- * @method $this leftJoin(\string $table, \string $on1, \string $on2)
- * @method $this rightJoin(\string $table, \string $on1, \string $on2)
- * @method $this Join(\string $table, \string $on1, \string $on2)
- * @method $this fullJoin(\string $table = '', \string $on1 = '', \string $on2 = '')
- * @method $this innerJoin(\string $table = '', \string $on1 = '', \string $on2 = '')
+ * @method $this leftJoin(string $table, string $on1, string $on2)
+ * @method $this rightJoin(string $table, string $on1, string $on2)
+ * @method $this Join(string $table, string $on1, string $on2)
+ * @method $this fullJoin(string $table = '', string $on1 = '', string $on2 = '')
+ * @method $this innerJoin(string $table = '', string $on1 = '', string $on2 = '')
  * @method $this union(bool $all = false)
- * @method bool|int delete(\string $table = '', \string $where = '', \string $orderBy = '', \string $limit = '')
- * @method $this group(\string $group = '')
- * @method DataObject|bool|array query(\string $sql = '')
- * @method DataObject|bool getOne(\string $field = '*')
- * @method DataObject|bool find(\string $field = '*')
- * @method DataObject|null|array findAll(\string $field = '*')
- * @method string getField(\string $column)
- * @method string setField(\string $column, \string $value)
- * @method DataObject paginate($size, $page = 1)
- * @method string get_table($table = FALSE)
- * @method int|bool setInc(\string $column, \string $num) 字段自增加
- * @method int|bool setDnc(\string $column, int $num) 字段自减少
+ * @method bool|int delete(string $table = '', string $where = '', string $orderBy = '', string $limit = '')
+ * @method $this group(string $group = '')
+ * @method DataObject|bool|array query(string $sql = '')
+ * @method DataObject|bool getOne(string $field = '*')
+ * @method DataObject|bool find(string $field = '*')
+ * @method DataObject|null|array findAll(string $field = '*')
+ * @method string getField(string $column)
+ * @method string setField(string $column, string $value)
+ * @method DataObject paginate(int $size, int $page = 1)
+ * @method string get_table(string $table = FALSE)
+ * @method int|bool setInc(string $column, int $num = 1) 字段自增加
+ * @method int|bool setDnc(string $column, int $num = 1) 字段自减少
  * @method string compile()
  * @method bool beginTransaction() 开启事务
  * @method bool transaction(\Closure $callback) 闭包执行事务，返回事务执行的状态
@@ -59,7 +60,7 @@ use GFPHP\Model\filesModel;
  * @method string version() 获取MYSQL版本
  * @method string lastSql() 获取最后执行的sql
  * @method int|bool lastInsertId() 获取最后插入的自增ID
- * @method $this like(\string $field, \string $value) 搜索查询
+ * @method $this like(string $field, string $value) 搜索查询
  */
 class Model
 {

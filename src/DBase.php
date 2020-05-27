@@ -2,6 +2,8 @@
 
 namespace GFPHP;
 
+use Closure;
+
 /**
  * SQL语句处理类
  * 提供简单的SQL语句构造方法
@@ -105,6 +107,17 @@ abstract class DBase
         return $field;
     }
 
+    /**
+     * 获取最大值
+     * @param $field
+     * @return int
+     */
+    final function sum($field)
+    {
+        $field = $this->_Field($field);
+        $sum = $this->getOne('sum(' . $field . ')');
+        return isset($sum['sum(' . $field . ')']) ? $sum['sum(' . $field . ')'] : 0;
+    }
 
     /**
      * 获取最大值
@@ -137,7 +150,7 @@ abstract class DBase
      *
      * @return int    获取到的数量
      */
-    final public function Count($field = '*')
+    final public function count($field = '*')
     {
         $field = $this->_Field($field);
         $count = $this->getOne('count(' . $field . ')');
@@ -219,7 +232,7 @@ abstract class DBase
      * 设置查询
      * 参数为一个时设置查询字段
      * 当为多个时可看成
-     * SELECT($table,$where,$orderby,$limit,$column);
+     * SELECT($table,$where,$orderBy,$limit,$column);
      *
      * @param array|string $select
      *
@@ -1040,16 +1053,20 @@ abstract class DBase
 
     /**
      * 闭包执行事务，返回事务执行的状态
-     * @param \Closure $callback
+     * @param Closure $callback
      * @return bool
      */
-    final public function transaction(\Closure $callback)
+    final public function transaction(Closure $callback)
     {
         try {
             $this->beginTransaction();
             $callback($this);
-            $this->commit();
-            return true;
+            $result = $this->commit();
+            if ($result) {
+                return $result;
+            } else {
+                return false;
+            }
         } catch (\Exception $e) {
             $this->rollBack();
             return false;
