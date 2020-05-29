@@ -56,7 +56,7 @@ abstract class Authorize extends Model
     }
 
     /**
-     * @param $account
+     * @param $account_name
      * @return bool|DataObject
      */
     public function getAccount($account_name)

@@ -2,8 +2,6 @@
 
 namespace GFPHP;
 
-use Closure;
-
 /**
  * SQL语句处理类
  * 提供简单的SQL语句构造方法
@@ -107,17 +105,6 @@ abstract class DBase
         return $field;
     }
 
-    /**
-     * 获取最大值
-     * @param $field
-     * @return int
-     */
-    final function sum($field)
-    {
-        $field = $this->_Field($field);
-        $sum = $this->getOne('sum(' . $field . ')');
-        return isset($sum['sum(' . $field . ')']) ? $sum['sum(' . $field . ')'] : 0;
-    }
 
     /**
      * 获取最大值
@@ -150,12 +137,26 @@ abstract class DBase
      *
      * @return int    获取到的数量
      */
-    final public function count($field = '*')
+    final public function Count($field = '*')
     {
         $field = $this->_Field($field);
         $count = $this->getOne('count(' . $field . ')');
 
         return isset($count['count(' . $field . ')']) ? $count['count(' . $field . ')'] : 0;
+    }
+
+    /**
+     * 有多少条数据
+     *
+     * @param $field
+     *
+     * @return int    获取到的数量
+     */
+    final public function sum($field)
+    {
+        $field = $this->_Field($field);
+        $count = $this->getOne('SUM(' . $field . ')');
+        return isset($count['SUM(' . $field . ')']) ? $count['SUM(' . $field . ')'] : 0;
     }
 
     /**
@@ -232,7 +233,7 @@ abstract class DBase
      * 设置查询
      * 参数为一个时设置查询字段
      * 当为多个时可看成
-     * SELECT($table,$where,$orderBy,$limit,$column);
+     * SELECT($table,$where,$orderby,$limit,$column);
      *
      * @param array|string $select
      *
@@ -441,8 +442,8 @@ abstract class DBase
                     unset($wheres);
                 } elseif ($hasAnd) {
                     $wheres = [];
-                    $field = $this->_Field($field);
                     foreach ($fieldAnd as $f) {
+                        $f = $this->_Field($f);
                         $wheres[] = '' . $f . ' ' . func_get_arg(1) . ' ' . $this->addslashes(func_get_arg(2));
                     }
                     $where = implode(' and ', $wheres);
@@ -471,23 +472,40 @@ abstract class DBase
     /**
      * 设置排序方式
      *
-     * @param $orderby
-     *
+     * @param $field
+     * @param $by
      * @return $this
      */
-    final function orderBy($orderby)
+    final function orderBy($field, $by = false)
     {
-        if (is_array($orderby)) {
-            $order = '';
-            foreach ($orderby as $field) {
-                if ($order == '') {
-                    $order = $this->_Field($field);
-                } else
-                    $order .= ',' . $this->_Field($field);
+        $func_num = func_num_args();
+        if ($func_num == 2) {
+            $fields = func_get_arg(0);
+            $order = func_get_arg(1);
+            $orderByStr = '';
+            if (is_array($fields)) {
+                foreach ($fields as $item) {
+                    if ($orderByStr)
+                        $orderByStr .= ',';
+                    $orderByStr .= $this->_Field($item) . ' ' . $order;
+                }
+                $this->section['orderby'] = $orderByStr;
+            } else {
+                $this->section['orderby'] = $this->_Field(func_get_arg(0)) . ' ' . func_get_arg(1);
             }
-            $this->section['orderby'] = $order;
         } else {
-            $this->section['orderby'] = $orderby;
+            if (is_array($field)) {
+                $order = '';
+                foreach ($field as $field) {
+                    if ($order == '') {
+                        $order = $this->_Field($field);
+                    } else
+                        $order .= ',' . $this->_Field($field);
+                }
+                $this->section['orderby'] = $order;
+            } else {
+                $this->section['orderby'] = $field;
+            }
         }
 
         return $this;
@@ -517,7 +535,7 @@ abstract class DBase
     {
         if (func_num_args() > 1) {
             $field = func_get_arg(0);
-            $field = $this->_Field($field);
+//      $field = $this->_Field($field);
             $fieldAnd = explode('&', $field);
             $hasAnd = count($fieldAnd) > 1 ? TRUE : FALSE;
             $fieldOr = explode('|', $field);
@@ -531,6 +549,7 @@ abstract class DBase
                 if ($hasOr) {
                     $wheres = [];
                     foreach ($fieldOr as $f) {
+                        $f = $this->_Field($f);
                         if (is_array($value))
                             $value = implode(' or ' . $f . '=', $this->addslashes($value));
                         else
@@ -542,6 +561,7 @@ abstract class DBase
                 } elseif ($hasAnd) {
                     $wheres = [];
                     foreach ($fieldAnd as $f) {
+                        $f = $this->_Field($f);
                         if (is_array($value))
                             $value = implode(' or ' . $f . '=', $this->addslashes($value));
                         else
@@ -551,6 +571,7 @@ abstract class DBase
                     $where = implode(' and ', $wheres);
                     unset($wheres);
                 } else {
+                    $field = $this->_Field($field);
                     if (is_array($value)) {
                         $value = implode(' or ' . $field . '=', $this->addslashes($value));
                     } else
@@ -562,6 +583,7 @@ abstract class DBase
                 if ($hasOr) {
                     $wheres = [];
                     foreach ($fieldOr as $f) {
+                        $f = $this->_Field($f);
                         $wheres[] = '' . $f . ' ' . func_get_arg(1) . ' ' . $this->addslashes(func_get_arg(2));
                     }
                     $where = implode(' or ', $wheres);
@@ -569,11 +591,13 @@ abstract class DBase
                 } elseif ($hasAnd) {
                     $wheres = [];
                     foreach ($fieldAnd as $f) {
+                        $f = $this->_Field($f);
                         $wheres[] = '' . $f . ' ' . func_get_arg(1) . ' ' . $this->addslashes(func_get_arg(2));
                     }
                     $where = implode(' and ', $wheres);
                     unset($wheres);
                 } else {
+                    $field = $this->_Field($field);
                     if (is_array($value)) {
                         $value = implode(' or ' . $field . ' ' . func_get_arg(1), $this->addslashes($value));
                     } else
@@ -605,7 +629,7 @@ abstract class DBase
     }
 
     //---字段自增
-    final function setInc($column, $num)
+    final function setInc($column, $num = 1)
     {
 
         $this->section['handle'] = 'update';
@@ -615,7 +639,7 @@ abstract class DBase
     }
 
     //---字段自减
-    final function setDnc($column, $num)
+    final function setDnc($column, $num = 1)
     {
         $this->section['handle'] = 'update';
         $this->_set($column . '=' . $column . '-' . $num, 'update');
@@ -978,8 +1002,7 @@ abstract class DBase
      */
     final function group($group)
     {
-        $this->section['group'] = $group;
-
+        $this->section['group'] = $this->_Field($group);
         return $this;
     }
 
@@ -1053,20 +1076,16 @@ abstract class DBase
 
     /**
      * 闭包执行事务，返回事务执行的状态
-     * @param Closure $callback
+     * @param \Closure $callback
      * @return bool
      */
-    final public function transaction(Closure $callback)
+    final public function transaction(\Closure $callback)
     {
         try {
             $this->beginTransaction();
             $callback($this);
-            $result = $this->commit();
-            if ($result) {
-                return $result;
-            } else {
-                return false;
-            }
+            $this->commit();
+            return true;
         } catch (\Exception $e) {
             $this->rollBack();
             return false;
