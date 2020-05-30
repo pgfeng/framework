@@ -521,7 +521,7 @@ abstract class DBase
         if ($arg_num == 1)
             $this->section['limit'] = $arg_list[0];
         if ($arg_num == 2)
-            $this->section['limit'] = $arg_list[0] . ',' . $arg_list[1];
+            $this->section['limit'] = (int)$arg_list[0] . ',' . (int)$arg_list[1];
 
         return $this;
     }
@@ -535,7 +535,6 @@ abstract class DBase
     {
         if (func_num_args() > 1) {
             $field = func_get_arg(0);
-//      $field = $this->_Field($field);
             $fieldAnd = explode('&', $field);
             $hasAnd = count($fieldAnd) > 1 ? TRUE : FALSE;
             $fieldOr = explode('|', $field);
@@ -770,7 +769,6 @@ abstract class DBase
                 $sql = "{$this->section['handle']} from {$this->section['table']}";
             if (!empty($sql)) {
                 $sql .= ($this->section['join'] ? " " . $this->section['join'] : '') . ($this->section['where'] ? " where {$this->section['where']}" : '') . ($this->section['group'] ? " group by {$this->section['group']}" : '') . ($this->section['orderby'] ? " order by {$this->section['orderby']}" : '') . ($this->section['limit'] ? " limit  {$this->section['limit']}" : '');
-
                 return $this->sql .= $sql;
             } else {
                 echo $this->section['handle'] . 'method is undefined!';

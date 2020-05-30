@@ -7,13 +7,15 @@
  */
 
 namespace GFPHP;
+use ArrayObject;
+
 /**
  * 数据对象
  * Class DataObject
  *
  * @package GFPHP
  */
-class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerializable, \ArrayAccess, \Countable
+class DataObject extends ArrayObject implements \IteratorAggregate, \JsonSerializable, \ArrayAccess, \Countable
 {
 	private $storage = [ ],
 		$table = 'Data',
@@ -247,7 +249,7 @@ class DataObject extends \ArrayObject implements \IteratorAggregate, \JsonSerial
 	}
 
 	/**
-	 * @return \ArrayObject|DataObject
+	 * @return ArrayObject|DataObject
 	 */
 	public function getIterator ()
 	{

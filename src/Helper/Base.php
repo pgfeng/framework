@@ -224,9 +224,10 @@ function mkPathDir($path, $mode = 0777)
  * @param bool $params
  * @param array $array
  *
+ * @param bool $default
  * @return array|bool|null
  */
-function getValue($params, $array)
+function getValue($params, $array, $default = null)
 {
     if ($params == FALSE) {
         return $array;
@@ -238,33 +239,35 @@ function getValue($params, $array)
 
         return $data;
     } else {
-        return isset($array[$params]) ? $array[$params] : NULL;
+        return isset($array[$params]) ? $array[$params] : $default;
     }
 }
 
 /**
  * 获取GET值
  *
- * @param $params
+ * @param bool $params
  *
+ * @param bool $default
  * @return array|bool|null
  */
-function GET($params = false)
+function GET($params = false, $default = null)
 {
-    return getValue($params, $_GET);
+    return getValue($params, $_GET, $default);
 }
 
 
 /**
  * 获取POST值
  *
- * @param $params
+ * @param bool $params
  *
+ * @param null $default
  * @return array|bool|null
  */
-function POST($params = false)
+function POST($params = false, $default = null)
 {
-    return getValue($params, $_POST);
+    return getValue($params, $_POST, $default);
 }
 
 
@@ -283,41 +286,44 @@ function FILES($params = false)
 /**
  * 获取SESSION值
  *
- * @param $params
+ * @param bool $params
  *
+ * @param null $default
  * @return array|bool|null
  */
-function SESSION($params = false)
+function SESSION($params = false, $default = null)
 {
-    return getValue($params, $_SESSION);
+    return getValue($params, $_SESSION, $default);
 }
 
 /**
  * 获取COOKIE值
  *
- * @param $params
+ * @param bool $params
  *
+ * @param null $default
  * @return array|bool|null
  */
-function COOKIE($params = false)
+function COOKIE($params = false, $default = null)
 {
-    return getValue($params, $_COOKIE);
+    return getValue($params, $_COOKIE, $default);
 }
 
 /**
  * 获取REQUEST值
  *
- * @param $params
+ * @param bool $params
  *
+ * @param null $default
  * @return array|bool|null
  */
-function REQUEST($params = FALSE)
+function REQUEST($params = FALSE, $default = null)
 {
     $GET = $_GET;
     unset($GET['_router']);
     $_REQUEST = array_merge($_POST, $GET);
 
-    return getValue($params, $_REQUEST);
+    return getValue($params, $_REQUEST, $default);
 }
 
 /**
@@ -366,8 +372,8 @@ function ip()
 /**
  * 人性化的时间显示
  *
- * @param  String $time Unix时间戳，默认为当前时间
- * @param  string $date_format 默认时间显示格式
+ * @param String $time Unix时间戳，默认为当前时间
+ * @param string $date_format 默认时间显示格式
  *
  * @return String
  */
@@ -391,7 +397,7 @@ function toTime($time = NULL, $date_format = 'Y/m/d H:i:s')
 /**
  * 文件大小单位换算
  *
- * @param  int $byte 文件Byte值
+ * @param int $byte 文件Byte值
  *
  * @return String
  */
@@ -657,8 +663,8 @@ function isPost($param = [])
 /**
  * 产生随机字符串
  *
- * @param    int $length 输出长度
- * @param    string $chars 可选的 ，默认为 0123456789
+ * @param int $length 输出长度
+ * @param string $chars 可选的 ，默认为 0123456789
  *
  * @return   string     字符串
  */
