@@ -45,7 +45,7 @@ class PDO extends DBase
      *
      * @return string
      */
-    function getError()
+    public function getError()
     {
         return implode(' | ', $this->db->errorInfo());
     }
@@ -61,8 +61,9 @@ class PDO extends DBase
     public function _query($sql)
     {
         $query = $this->db->query($sql);
-        if (!$query)
+        if (!$query) {
             return [];
+        }
         $result = $query->fetchAll(\PDO::FETCH_ASSOC);   //只获取键值
         foreach ($result as &$item) {
             $item = new DataObject($item, TRUE, $this->table, $this->configName);
@@ -78,7 +79,7 @@ class PDO extends DBase
      *
      * @return string
      */
-    function real_escape_string($string)
+    public function real_escape_string($string)
     {
         return $this->db->quote($string);
     }

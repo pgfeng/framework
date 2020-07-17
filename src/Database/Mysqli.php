@@ -22,7 +22,7 @@ class Mysqli extends DBase
      *
      * @return bool
      */
-    function _connect($configName)
+    public function _connect($configName)
     {
         $config = Config::database($configName);
         //=====使用长连接

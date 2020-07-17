@@ -16,7 +16,9 @@
     "nette/reflection": "^2.4",
     "league/climate": "^3.5",
     "ext-json": "*",
-    "ext-mbstring":"*"
+    "ext-mbstring":"*",
+    "ext-pdo": "*",
+    "ext-mysqli": "*"
   },
   "autoload": {
     "files": [
