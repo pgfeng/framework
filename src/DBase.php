@@ -841,7 +841,7 @@ abstract class DBase
      *
      * @return DBase
      */
-    final function leftJoin($table, $on1, $on2)
+    final public function leftJoin($table, $on1, $on2)
     {
         return $this->join($table, $on1, $on2, 'left');
     }

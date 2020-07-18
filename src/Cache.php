@@ -107,7 +107,7 @@ abstract class Cache
      * @param $space
      * @return mixed
      */
-    abstract function _get($name, $space);
+    abstract public function _get($name, $space);
 
     /**
      * @param $name
@@ -116,24 +116,24 @@ abstract class Cache
      * @param $space
      * @return mixed
      */
-    abstract function _set($name, $con, $space, $expiration);
+    abstract public function _set($name, $con, $space, $expiration);
 
     /**
      * @param $name
      * @param $space
      * @return mixed
      */
-    abstract function _is_cache($name, $space);
+    abstract public function _is_cache($name, $space);
 
     /**
      * @param $name
      * @param $space
      * @return mixed
      */
-    abstract function _delete($name, $space);
+    abstract public function _delete($name, $space);
 
     /**
      * @return mixed
      */
-    abstract function _flush();
+    abstract public function _flush();
 }

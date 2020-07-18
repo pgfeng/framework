@@ -50,9 +50,9 @@ class Command
     {
         error_reporting(E_ALL ^ E_NOTICE);
         date_default_timezone_set("PRC");
-        $this->stdout = fopen('php://stdout', 'w');
-        $this->stdin = fopen('php://stdin', 'r');
-        $this->stderr = fopen('php://stderr', 'w');
+        $this->stdout = fopen('php://stdout', 'wb');
+        $this->stdin = fopen('php://stdin', 'rb');
+        $this->stderr = fopen('php://stderr', 'wb');
         $this->cli = new CLImate();
         array_shift($_SERVER['argv']);
         $this->argv = $_SERVER['argv'];
@@ -87,7 +87,7 @@ class Command
         if (!$this->argv) {
             $this->help();
         } else {
-            if ($this->argv[0] == '') {
+            if ($this->argv[0] === '') {
                 $this->argv[0] = $this->getStdin("请输入正确的Handler名称: [" . implode(',', array_keys($this->Handler)) . ']')[0];
                 $this->execute();
             } else {
@@ -140,7 +140,7 @@ class Command
     /**
      * 读取一行内容
      * @param string $notice
-     * @return bool|string
+     * @return array
      */
     public function getStdin($notice = '')
     {

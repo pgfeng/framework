@@ -36,7 +36,7 @@ class Controller
      */
     final public function fetchTemplate($template, $cacheTime = FALSE, $cacheKey = FALSE)
     {
-        return $content = GFPHP::$Template->fetchTemplate($template, $cacheTime, $cacheKey);
+        return GFPHP::$Template->fetchTemplate($template, $cacheTime, $cacheKey);
     }
 
     /**
@@ -44,9 +44,9 @@ class Controller
      * @param $templateCon
      * @return string
      */
-    final function fetch($templateCon)
+    final public function fetch($templateCon)
     {
-        return $content = GFPHP::$Template->fetch($templateCon);
+        return GFPHP::$Template->fetch($templateCon);
     }
     //-----给模板赋值变量
 
@@ -54,7 +54,7 @@ class Controller
      * 当为一个参数时,必须为数组形式
      * @param string|array $key
      */
-    final function assign($key)
+    final public function assign($key)
     {
         if (func_num_args() == 1) {
             GFPHP::$Template->assign(func_get_arg(0));

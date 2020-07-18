@@ -119,10 +119,7 @@ class Hooks
                 }
             }
         }
-        if (count($params) == 1)
-            return end($params);
-        else
-            return $params;
+        return count($params) === 1 ? end($params) : $params;
     }
 
 
@@ -136,13 +133,14 @@ class Hooks
      */
     public static function add($HooksName, $Class, $Func = '')
     {
-        if (!isset(self::$Hooks[$HooksName]))
+        if (!isset(self::$Hooks[$HooksName])) {
             self::$Hooks[$HooksName] = [];
+        }
         $hooks = [
             'Hooks' => $Class,
             'Func' => $Func,
         ];
-        if (!in_array($hooks, self::$Hooks[$HooksName])) {
+        if (!in_array($hooks, self::$Hooks[$HooksName], true)) {
             self::$Hooks[$HooksName][] = $hooks;
 
             return TRUE;
@@ -160,10 +158,12 @@ class Hooks
     {
         foreach ($Hooks as $k => $v) {
             foreach ($v as $a) {
-                if (!isset($a['Hooks']))
+                if (!isset($a['Hooks'])) {
                     continue;
-                if (isset($a['Func']))
+                }
+                if (isset($a['Func'])) {
                     self::add($k, $a['Hooks'], $a['Func']);
+                }
             }
         }
     }

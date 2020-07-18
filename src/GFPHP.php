@@ -35,7 +35,7 @@ class GFPHP
             exit('Not Define BASE_PATH');
 
         //==项目网址根目录
-        define('ROOT_URL', ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https:' : 'http:') . ('//' . $_SERVER['HTTP_HOST'] . (($_SERVER["SERVER_PORT"] == '80' || $_SERVER["SERVER_PORT"] == '443') ? '' : ':' . $_SERVER["SERVER_PORT"])));
+        define('ROOT_URL', ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https:' : 'http:') . ('//' . $_SERVER['HTTP_HOST'] . (($_SERVER["SERVER_PORT"] == '80' || $_SERVER["SERVER_PORT"] == '443') ? '' : ':' . $_SERVER["SERVER_PORT"])));
 
         //==当前时间
         define('__NOW__', $_SERVER['REQUEST_TIME']);
@@ -44,25 +44,25 @@ class GFPHP
         define('REQUEST_METHOD', $_SERVER['REQUEST_METHOD']);
 
         //==是否为GET请求
-        define('IS_GET', REQUEST_METHOD == 'GET' ? true : false);
+        define('IS_GET', REQUEST_METHOD === 'GET');
 
         //==是否为POST请求
-        define('IS_POST', REQUEST_METHOD == 'POST' ? true : false);
+        define('IS_POST', REQUEST_METHOD === 'POST');
 
         //==是否为PUT请求
-        define('IS_PUT', REQUEST_METHOD == 'PUT' ? true : false);
+        define('IS_PUT', REQUEST_METHOD === 'PUT');
 
         //==是否为DELETE请求
-        define('IS_DELETE', REQUEST_METHOD == 'DELETE' ? true : false);
+        define('IS_DELETE', REQUEST_METHOD === 'DELETE');
 
         //==是否为AJAX请求
-        define('IS_AJAX', ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')) ? true : false);
+        define('IS_AJAX', (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'));
 
         session_start();
 
         $time_zone = Config::config('time_zone');
 
-        $time_zone = $time_zone ? $time_zone : 'PRC';
+        $time_zone = $time_zone ?: 'PRC';
 
         date_default_timezone_set($time_zone);
 

@@ -30,8 +30,10 @@ class Template
     final function __construct()
     {
         $temp_vars = Config::view_vars();
-        foreach ($temp_vars as $key => $value) {
-            $this->var[$key] = $value;
+        if ($temp_vars){
+            foreach ($temp_vars as $key => $value) {
+                $this->var[$key] = $value;
+            }
         }
     }
 
