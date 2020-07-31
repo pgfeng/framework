@@ -86,20 +86,16 @@ class Command
     {
         if (!$this->argv) {
             $this->help();
+        } else if ($this->argv[0] === '') {
+            $this->argv[0] = $this->getStdin("请输入正确的Handler名称: [" . implode(',', array_keys($this->Handler)) . ']')[0];
+            $this->execute();
+        } else if (isset($this->Handler[$this->argv[0]])) {
+            $argv = $this->argv;
+            $handle_name = array_shift($argv);
+            $this->Handler[$handle_name]->handler($argv);
         } else {
-            if ($this->argv[0] === '') {
-                $this->argv[0] = $this->getStdin("请输入正确的Handler名称: [" . implode(',', array_keys($this->Handler)) . ']')[0];
-                $this->execute();
-            } else {
-                if (isset($this->Handler[$this->argv[0]])) {
-                    $argv = $this->argv;
-                    $handle_name = array_shift($argv);
-                    $this->Handler[$handle_name]->handler($argv);
-                } else {
-                    $this->argv[0] = $this->getStdin("请输入正确的Handler名称: [" . implode(',', array_keys($this->Handler)) . ']')[0];
-                    $this->execute();
-                }
-            }
+            $this->argv[0] = $this->getStdin("请输入正确的Handler名称: [" . implode(',', array_keys($this->Handler)) . ']')[0];
+            $this->execute();
         }
     }
 
@@ -128,8 +124,9 @@ class Command
      */
     public function write($message)
     {
-        if (!is_string($message))
+        if (!is_string($message)) {
             $message = var_export($message, true);
+        }
 //        if (strtoupper(substr(PHP_OS,0,3))==='WIN') {
 //            if (mb_detect_encoding($message, 'UTF-8', true))
 //                $message = mb_convert_encoding($message, "GBK", "UTF-8");

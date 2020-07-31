@@ -56,9 +56,9 @@ class Controller
      */
     final public function assign($key)
     {
-        if (func_num_args() == 1) {
+        if (func_num_args() === 1) {
             GFPHP::$Template->assign(func_get_arg(0));
-        } elseif (func_num_args() == 2) {
+        } elseif (func_num_args() === 2) {
             GFPHP::$Template->assign(func_get_arg(0), func_get_arg(1));
         }
     }
@@ -70,7 +70,7 @@ class Controller
      * @param bool $cacheKey
      * @return mixed|String
      */
-    final function display($cacheTime = FALSE, $cacheKey = FALSE)
+    final public function display($cacheTime = FALSE, $cacheKey = FALSE)
     {
         $this->Assign('_ACT', ['module_name' => MODULE_NAME, 'controller_name' => CONTROLLER_NAME, 'method_name' => METHOD_NAME]);
         /** @var string $template */

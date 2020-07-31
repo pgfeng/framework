@@ -246,7 +246,7 @@ class Model
      */
     public function __construct($model = FALSE, $configName = 'default')
     {
-        if ($configName == FALSE)
+        if ($configName === FALSE)
             $configName = $this->configName;
         $this->database($configName);
 
@@ -255,7 +255,7 @@ class Model
         /**
          * 添加自动上传验证规则
          */
-        $this->addCheckRule('file', function ($Column, &$value) {
+        $this->addCheckRule('file', static function ($Column, &$value) {
             $filesModel = new filesModel();
             if (isset($Column['allow_type'])) {
                 $allow_type = $Column['allow_type'];
@@ -267,7 +267,7 @@ class Model
             $path = isset($value['path']) ? $value['path'] : FALSE;
             $msg = isset($value['msg']) ? $value['msg'] : '';
             if (isset($status)) {
-                if ($status == 'false') {
+                if ($status === 'false') {
                     return $Column['ColumnName'] . '上传出现错误：' . $msg;
                 }
                 $value = $path;
@@ -294,11 +294,11 @@ class Model
             if (isset($this->Column[$column])) {
                 if (is_callable($this->Column[$column]['rule'])) {
                     if ($res = $this->Column[$column]['rule']($this->Column[$column], $value)) {
-                        if (isset($this->Column[$column]['msg']) && $this->Column[$column]['msg'] != '') {
+                        if (isset($this->Column[$column]['msg']) && $this->Column[$column]['msg'] !== '') {
                             return str_replace('%ColumnName%', $this->Column[$column]['ColumnName'], isset($this->validate[$this->Column[$column]['rule']]['msg']) ? $this->validate[$this->Column[$column]['rule']]['msg'] : '请输入正确的%ColumnName%');
-                        } else {
-                            return $res;
                         }
+
+                        return $res;
                     }
                 } else
                     if (isset($this->validate[$this->Column[$column]['rule']])) {
@@ -348,9 +348,9 @@ class Model
     {
         //--计算表名
         $tb_name = substr(get_class($this), 6);
-        $class = substr($tb_name, (($start = strripos($tb_name, '\\')) > 0 ? $start + 1 : 0));
+        $class = substr($tb_name, (($start = strrpos($tb_name, '\\')) > 0 ? $start + 1 : 0));
         $num = strpos($class, 'Model');
-        if ($num != 0) {
+        if ($num !== 0) {
             $table = substr($class, 0, $num);
         } else {
             $table = substr($this->model, 0, strpos($this->model, 'Model'));
@@ -443,18 +443,20 @@ class Model
         if (method_exists($this->db, $func)) {
             $res = call_user_func_array([$this->db, $func], $val);
             if (is_object($res)) {
-                if (get_class($res) == 'GFPHP\DataObject')
+                if (get_class($res) === 'GFPHP\DataObject') {
                     return $res;
+                }
                 $this->db = $res;
 
                 return $this;
-            } else
-                return $res;
-        } else {
-            $error = debug_backtrace()[1];
-            $error['message'] = get_class($this) . ' 不存在 ' . $func . '方法!';
-            new \Exception($error);
+            }
+
+            return $res;
         }
+
+        $error = debug_backtrace()[1];
+        $error['message'] = get_class($this) . ' 不存在 ' . $func . '方法!';
+        new \Exception($error);
 
         return FALSE;
     }

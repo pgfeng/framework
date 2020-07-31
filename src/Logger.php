@@ -31,13 +31,13 @@ class Logger
     {
         if (isset(self::$monolog[$name])) {
             return self::$monolog[$name];
-        } else {
-            self::$monolog[$name] = new \Monolog\Logger($name);
-            foreach (Config::debug('log_handler') as $handler) {
-                self::$monolog[$name]->pushHandler($handler);
-            }
-            self::$monolog[$name]->pushProcessor(Config::debug('log_processor'));
-            return self::$monolog[$name];
         }
+
+        self::$monolog[$name] = new \Monolog\Logger($name);
+        foreach (Config::debug('log_handler') as $handler) {
+            self::$monolog[$name]->pushHandler($handler);
+        }
+        self::$monolog[$name]->pushProcessor(Config::debug('log_processor'));
+        return self::$monolog[$name];
     }
 }

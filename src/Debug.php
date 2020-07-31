@@ -104,12 +104,12 @@ class Debug
         if ($index !== FALSE && is_numeric($index)) {
             if ($index > $sql_count) {
                 return self::$sqls[0];
-            } else {
-                return self::$sqls[$sql_count - $index];
             }
-        } else {
-            return self::$sqls;
+
+            return self::$sqls[$sql_count - $index];
         }
+
+        return self::$sqls;
     }
 
     /**

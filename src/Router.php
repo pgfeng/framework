@@ -51,9 +51,9 @@ class Router
     public static function init()
     {
         error_reporting(Config::config('error_reporting'));
-        Router::all('(.*)', function ($router) {
+        Router::all('(.*)', static function ($router) {
             $uris = explode('/', $router);
-            $uris = array_filter($uris, function ($value) {
+            $uris = array_filter($uris, static function ($value) {
                 return $value !== '';
             });
             $count = count($uris);
@@ -95,7 +95,7 @@ class Router
             foreach ($methods as $item) {
                 $route = $ref->getMethod($item->name)->getAnnotation('Route');
                 $class_map = explode('\\', $class);
-                if ($route && substr($item->name, -6) == 'Action') {
+                if ($route && substr($item->name, -6) === 'Action') {
                     $Annotations = $ref->getMethod($item->name)->getAnnotations();
                     $route = preg_replace("/\s+/is", " ", $route);
                     $route = explode(' ', $route);
@@ -115,13 +115,14 @@ class Router
                             array_shift($route);
                         }
                     }
-                    if (!count($route))
+                    if (!count($route)) {
                         break;
+                    }
                     $annotation = "\n/**\n";
                     $annotation .= " * @var {$class}\n";
                     foreach ($Annotations as $key => $value) {
                         foreach ($value as $k => $v) {
-                            if ($key == 'description') {
+                            if ($key === 'description') {
                                 $annotation .= ' * ' . $v . "\n";
                             } else {
                                 $annotation .= ' * @' . $key . ' ' . $v . "\n";
@@ -279,28 +280,34 @@ class Router
             if (!is_callable($callback)) {
                 $pattern_seg = preg_replace('#\(.*?\)#', $explode_str, $pattern);
                 $num = substr_count($pattern_seg, $explode_str);
-                if ($num != $params_count)
+                if ($num !== $params_count) {
                     continue;
-                if (strcasecmp($callback, $uri) == 0) {
+                }
+                if (strcasecmp($callback, $uri) === 0) {
                     $exp_array = explode($explode_str, $pattern_seg);
                     $uri_compile = '';
                     for ($i = 0; $i <= $params_count; $i++) {
-                        if ($i == $params_count)
+                        if ($i === $params_count) {
                             $uri_compile .= $exp_array[$i];
-                        else
+                        }
+                        else {
                             $uri_compile .= $exp_array[$i] . $params[$i];
+                        }
                     }
 
-                    if ($get)
+                    if ($get) {
                         $uri_compile = $uri_compile . '?' . http_build_query($get);
+                    }
                     return $uri_compile;
                 }
             }
         }
-        if ($get)
+        if ($get) {
             $uri_compile = '/' . $old_uri . '?' . http_build_query($get);
-        else
+        }
+        else {
             $uri_compile = '/' . $old_uri;
+        }
         return $uri_compile;
     }
 
@@ -325,39 +332,40 @@ class Router
         if (is_callable($callback)) {
             if (!$params) {
                 return call_user_func($callback);
-            } else {
-                return call_user_func_array($callback, $params);
             }
-        } else {
-            $callback = str_replace('/', '\\', $callback);
-            $segments = explode('@', $callback);
-            if (count($segments) == 1)
-                throw new \Exception('必须传入操作的行为!');
-            $seg = explode('\\', $segments[0]);
-            if (count($seg) != 2) {
-                throw new \Exception('传入的控制器必须两层结构!');
-            }
-            define('MODULE_NAME', self::$module_name = ucfirst(strtolower($seg[0])));
-            define('CONTROLLER_NAME', self::$controller_name = ucfirst(strtolower($seg[1])));
-            define('METHOD_NAME', self::$action_name = strtolower($segments[1]));
-            $controllerName = GFPHP::$app_name . '\\' . MODULE_NAME . '\\' . CONTROLLER_NAME . Config::router('controllerSuffix');
 
-            /** @var Controller $controller */
-            $controller = new $controllerName();
-            $method = METHOD_NAME . Config::router('methodSuffix');
-            if (!method_exists($controller, $method)) {
-                if (Config::router('default_404')) {
-                    return self::runCallBack(Config::router('default_404'), []);
-                } else {
-                    header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
-                    throw new \Exception('method ' . $method . ' not find!');
-                }
-            }
-            if (!is_array($params)) {
-                return $controller->$method();
-            } else {
-                return call_user_func_array(array($controller, $method), $params);
-            }
+            return call_user_func_array($callback, $params);
         }
+
+        $callback = str_replace('/', '\\', $callback);
+        $segments = explode('@', $callback);
+        if (count($segments) === 1) {
+            throw new \Exception('必须传入操作的行为!');
+        }
+        $seg = explode('\\', $segments[0]);
+        if (count($seg) !== 2) {
+            throw new \Exception('传入的控制器必须两层结构!');
+        }
+        define('MODULE_NAME', self::$module_name = ucfirst(strtolower($seg[0])));
+        define('CONTROLLER_NAME', self::$controller_name = ucfirst(strtolower($seg[1])));
+        define('METHOD_NAME', self::$action_name = strtolower($segments[1]));
+        $controllerName = GFPHP::$app_name . '\\' . MODULE_NAME . '\\' . CONTROLLER_NAME . Config::router('controllerSuffix');
+
+        /** @var Controller $controller */
+        $controller = new $controllerName();
+        $method = METHOD_NAME . Config::router('methodSuffix');
+        if (!method_exists($controller, $method)) {
+            if (Config::router('default_404')) {
+                return self::runCallBack(Config::router('default_404'), []);
+            }
+
+            header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
+            throw new \Exception('method ' . $method . ' not find!');
+        }
+        if (!is_array($params)) {
+            return $controller->$method();
+        }
+
+        return call_user_func_array(array($controller, $method), $params);
     }
 }

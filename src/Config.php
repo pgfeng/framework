@@ -45,12 +45,14 @@ class Config
      */
     public static function set($config, $type = 'config')
     {
-        if (is_array($config))
+        if (is_array($config)) {
             foreach ($config as $k => $v) {
                 self::$config[$type][$k] = $v;
             }
-        else
+        }
+        else {
             throw new \Exception('$config must is array');
+        }
         return TRUE;
     }
 
@@ -65,8 +67,9 @@ class Config
      */
     public static function __callStatic($a, $v)
     {
-        if (!empty($v))
-            return count($v) == 1 ? self::get($a, $v[0]) : self::get($a, $v[0], $v[1]);
+        if (!empty($v)) {
+            return count($v) === 1 ? self::get($a, $v[0]) : self::get($a, $v[0], $v[1]);
+        }
 
         return self::get($a);
     }
@@ -82,19 +85,20 @@ class Config
      */
     public static function &get($type, $name = FALSE, $value = FALSE)
     {
-        if (!isset(self::$config[$type]))
+        if (!isset(self::$config[$type])) {
             self::$config[$type] = include BASE_PATH . self::$config_dir . DIRECTORY_SEPARATOR . $type . '.php';
+        }
         if ($name) {
-            if (FALSE == $value) {
-                return self::$config[$type][$name];
-            } else {
-                self::$config[$type][$name] = $value;
-
+            if (FALSE === $value) {
                 return self::$config[$type][$name];
             }
-        } else {
-            return self::$config[$type];
+
+            self::$config[$type][$name] = $value;
+
+            return self::$config[$type][$name];
         }
+
+        return self::$config[$type];
     }
 
 

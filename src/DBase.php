@@ -237,7 +237,7 @@ abstract class DBase
      *
      * @param array|string $select
      *
-     * @return $this
+     * @return DBase|array|DataObject
      */
     final function select($select = '*')
     {
@@ -294,10 +294,11 @@ abstract class DBase
      *
      * @return $this
      */
-    final function setTable($table, $forget = 1)
+    final public function setTable($table, $forget = 1)
     {
-        if ($forget == 0)
+        if ($forget === 0) {
             $this->table = $this->config ['table_pre'] . $table;
+        }
         $this->_set($this->config ['table_pre'] . $table, 'table');
         $this->compile();
 
@@ -392,14 +393,14 @@ abstract class DBase
             $field = func_get_arg(0);
 //            $field = $this->_Field($field);
             $fieldAnd = explode('&', $field);
-            $hasAnd = count($fieldAnd) > 1 ? TRUE : FALSE;
+            $hasAnd = count($fieldAnd) > 1;
             $fieldOr = explode('|', $field);
-            $hasOr = count($fieldOr) > 1 ? TRUE : FALSE;
+            $hasOr = count($fieldOr) > 1;
             if ($hasAnd && $hasOr) {
                 //TODO 待解决 同时处理OR和AND
                 new Exception('Where 字段目前不能同时包含&和|');
             }
-            if (func_num_args() == 2) {
+            if (func_num_args() === 2) {
                 $value = func_get_arg(1);
                 if ($hasOr) {
                     $wheres = [];
@@ -417,8 +418,9 @@ abstract class DBase
                     $value = $this->addslashes($value);
                     foreach ($fieldAnd as $f) {
                         $f = $this->_Field($f);
-                        if (is_array($value))
+                        if (is_array($value)) {
                             $value = implode(' or ' . $f . '=', $value);
+                        }
                         $wheres[] = '' . $f . '=' . $value;
                     }
                     $where = implode(' and ', $wheres);
@@ -431,7 +433,7 @@ abstract class DBase
                         $value = $this->addslashes($value);
                     $where = '' . $field . '=' . $value;
                 }
-            } elseif (func_num_args() == 3) {
+            } elseif (func_num_args() === 3) {
                 if ($hasOr) {
                     $wheres = [];
                     foreach ($fieldOr as $f) {
@@ -453,18 +455,21 @@ abstract class DBase
                     $value = func_get_arg(2);
                     if (is_array($value)) {
                         $value = implode(' or ' . $field . ' ' . func_get_arg(1), $this->addslashes($value));
-                    } else
+                    } else {
                         $value = $this->addslashes($value);
+                    }
                     $where = '' . $field . ' ' . func_get_arg(1) . ' ' . $value;
                 }
             }
         }
-        if (is_array($where))
+        if (is_array($where)) {
             $where = implode(' and ', $where);
-        if (isset($this->section['where']) && !empty($this->section['where']))
+        }
+        if (isset($this->section['where']) && !empty($this->section['where'])) {
             $this->section['where'] .= ' and ' . '(' . $where . ')';
-        else
+        } else {
             $this->section['where'] = '(' . $where . ')';
+        }
 
         return $this;
     }
@@ -479,7 +484,7 @@ abstract class DBase
     final function orderBy($field, $by = false)
     {
         $func_num = func_num_args();
-        if ($func_num == 2) {
+        if ($func_num === 2) {
             $fields = func_get_arg(0);
             $order = func_get_arg(1);
             $orderByStr = '';
@@ -518,10 +523,12 @@ abstract class DBase
     {
         $arg_num = func_num_args();
         $arg_list = func_get_args();
-        if ($arg_num == 1)
+        if ($arg_num === 1) {
             $this->section['limit'] = $arg_list[0];
-        if ($arg_num == 2)
+        }
+        if ($arg_num === 2) {
             $this->section['limit'] = (int)$arg_list[0] . ',' . (int)$arg_list[1];
+        }
 
         return $this;
     }
@@ -536,14 +543,14 @@ abstract class DBase
         if (func_num_args() > 1) {
             $field = func_get_arg(0);
             $fieldAnd = explode('&', $field);
-            $hasAnd = count($fieldAnd) > 1 ? TRUE : FALSE;
+            $hasAnd = count($fieldAnd) > 1;
             $fieldOr = explode('|', $field);
-            $hasOr = count($fieldOr) > 1 ? TRUE : FALSE;
+            $hasOr = count($fieldOr) > 1;
             if ($hasAnd && $hasOr) {
                 //TODO 待解决 同时处理OR和AND
                 new Exception('Where 字段目前不能同时包含&和|');
             }
-            if (func_num_args() == 2) {
+            if (func_num_args() === 2) {
                 $value = func_get_arg(1);
                 if ($hasOr) {
                     $wheres = [];
@@ -577,7 +584,7 @@ abstract class DBase
                         $value = $this->addslashes($value);
                     $where = '' . $field . '=' . $value;
                 }
-            } elseif (func_num_args() == 3) {
+            } elseif (func_num_args() === 3) {
                 $value = func_get_arg(2);
                 if ($hasOr) {
                     $wheres = [];
@@ -599,18 +606,21 @@ abstract class DBase
                     $field = $this->_Field($field);
                     if (is_array($value)) {
                         $value = implode(' or ' . $field . ' ' . func_get_arg(1), $this->addslashes($value));
-                    } else
+                    } else {
                         $value = $this->addslashes($value);
+                    }
                     $where = '' . $field . ' ' . func_get_arg(1) . ' ' . $value;
                 }
             }
         }
-        if (is_array($where))
+        if (is_array($where)) {
             $where = implode(' or ', $where);
-        if (isset($this->section['where']) && !empty($this->section['where']))
+        }
+        if (isset($this->section['where']) && !empty($this->section['where'])) {
             $this->section['where'] .= ' or ' . '(' . $where . ')';
-        else
+        } else {
             $this->section['where'] = '(' . $where . ')';
+        }
 
         return $this;
     }
@@ -689,7 +699,7 @@ abstract class DBase
                 return $this->exec();
             }
             $keys = array_keys($update);
-            if (in_array('0', $keys)) {
+            if (in_array('0', $keys, true)) {
                 $this->_set($update, 'update');
             } else {
                 $values = array_values($update);
@@ -697,8 +707,9 @@ abstract class DBase
                 $size = count($keys);
                 $ud = NULL;
                 for ($i = 0; $i < $size; $i++) {
-                    if ($i != 0)
+                    if ($i !== 0) {
                         $ud .= ',';
+                    }
                     $ud .= $keys[$i] . ' = ' . (is_array($values[$i]) ? $this->addslashes(json_encode($values[$i], JSON_UNESCAPED_UNICODE)) : (is_object($values[$i]) ? $this->addslashes(serialize($values[$i])) : $this->addslashes($values[$i]))) . '';
                 }
                 $this->_set($ud, 'update');
@@ -725,27 +736,27 @@ abstract class DBase
     }
 
     /**
-     * @param bool $sql
+     * @param string|null $sql
      *
      * @return mixed
      */
-    final function exec($sql = FALSE)
+    final function exec($sql = null)
     {
-        if (!$sql)
+        if (!$sql) {
             $this->compile();
-        $sql = $sql ? $sql : $this->sql;
-
+            $sql = $this->sql;
+        }
         //--转表前缀
         $this->parseTablePre($sql);
         $this->lastSql = $sql;
         Debug::add($sql, 2);
         $this->_reset();
-        if ($res = $this->_exec($sql) !== FALSE) {
-            return $res;
-        } else {
-            new Exception($this->getError());
-            return $res;
+        if ($this->_exec($sql) !== FALSE) {
+            return true;
         }
+
+        new Exception($this->getError());
+        return false;
     }
 
     /**
@@ -758,20 +769,19 @@ abstract class DBase
     final function compile()
     {
         $this->section['table'] = $this->get_table();
-        if ($this->section['handle'] == 'insert') {
+        if ($this->section['handle'] === 'insert') {
             $this->sql .= 'INSERT' . ' INTO ' . $this->section['table'] . ' ' . $this->section['insert'];
         } else {
-            if ($this->section['handle'] == 'select')
+            if ($this->section['handle'] === 'select') {
                 $sql = "{$this->section['handle']} {$this->section['select']} from {$this->section['table']}";
-            elseif ($this->section['handle'] == 'update')
+            } elseif ($this->section['handle'] === 'update') {
                 $sql = "{$this->section['handle']} {$this->section['table']} set {$this->section['update']}";
-            elseif ($this->section['handle'] == 'delete')
+            } elseif ($this->section['handle'] === 'delete') {
                 $sql = "{$this->section['handle']} from {$this->section['table']}";
+            }
             if (!empty($sql)) {
                 $sql .= ($this->section['join'] ? " " . $this->section['join'] : '') . ($this->section['where'] ? " where {$this->section['where']}" : '') . ($this->section['group'] ? " group by {$this->section['group']}" : '') . ($this->section['orderby'] ? " order by {$this->section['orderby']}" : '') . ($this->section['limit'] ? " limit  {$this->section['limit']}" : '');
                 return $this->sql .= $sql;
-            } else {
-                echo $this->section['handle'] . 'method is undefined!';
             }
 
             return FALSE;
@@ -856,7 +866,7 @@ abstract class DBase
      */
     final function join($table, $on1, $on2, $ori)
     {
-        if ($this->section['join'] == '')
+        if ($this->section['join'] === '')
             $this->section['join'] = $ori . ' join ' . $this->config ['table_pre'] . $table . " on " . $this->config ['table_pre'] . $on1 . '=' . $this->config ['table_pre'] . $on2;
         else
             $this->section['join'] .= ' ' . $ori . ' join ' . $this->config ['table_pre'] . $table . " on " . $this->config ['table_pre'] . $on1 . '=' . $this->config ['table_pre'] . $on2;
@@ -987,8 +997,9 @@ abstract class DBase
 
             return $this->exec();
         }
-        if ($delete)
+        if ($delete) {
             $this->setTable($delete);
+        }
 
         return $this->exec();
     }
@@ -1027,34 +1038,29 @@ abstract class DBase
      */
     final public function save($data, $primary_key = '')
     {
-        if (!is_array($data)) return FALSE;
-        if ($primary_key != '') {
-            if (isset($data[$primary_key]) && $data[$primary_key]) {
-                $primary_value = $data[$primary_key];
-                unset($data[$primary_key]);
+        if (($primary_key !== '') && isset($data[$primary_key]) && $data[$primary_key]) {
+            $primary_value = $data[$primary_key];
+            unset($data[$primary_key]);
 
-                return $this->where($primary_key, $primary_value)->update($data);
-            } else {
-                return $this->insert($data);
-            }
-        } else {
-            return $this->insert($data);
+            return $this->where($primary_key, $primary_value)->update($data);
         }
+
+        return $this->insert($data);
     }
 
     /**
      * 查询SQL
      *
-     * @param bool $sql
+     * @param string|null $sql
      *
      * @return array | DataObject
      */
-    final public function &query($sql = FALSE)
+    final public function &query($sql = null)
     {
         if (!$sql) {
             $this->compile();
+            $sql = $this->sql;
         }
-        $sql = $sql ? $sql : $this->sql;
         $this->_reset();
         $this->parseTablePre($sql);
         $this->lastSql = $sql;
@@ -1065,10 +1071,13 @@ abstract class DBase
             new Exception($this->getError());
         }
         $data = $this->stripslashes($data);
-        if ($data == NULL)         //防止直接返回Null
-            $data = [];
-        else
+        if ($data === NULL)         //防止直接返回Null
+        {
+            $data = new DataObject([]);
+        }
+        else {
             $data = new DataObject($data);
+        }
         return $data;
     }            //链接数据库方法
 
@@ -1094,7 +1103,7 @@ abstract class DBase
      * 转义函数
      * 参数可以为多参数或数组，返回数组
      *
-     * @param string $var
+     * @param string|array $var
      *
      * @return string | array
      */
@@ -1112,9 +1121,9 @@ abstract class DBase
     }
 
     /**
-     * @param $var
+     * @param string|array $var
      *
-     * @return string
+     * @return string|array
      */
     public function stripslashes($var)
     {

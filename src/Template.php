@@ -30,7 +30,7 @@ class Template
     final function __construct()
     {
         $temp_vars = Config::view_vars();
-        if ($temp_vars){
+        if ($temp_vars) {
             foreach ($temp_vars as $key => $value) {
                 $this->var[$key] = $value;
             }
@@ -286,36 +286,35 @@ class Template
     {
         $leftDelim = Config::template('leftDelim');
         $rightDelim = Config::template('rightDelim');
-        if (count($match) == 3) {
+        if (count($match) === 3) {
             foreach ($match[1] as $k => $v) {
                 $v = parse_uri($v);
                 preg_match_all('/' . $leftDelim . 'block\s+[\'|"](.*?)[\'|"]' . $rightDelim . '(.*?)' . $leftDelim . '\/block' . $rightDelim . '/is', $match[2][$k], $match_blocks);
-                if (count($match_blocks) != 3) {
+                if (count($match_blocks) !== 3) {
                     continue;
 
-                } else {
-                    //匹配出来的block
-                    $this->blacks = array_merge($this->blacks, array_combine($match_blocks[1], $match_blocks[2]));
                 }
+                //匹配出来的block 合并
+                $this->blacks = array_merge($this->blacks, array_combine($match_blocks[1], $match_blocks[2]));
                 $matches_blocks = $this->blacks;
                 $content = str_replace($match[0][$k], $this->template_parse(file_get_contents($this->get_path($v))), $content);
                 $content = preg_replace_callback('/' . $leftDelim . 'block\s+[\'|"](.*?)[\'|"]' . $rightDelim . '(.*?)' . $leftDelim . '\/block' . $rightDelim . '/is', function ($matches) use (&$match, $matches_blocks) {
-                    if (count($matches) == 3) {
+                    if (count($matches) === 3) {
                         if (isset($matches_blocks[$matches[1]])) {
                             return $matches_blocks[$matches[1]];
-                        } else {
-                            return $matches[2];
                         }
-                    } else {
-                        return '';
+
+                        return $matches[2];
                     }
+
+                    return '';
                 }, $content);
             }
 
             return TRUE;
-        } else {
-            return FALSE;
         }
+
+        return FALSE;
     }
 
     /**
@@ -323,14 +322,18 @@ class Template
      *
      * @access private
      *
-     * @param string $content 模板内容
+     * @param string|array $content 模板内容
      *
      * @return string|false
      */
     private function parseLiteral($content)
     {
-        if (is_array($content)) $content = $content[1];
-        if (trim($content) == '') return '';
+        if (is_array($content)) {
+            $content = $content[1];
+        }
+        if (trim($content) === '') {
+            return '';
+        }
         $i = count($this->literal);
         $parseStr = "<!--###literal{$i}###-->";
         $this->literal[$i] = $content;
@@ -343,13 +346,15 @@ class Template
      *
      * @access private
      *
-     * @param string $tag literal标签序号
+     * @param string|array $tag literal标签序号
      *
      * @return string|false
      */
     private function restoreLiteral($tag)
     {
-        if (is_array($tag)) $tag = $tag[1];
+        if (is_array($tag)) {
+            $tag = $tag[1];
+        }
         // 还原literal标签
         $parseStr = $this->literal[$tag];
         // 销毁literal记录
@@ -423,7 +428,7 @@ class Template
     public function assign($data)
     {
         $arg_num = func_num_args();
-        if ($arg_num == 1) {
+        if ($arg_num === 1) {
             if (is_array($data)) {
                 foreach ($data as $k => $v) {
                     $this->var[$k] = $v;
@@ -432,7 +437,5 @@ class Template
         } else {
             $this->var[func_get_arg(0)] = func_get_arg(1);
         }
-
-        return;
     }
 }

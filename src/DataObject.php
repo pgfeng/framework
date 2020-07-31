@@ -258,10 +258,12 @@ class DataObject extends ArrayObject implements \JsonSerializable
      */
     public function getIterator()
     {
-        if ($this->storage)
+        if ($this->storage) {
             $data = new \ArrayObject($this->storage);
-        else
+        }
+        else {
             $data = NULL;
+        }
         return $data;
     }
 
@@ -283,23 +285,25 @@ class DataObject extends ArrayObject implements \JsonSerializable
             $data = $this->storage;
         if (!$data) {
             return [];
-        } else {
-            $tree = [];
-            foreach ($data as $key => $item) {
-                if ($item[$pidK] == $pid) {
-                    unset($data[$key]);
-                    $item[$childK] = $this->toTree($idK, $pidK, $childK, $item[$idK], $data);
-                    $tree[] = $item;
-                }
-                continue;
-            }
-            if ($tree)
-                $data = new DataObject($tree);
-            else
-                $data = NULL;
-
-            return $data;
         }
+
+        $tree = [];
+        foreach ($data as $key => $item) {
+            if ($item[$pidK] == $pid) {
+                unset($data[$key]);
+                $item[$childK] = $this->toTree($idK, $pidK, $childK, $item[$idK], $data);
+                $tree[] = $item;
+            }
+            continue;
+        }
+        if ($tree) {
+            $data = new DataObject($tree);
+        }
+        else {
+            $data = NULL;
+        }
+
+        return $data;
     }
 
     /**
