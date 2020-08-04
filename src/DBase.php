@@ -227,8 +227,11 @@ abstract class DBase
         $this->select($field_name);
         $this->limit(0, 1);
         $fetch = $this->query();
-        if (empty($fetch)) return FALSE; else
-            return $fetch[0][$field_name];
+        if (empty($fetch)) {
+            return FALSE;
+        }
+
+        return $fetch[0][$field_name];
     }
 
     /**
