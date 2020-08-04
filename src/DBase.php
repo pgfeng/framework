@@ -50,7 +50,7 @@ abstract class DBase
     public $sql = '';
     public $lastSql = '';
 
-    final function lastSql()
+    final public function lastSql()
     {
         return $this->lastSql;
     }
@@ -76,7 +76,7 @@ abstract class DBase
     final public function paginate($number = 10, $page = 1)
     {
         $page = $page > 0 ? $page : 1;
-        $min = (intval($page) - 1) * $number;
+        $min = ((int)$page - 1) * $number;
 
         return $this->limit($min, intval($number))->query();
     }
@@ -98,10 +98,11 @@ abstract class DBase
      * @param $field
      * @return string
      */
-    final private function _Field($field)
+    final public function _Field($field)
     {
-        if (strpos($field, '.') !== FALSE)
+        if (strpos($field, '.') !== FALSE) {
             $field = $this->config ['table_pre'] . $field;
+        }
         return $field;
     }
 
@@ -111,11 +112,11 @@ abstract class DBase
      * @param $field
      * @return int
      */
-    final function max($field)
+    final public function max($field)
     {
         $field = $this->_Field($field);
         $max = $this->getOne('max(' . $field . ')');
-        return isset($max['max(' . $field . ')']) ? $max['max(' . $field . ')'] : 0;
+        return $max ? $max['max(' . $field . ')'] : 0;
     }
 
     /**
@@ -123,11 +124,11 @@ abstract class DBase
      * @param $field
      * @return int
      */
-    final function min($field)
+    final public function min($field)
     {
         $field = $this->_Field($field);
         $max = $this->getOne('min(' . $field . ')');
-        return isset($max['min(' . $field . ')']) ? $max['min(' . $field . ')'] : 0;
+        return $max ? $max['min(' . $field . ')'] : 0;
     }
 
     /**
@@ -142,7 +143,7 @@ abstract class DBase
         $field = $this->_Field($field);
         $count = $this->getOne('count(' . $field . ')');
 
-        return isset($count['count(' . $field . ')']) ? $count['count(' . $field . ')'] : 0;
+        return $count ? $count['count(' . $field . ')'] : 0;
     }
 
     /**
@@ -155,8 +156,8 @@ abstract class DBase
     final public function sum($field)
     {
         $field = $this->_Field($field);
-        $count = $this->getOne('SUM(' . $field . ')');
-        return isset($count['SUM(' . $field . ')']) ? $count['SUM(' . $field . ')'] : 0;
+        $sum = $this->getOne('SUM(' . $field . ')');
+        return $sum ? $sum['SUM(' . $field . ')'] : 0;
     }
 
     /**
@@ -171,10 +172,11 @@ abstract class DBase
         $this->select($field);
         $this->limit(0, 1);
         $fetch = $this->query();
-        if (empty($fetch))
+        if (empty($fetch)) {
             return false;
-        else
-            return $fetch[0];
+        }
+
+        return $fetch[0];
     }
 
     /**
@@ -239,7 +241,7 @@ abstract class DBase
      *
      * @return DBase|array|DataObject
      */
-    final function select($select = '*')
+    final public function select($select = '*')
     {
         $this->section['handle'] = 'select';
         $arg_num = func_num_args();
@@ -267,23 +269,22 @@ abstract class DBase
             }
 
             return $this->query();        //多参数将自懂执行query，返回数组；
-        } else {
-            //==判断是否为数组
-            if (is_array($select)) {
-                $allField = '';
-                foreach ($select as $field) {
-                    if ($allField == '') {
-                        $allField = $this->_Field($field);
-                    } else
-                        $allField .= ',' . $this->_Field($field);
-                }
-                $this->_set($allField, 'select');
-            } else {
-                $this->_set($select, 'select');
-            }
-
-            return $this;
         }
+        if (is_array($select)) {
+            $allField = '';
+            foreach ($select as $field) {
+                if ($allField === '') {
+                    $allField = $this->_Field($field);
+                } else {
+                    $allField .= ',' . $this->_Field($field);
+                }
+            }
+            $this->_set($allField, 'select');
+        } else {
+            $this->_set($select, 'select');
+        }
+
+        return $this;
     }
 
     /**
@@ -311,7 +312,7 @@ abstract class DBase
      * @param $data
      * @param $type
      */
-    final function _set($data, $type)
+    final public function _set($data, $type)
     {
         if (is_array($data)) {
             $this->section[$type] = implode(',', $data);
@@ -326,7 +327,7 @@ abstract class DBase
      *
      * @return Object
      */
-    final function between($field, $Between)
+    final public function between($field, $Between)
     {
         $Between = implode(' AND ', $Between);
 
@@ -339,7 +340,7 @@ abstract class DBase
      *
      * @return Object
      */
-    final function notBetween($field, $Between)
+    final public function notBetween($field, $Between)
     {
         $Between = implode(' AND ', $Between);
 
@@ -352,7 +353,7 @@ abstract class DBase
      *
      * @return Object
      */
-    final function in($field, $in)
+    final public function in($field, $in)
     {
         $field = $this->_Field($field);
         if (is_array($in)) {
@@ -498,19 +499,18 @@ abstract class DBase
             } else {
                 $this->section['orderby'] = $this->_Field(func_get_arg(0)) . ' ' . func_get_arg(1);
             }
-        } else {
-            if (is_array($field)) {
-                $order = '';
-                foreach ($field as $field) {
-                    if ($order == '') {
-                        $order = $this->_Field($field);
-                    } else
-                        $order .= ',' . $this->_Field($field);
+        } else if (is_array($field)) {
+            $order = '';
+            foreach ($field as $f) {
+                if ($order === '') {
+                    $order = $this->_Field($f);
+                } else {
+                    $order .= ',' . $this->_Field($f);
                 }
-                $this->section['orderby'] = $order;
-            } else {
-                $this->section['orderby'] = $field;
             }
+            $this->section['orderby'] = $order;
+        } else {
+            $this->section['orderby'] = $field;
         }
 
         return $this;
@@ -519,7 +519,7 @@ abstract class DBase
     /**
      * @return $this
      */
-    final function limit()
+    final public function limit()
     {
         $arg_num = func_num_args();
         $arg_list = func_get_args();
@@ -538,7 +538,7 @@ abstract class DBase
      *
      * @return $this
      */
-    final function orWhere($where)
+    final public function orWhere($where)
     {
         if (func_num_args() > 1) {
             $field = func_get_arg(0);
@@ -568,10 +568,11 @@ abstract class DBase
                     $wheres = [];
                     foreach ($fieldAnd as $f) {
                         $f = $this->_Field($f);
-                        if (is_array($value))
+                        if (is_array($value)) {
                             $value = implode(' or ' . $f . '=', $this->addslashes($value));
-                        else
+                        } else {
                             $value = $this->addslashes($value);
+                        }
                         $wheres[] = '' . $f . '=' . $value;
                     }
                     $where = implode(' and ', $wheres);
@@ -630,15 +631,20 @@ abstract class DBase
      *
      * @return $this
      */
-    final function from($from)
+    final public function from($from)
     {
         $this->setTable($from);
 
         return $this;
     }
 
-    //---字段自增
-    final function setInc($column, $num = 1)
+
+    /**
+     * @param $column
+     * @param int $num
+     * @return mixed
+     */
+    final public function setInc($column, $num = 1)
     {
 
         $this->section['handle'] = 'update';
@@ -647,8 +653,12 @@ abstract class DBase
         return $this->exec();
     }
 
-    //---字段自减
-    final function setDnc($column, $num = 1)
+    /**
+     * @param $column
+     * @param int $num
+     * @return mixed
+     */
+    final public function setDnc($column, $num = 1)
     {
         $this->section['handle'] = 'update';
         $this->_set($column . '=' . $column . '-' . $num, 'update');
@@ -665,7 +675,7 @@ abstract class DBase
      *
      * @return bool
      */
-    final function update($update)
+    final public function update($update)
     {
         $this->section['handle'] = 'update';
         $arg_num = func_num_args();
@@ -690,33 +700,32 @@ abstract class DBase
             }
 
             return $this->exec();
-        } else {
+        }
 
-            $this->section['handle'] = 'update';
-            if (is_string($update)) {
-                $this->_set($update, 'update');
-
-                return $this->exec();
-            }
-            $keys = array_keys($update);
-            if (in_array('0', $keys, true)) {
-                $this->_set($update, 'update');
-            } else {
-                $values = array_values($update);
-
-                $size = count($keys);
-                $ud = NULL;
-                for ($i = 0; $i < $size; $i++) {
-                    if ($i !== 0) {
-                        $ud .= ',';
-                    }
-                    $ud .= $keys[$i] . ' = ' . (is_array($values[$i]) ? $this->addslashes(json_encode($values[$i], JSON_UNESCAPED_UNICODE)) : (is_object($values[$i]) ? $this->addslashes(serialize($values[$i])) : $this->addslashes($values[$i]))) . '';
-                }
-                $this->_set($ud, 'update');
-            }
+        $this->section['handle'] = 'update';
+        if (is_string($update)) {
+            $this->_set($update, 'update');
 
             return $this->exec();
         }
+        $keys = array_keys($update);
+        if (in_array('0', $keys, true)) {
+            $this->_set($update, 'update');
+        } else {
+            $values = array_values($update);
+
+            $size = count($keys);
+            $ud = NULL;
+            for ($i = 0; $i < $size; $i++) {
+                if ($i !== 0) {
+                    $ud .= ',';
+                }
+                $ud .= $keys[$i] . ' = ' . (is_array($values[$i]) ? $this->addslashes(json_encode($values[$i], JSON_UNESCAPED_UNICODE)) : (is_object($values[$i]) ? $this->addslashes(serialize($values[$i])) : $this->addslashes($values[$i]))) . '';
+            }
+            $this->_set($ud, 'update');
+        }
+
+        return $this->exec();
     }
 
 
@@ -729,10 +738,11 @@ abstract class DBase
      */
     final public function get_table($table = FALSE)
     {
-        if (!$table)
+        if (!$table) {
             return (isset($this->section['table']) && !empty($this->section['table'])) ? $this->section['table'] : $this->config ['table_pre'] . $this->table;
-        else
+        } else {
             return $this->config ['table_pre'] . $table;
+        }
     }
 
     /**
@@ -740,7 +750,7 @@ abstract class DBase
      *
      * @return mixed
      */
-    final function exec($sql = null)
+    final public function exec($sql = null)
     {
         if (!$sql) {
             $this->compile();
@@ -766,7 +776,7 @@ abstract class DBase
      * @return String or false
      */
 
-    final function compile()
+    final public function compile()
     {
         $this->section['table'] = $this->get_table();
         if ($this->section['handle'] === 'insert') {
@@ -792,7 +802,7 @@ abstract class DBase
     /**
      * 重置查询
      */
-    final function _reset()
+    final public function _reset()
     {
         $this->section = [
             'handle' => 'select',
@@ -818,7 +828,7 @@ abstract class DBase
      *
      * @return bool
      */
-    final function insert($insert)
+    final public function insert($insert)
     {
         $this->section['handle'] = 'insert';
         $arg_num = func_num_args();
@@ -864,12 +874,13 @@ abstract class DBase
      *
      * @return $this
      */
-    final function join($table, $on1, $on2, $ori)
+    final public function join($table, $on1, $on2, $ori)
     {
-        if ($this->section['join'] === '')
+        if ($this->section['join'] === '') {
             $this->section['join'] = $ori . ' join ' . $this->config ['table_pre'] . $table . " on " . $this->config ['table_pre'] . $on1 . '=' . $this->config ['table_pre'] . $on2;
-        else
+        } else {
             $this->section['join'] .= ' ' . $ori . ' join ' . $this->config ['table_pre'] . $table . " on " . $this->config ['table_pre'] . $on1 . '=' . $this->config ['table_pre'] . $on2;
+        }
 
         return $this;
     }
@@ -881,7 +892,7 @@ abstract class DBase
      *
      * @return DBase
      */
-    final function rightJoin($table, $on1, $on2)
+    final public function rightJoin($table, $on1, $on2)
     {
         return $this->join($table, $on1, $on2, 'right');
     }
@@ -893,7 +904,7 @@ abstract class DBase
      *
      * @return DBase
      */
-    final function fullJoin($table, $on1, $on2)
+    final public function fullJoin($table, $on1, $on2)
     {
         return $this->join($table, $on1, $on2, 'full');
     }
@@ -905,7 +916,7 @@ abstract class DBase
      *
      * @return DBase
      */
-    final function innerJoin($table, $on1, $on2)
+    final public function innerJoin($table, $on1, $on2)
     {
         return $this->join($table, $on1, $on2, 'inner');
     }
@@ -915,7 +926,7 @@ abstract class DBase
      *
      * @return $this
      */
-    final function union($all = FALSE)
+    final public function union($all = FALSE)
     {
         $handle = $this->section['handle'];
         $sql = $this->compile();
@@ -939,8 +950,9 @@ abstract class DBase
      */
     final public function notNull($field)
     {
-        if (strpos($field, '.'))
+        if (strpos($field, '.')) {
             $field = $this->config['table_pre'] . $field;
+        }
 
         return $this->where($field . ' not null');
     }
@@ -954,8 +966,9 @@ abstract class DBase
      */
     final public function isNull($field)
     {
-        if (strpos($field, '.'))
+        if (strpos($field, '.')) {
             $field = $this->config['table_pre'] . $field;
+        }
 
         return $this->where($field . ' is null');
     }
@@ -1070,14 +1083,13 @@ abstract class DBase
         if ($data === FALSE) {
             new Exception($this->getError());
         }
-
+        $data = $this->stripslashes($data);
         if ($data === NULL)         //防止直接返回Null
         {
             $data = new DataObject([]);
         } else {
             $data = new DataObject($data);
         }
-        $data = $this->stripslashes($data);
         return $data;
     }            //链接数据库方法
 
@@ -1159,29 +1171,29 @@ abstract class DBase
      * @return array
      */
 
-    abstract function _query($sql);         //返回值是查询出的数组
+    abstract public function _query($sql);         //返回值是查询出的数组
 
     /**
      * @return string
      */
-    abstract function getError();            //返回上一个错误信息
+    abstract public function getError();            //返回上一个错误信息
 
-    abstract function real_escape_string($string); //特殊字符转义
+    abstract public function real_escape_string($string); //特殊字符转义
 
     /**
      * @param $sql
      *
      * @return mixed
      */
-    abstract function _exec($sql);           //执行SQL
+    abstract public function _exec($sql);           //执行SQL
 
-    abstract function _connect($configName);            //返回处理后的语柄
+    abstract public function _connect($configName);            //返回处理后的语柄
 
-    abstract function beginTransaction();   //开启事务
+    abstract public function beginTransaction();   //开启事务
 
-    abstract function commit();             //关闭事务
+    abstract public function commit();             //关闭事务
 
-    abstract function rollBack();           //回滚事务
+    abstract public function rollBack();           //回滚事务
 }
 
 //====================    END DB.class.php      ========================//
