@@ -1070,14 +1070,14 @@ abstract class DBase
         if ($data === FALSE) {
             new Exception($this->getError());
         }
-        $data = $this->stripslashes($data);
+
         if ($data === NULL)         //防止直接返回Null
         {
             $data = new DataObject([]);
-        }
-        else {
+        } else {
             $data = new DataObject($data);
         }
+        $data = $this->stripslashes($data);
         return $data;
     }            //链接数据库方法
 

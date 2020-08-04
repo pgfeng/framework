@@ -19,10 +19,22 @@ use IteratorAggregate;
  */
 class DataObject extends ArrayObject implements \JsonSerializable
 {
-    private $storage = [],
-        $table = 'Data',
-        $DBName = 'default',
-        $is_row = FALSE;
+    /**
+     * @var array
+     */
+    private $storage;
+    /**
+     * @var string
+     */
+    private $table;
+    /**
+     * @var string
+     */
+    private $DBName;
+    /**
+     * @var bool
+     */
+    private $is_row;
 
     /**
      * DataObject constructor.
@@ -35,7 +47,7 @@ class DataObject extends ArrayObject implements \JsonSerializable
      *
      * @internal param bool|string $table
      */
-    public function __construct(array $data, $is_row = FALSE, $table = 'Data', $configName = 'default')
+    public function __construct(array $data = [], $is_row = FALSE, $table = 'Data', $configName = 'default')
     {
         $this->storage = $data;
         $this->is_row = $is_row;
@@ -62,12 +74,12 @@ class DataObject extends ArrayObject implements \JsonSerializable
      */
     public function save($primary_key = 'id')
     {
-        if (!$this->is_row && $this->table == 'Data') {
+        if (!$this->is_row && $this->table === 'Data') {
             new Exception("数据不是单行数据库数据!");
             return FALSE;
-        } else {
-            return DB::table($this->table, $this->DBName)->save($this->storage, $primary_key);
         }
+
+        return DB::table($this->table, $this->DBName)->save($this->storage, $primary_key);
     }
 
     /**
@@ -195,7 +207,7 @@ class DataObject extends ArrayObject implements \JsonSerializable
     /**
      * @return DataObject|null
      */
-    function current()
+    public function current()
     {
         $data = current($this->storage);
         if (!empty($data)) {
@@ -208,7 +220,7 @@ class DataObject extends ArrayObject implements \JsonSerializable
     /**
      * @return mixed
      */
-    function key()
+    public function key()
     {
         return key($this->storage);
     }
@@ -216,7 +228,7 @@ class DataObject extends ArrayObject implements \JsonSerializable
     /**
      * @return mixed
      */
-    function next()
+    public function next()
     {
         return next($this->storage);
     }
@@ -224,7 +236,7 @@ class DataObject extends ArrayObject implements \JsonSerializable
     /**
      * @return bool
      */
-    function valid()
+    public function valid()
     {
         return $this->current() !== NULL;
     }
@@ -258,13 +270,7 @@ class DataObject extends ArrayObject implements \JsonSerializable
      */
     public function getIterator()
     {
-        if ($this->storage) {
-            $data = new \ArrayObject($this->storage);
-        }
-        else {
-            $data = NULL;
-        }
-        return $data;
+        return new \ArrayObject($this->storage);
     }
 
     /**
@@ -277,33 +283,24 @@ class DataObject extends ArrayObject implements \JsonSerializable
      *
      * @param bool $data
      *
-     * @return array | DataObject
+     * @return DataObject
      */
     public function toTree($idK = 'id', $pidK = 'pid', $childK = 'child', $pid = '0', $data = FALSE)
     {
-        if ($data === FALSE)
+        if ($data === FALSE) {
             $data = $this->storage;
-        if (!$data) {
-            return [];
         }
 
         $tree = [];
         foreach ($data as $key => $item) {
-            if ($item[$pidK] == $pid) {
+            if ($item[$pidK] === $pid) {
                 unset($data[$key]);
                 $item[$childK] = $this->toTree($idK, $pidK, $childK, $item[$idK], $data);
                 $tree[] = $item;
             }
             continue;
         }
-        if ($tree) {
-            $data = new DataObject($tree);
-        }
-        else {
-            $data = NULL;
-        }
-
-        return $data;
+        return new DataObject($tree);
     }
 
     /**
