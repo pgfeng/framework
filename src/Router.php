@@ -51,7 +51,7 @@ class Router
     public static function init()
     {
         error_reporting(Config::config('error_reporting'));
-        Router::all('(.*)', static function ($router) {
+        self::all('(.*)', static function ($router) {
             $uris = explode('/', $router);
             $uris = array_filter($uris, static function ($value) {
                 return $value !== '';
@@ -97,7 +97,7 @@ class Router
                 $class_map = explode('\\', $class);
                 if ($route && substr($item->name, -6) === 'Action') {
                     $Annotations = $ref->getMethod($item->name)->getAnnotations();
-                    $route = preg_replace("/\s+/is", " ", $route);
+                    $route = preg_replace('/\\s+/is', " ", $route);
                     $route = explode(' ', $route);
                     $request_type = 'all';
                     if (count($route) > 1) {
@@ -194,13 +194,13 @@ class Router
             }
         }
         if (!$callback) {
-            $callback = function () {
+            $callback = static function () {
                 header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
                 if (Config::router('default_404')) {
                     return self::runCallBack(Config::router('default_404'), []);
-                } else {
-                    throw new \Exception('没有匹配到路由!');
                 }
+
+                throw new \RuntimeException('没有匹配到路由!');
             };
         }
         return self::runCallBack($callback, $params);
@@ -217,11 +217,12 @@ class Router
     {
         $uri = $old_uri = parse_uri($uri);
         $uris = explode('/', $uri);
-        $uris = array_filter($uris, function ($v) {
+        $uris = array_filter($uris, static function ($v) {
             if ($v === '') {
                 return 0;
-            } else
-                return 1;
+            }
+
+            return 1;
         });
         $count = count($uris);
         switch ($count) {
@@ -245,11 +246,12 @@ class Router
                 $uri = ucfirst($uris[0]) . '/' . ucfirst($uris[1]) . '@' . $uris[2];
                 $params = array_slice($uris, 3);
         }
-        $params = array_filter($params, function ($v) {
+        $params = array_filter($params, static function ($v) {
             if ($v === '') {
                 return 0;
-            } else
-                return 1;
+            }
+
+            return 1;
         });
         $params_count = count($params);
 
@@ -259,19 +261,22 @@ class Router
             if (!is_callable($callback)) {
                 $pattern_seg = preg_replace('#\(.*?\)#', $explode_str, $pattern);
                 $num = substr_count($pattern_seg, $explode_str);
-                if ($num != $params_count)
+                if ($num !== $params_count) {
                     continue;
-                if (strcasecmp($callback, $uri) == 0) {
+                }
+                if (strcasecmp($callback, $uri) === 0) {
                     $exp_array = explode($explode_str, $pattern_seg);
                     $uri_compile = '';
                     for ($i = 0; $i <= $params_count; $i++) {
-                        if ($i == $params_count)
+                        if ($i === $params_count) {
                             $uri_compile .= $exp_array[$i];
-                        else
+                        } else {
                             $uri_compile .= $exp_array[$i] . $params[$i];
+                        }
                     }
-                    if ($get)
-                        $uri_compile = $uri_compile . '?' . http_build_query($get);
+                    if ($get) {
+                        $uri_compile .= '?' . http_build_query($get);
+                    }
                     return $uri_compile;
                 }
             }
@@ -289,14 +294,13 @@ class Router
                     for ($i = 0; $i <= $params_count; $i++) {
                         if ($i === $params_count) {
                             $uri_compile .= $exp_array[$i];
-                        }
-                        else {
+                        } else {
                             $uri_compile .= $exp_array[$i] . $params[$i];
                         }
                     }
 
                     if ($get) {
-                        $uri_compile = $uri_compile . '?' . http_build_query($get);
+                        $uri_compile .= '?' . http_build_query($get);
                     }
                     return $uri_compile;
                 }
@@ -304,8 +308,7 @@ class Router
         }
         if ($get) {
             $uri_compile = '/' . $old_uri . '?' . http_build_query($get);
-        }
-        else {
+        } else {
             $uri_compile = '/' . $old_uri;
         }
         return $uri_compile;
@@ -331,7 +334,7 @@ class Router
         }
         if (is_callable($callback)) {
             if (!$params) {
-                return call_user_func($callback);
+                return $callback();
             }
 
             return call_user_func_array($callback, $params);
@@ -340,11 +343,11 @@ class Router
         $callback = str_replace('/', '\\', $callback);
         $segments = explode('@', $callback);
         if (count($segments) === 1) {
-            throw new \Exception('必须传入操作的行为!');
+            throw new \RuntimeException('必须传入操作的行为!');
         }
         $seg = explode('\\', $segments[0]);
         if (count($seg) !== 2) {
-            throw new \Exception('传入的控制器必须两层结构!');
+            throw new \RuntimeException('传入的控制器必须两层结构!');
         }
         define('MODULE_NAME', self::$module_name = ucfirst(strtolower($seg[0])));
         define('CONTROLLER_NAME', self::$controller_name = ucfirst(strtolower($seg[1])));
@@ -360,7 +363,7 @@ class Router
             }
 
             header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");
-            throw new \Exception('method ' . $method . ' not find!');
+            throw new \RuntimeException('method ' . $method . ' not find!');
         }
         if (!is_array($params)) {
             return $controller->$method();
