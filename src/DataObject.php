@@ -281,11 +281,11 @@ class DataObject extends ArrayObject implements \JsonSerializable
      * @param string $childK
      * @param String $pid
      *
-     * @param bool $data
+     * @param array $data
      *
-     * @return DataObject
+     * @return DataObject | array
      */
-    public function toTree($idK = 'id', $pidK = 'pid', $childK = 'child', $pid = '0', $data = FALSE)
+    public function toTree($idK = 'id', $pidK = 'pid', $childK = 'child', $pid = '0', $data = [])
     {
         if (!$data) {
             $data = $this->storage;
@@ -302,9 +302,9 @@ class DataObject extends ArrayObject implements \JsonSerializable
         }
         if ($tree) {
             return new DataObject($tree);
-        } else {
-            return [];
         }
+
+        return [];
     }
 
     /**
