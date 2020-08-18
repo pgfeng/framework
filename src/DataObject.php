@@ -287,7 +287,7 @@ class DataObject extends ArrayObject implements \JsonSerializable
      */
     public function toTree($idK = 'id', $pidK = 'pid', $childK = 'child', $pid = '0', $data = FALSE)
     {
-        if ($data === FALSE) {
+        if (!$data) {
             $data = $this->storage;
         }
 
@@ -300,7 +300,11 @@ class DataObject extends ArrayObject implements \JsonSerializable
             }
             continue;
         }
-        return new DataObject($tree);
+        if ($tree) {
+            return new DataObject($tree);
+        } else {
+            return [];
+        }
     }
 
     /**
