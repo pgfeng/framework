@@ -293,7 +293,7 @@ class DataObject extends ArrayObject implements \JsonSerializable
 
         $tree = [];
         foreach ($data as $key => $item) {
-            if ($item[$pidK] === $pid) {
+            if ((string)$item[$pidK] === (string)$pid) {
                 unset($data[$key]);
                 $item[$childK] = $this->toTree($idK, $pidK, $childK, $item[$idK], $data);
                 $tree[] = $item;
