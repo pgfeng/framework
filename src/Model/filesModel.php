@@ -167,7 +167,7 @@ class filesModel extends Model
             $files = [];
             foreach ($file['error'] as $key => $error) {
                 $f = [];
-                if ($error === 0 && $file['size'][$key] !== 0) {
+                if ((int)$error === 0 && (int)$file['size'][$key] !== 0) {
                     $md5 = md5_file($file['tmp_name'][$key]);
                     if ($rfile = $this->getFileByMd5($md5)) {
                         $f = [
@@ -226,7 +226,7 @@ class filesModel extends Model
 
             return $files;
         } else {
-            if ($file['error'] === 0 && $file['size'] !== 0) {
+            if ((int)$file['error'] === 0 && (int)$file['size'] !== 0) {
                 $md5 = md5_file($file['tmp_name']);
                 if ($rfile = $this->getFileByMd5($md5)) {
                     return [
