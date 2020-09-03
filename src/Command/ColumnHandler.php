@@ -54,25 +54,29 @@ class ColumnHandler extends Handler
     function handler($argv)
     {
         $this->argv = $argv;
-        if (!$argv || !isset($argv[0]) || $argv[0] == '') {
-            $res = $this->command->getStdin("未输入更新的数据库配置是否要更新全部数据库字段[yes or no]:[默认yes]")[0];
-            if (preg_match('/no/i', $res)) {
-                $this->argv[0] = $config = $this->choseConfig();
+        if($argv[0]==='--all'){
+            unset($this->argv[0], $argv[0]);
+        }else{
+            if (!$argv || !isset($argv[0]) || $argv[0] == '') {
+                $res = $this->command->getStdin("未输入更新的数据库配置是否要更新全部数据库字段[yes or no]:[默认yes]")[0];
+                if (preg_match('/no/i', $res)) {
+                    $this->argv[0] = $config = $this->choseConfig();
+                }
+            } else {
+                if (!Config::database($this->argv[0])) {
+                    $this->argv[0] = $config = $this->choseConfig();
+                }
             }
-        } else {
-            if (!Config::database($this->argv[0])) {
-                $this->argv[0] = $config = $this->choseConfig();
+            if ((!isset($argv[1]) || $argv[1] == 1) && (isset($this->argv[0]) && $this->argv[0] != '')) {
+                $res = $this->command->getStdin("未输入表名,是否{$this->argv[0]}全部数据表[yes or no]:[默认yes]")[0];
+                if (preg_match('/no/i', $res)) {
+                    $this->argv[1] = $this->choseTable($this->argv[0]);
+                }
             }
-        }
-        if ((!isset($argv[1]) || $argv[1] == 1) && (isset($this->argv[0]) && $this->argv[0] != '')) {
-            $res = $this->command->getStdin("未输入表名,是否{$this->argv[0]}全部数据表[yes or no]:[默认yes]")[0];
-            if (preg_match('/no/i', $res)) {
-                $this->argv[1] = $this->choseTable($this->argv[0]);
-            }
-        }
-        if (isset($argv[1])) {
-            if (!$this->tableExists(Config::database($this->argv[0])['table_pre'] . $this->argv[1])) {
-                $this->argv[1] = $this->choseTable($this->argv[0]);
+            if (isset($argv[1])) {
+                if (!$this->tableExists(Config::database($this->argv[0])['table_pre'] . $this->argv[1])) {
+                    $this->argv[1] = $this->choseTable($this->argv[0]);
+                }
             }
         }
         return $this->buildColumn();
