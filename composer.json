@@ -18,8 +18,7 @@
     "ext-json": "*",
     "ext-mbstring":"*",
     "ext-pdo": "*",
-    "ext-mysqli": "*",
-    "ext-mysql": "*"
+    "ext-mysqli": "*"
   },
   "autoload": {
     "files": [
