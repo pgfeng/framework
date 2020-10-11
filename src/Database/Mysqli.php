@@ -42,7 +42,7 @@ class Mysqli extends DBase
      *
      * @return string
      */
-    function real_escape_string($string)
+    public function real_escape_string($string)
     {
         $string = mysqli_real_escape_string($this->mysqli, $string);
         if (is_numeric($string)) {
@@ -56,7 +56,7 @@ class Mysqli extends DBase
      * 返回错误信息
      * @return string
      */
-    function getError()
+    public function getError()
     {
         return $this->mysqli->error;
     }
@@ -65,7 +65,7 @@ class Mysqli extends DBase
      * @param $sql
      * @return array | bool | \mysqli_result
      */
-    function &_query($sql)
+    public function &_query($sql)
     {
         $query = $this->mysqli->query($sql);
         if ($query) {
@@ -75,15 +75,15 @@ class Mysqli extends DBase
             }
             unset($query);
             return $result;
-        } else {
-            return $query;
         }
+
+        return $query;
     }
 
     /**
      * @return bool
      */
-    function close()
+    public function close()
     {
         return mysqli_close($this->mysqli);
     }
@@ -92,7 +92,7 @@ class Mysqli extends DBase
      * @param $sql
      * @return bool| \mysqli_result
      */
-    function _exec($sql)
+    public function _exec($sql)
     {
         return $this->mysqli->query($sql);
     }
@@ -100,7 +100,7 @@ class Mysqli extends DBase
     /**
      * @return bool
      */
-    function rollBack()
+    public function rollBack()
     {
         return $this->mysqli->rollback();
     }
@@ -108,7 +108,7 @@ class Mysqli extends DBase
     /**
      * @return bool
      */
-    function commit()
+    public function commit()
     {
         return $this->mysqli->commit();
     }
@@ -116,7 +116,7 @@ class Mysqli extends DBase
     /**
      * @return bool
      */
-    function beginTransaction()
+    public function beginTransaction()
     {
         return $this->mysqli->autocommit(FALSE);
     }

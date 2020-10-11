@@ -88,11 +88,12 @@ abstract class Cache
 
     /**
      * 清空一个缓存空间
+     * @param string $space
      * @return bool
      */
-    public static function flush()
+    public static function flush($space='')
     {
-        $res = self::$cache->_flush();
+        $res = self::$cache->_flush($space);
         if ($res) {
             Debug::add('Cache:缓存清空成功.', 0);
         } else {
@@ -133,7 +134,8 @@ abstract class Cache
     abstract public function _delete($name, $space);
 
     /**
+     * @param string $space
      * @return mixed
      */
-    abstract public function _flush();
+    abstract public function _flush($space='');
 }

@@ -52,22 +52,21 @@ class ControllerHandler extends Handler
     function handler($argv)
     {
         $this->argv = $argv;
-
-        if (!$argv || $argv[0] == '') {
+        if (!$argv || $argv[0] === '') {
             $this->argv[0] = $this->command->getStdin("请输入应用目录:")[0];
             return $this->handler($this->argv);
         }
 
-        if (!isset($argv[1]) || $argv[1] == '') {
+        if (!isset($argv[1]) || $argv[1] === '') {
             $this->argv[1] = $this->command->getStdin("请输入模块名称:")[0];
             return $this->handler($this->argv);
         }
 
-        if (!isset($argv[2]) || $argv[2] == '') {
+        if (!isset($argv[2]) || $argv[2] === '') {
             $this->argv[2] = $this->command->getStdin("请输入控制器名称:")[0];
             return $this->handler($this->argv);
         }
-        if (!isset($argv[3]) || $argv[3] == '') {
+        if (!isset($argv[3]) || $argv[3] === '') {
             $this->argv[3] = $this->command->getStdin("请输入行为名称逗号分隔:")[0];
             return $this->handler($this->argv);
         }
@@ -152,7 +151,7 @@ ACTION;
     /**
      * @return mixed
      */
-    function help()
+    public function help()
     {
         return;
     }

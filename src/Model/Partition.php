@@ -49,15 +49,15 @@ abstract class Partition extends \GFPHP\Model
      */
     public function where()
     {
-        if (func_get_arg(0) == $this->partition_field) {
-            if (func_num_args() != 2) {
+        if (func_get_arg(0) === $this->partition_field) {
+            if (func_num_args() !== 2) {
                 throw new Exception('效验分表字段，where必须传入两个参数！');
             }
-            if (func_num_args() == 3) {
+            if (func_num_args() === 3) {
                 throw new Exception('效验分表字段，where只能传入两个参数！');
-            } else {
-                $this->set_table(func_get_arg(1));
             }
+
+            $this->set_table(func_get_arg(1));
         }
         call_user_func_array([$this->db, 'where'], func_get_args());
         return $this;
@@ -73,8 +73,9 @@ abstract class Partition extends \GFPHP\Model
     {
         if (!isset($insert[$this->partition_field])) {
             throw new Exception('必须传入 [ ' . $this->partition_field . ' ] 字段！', 0);
-        } else
-            $this->set_table($insert[$this->partition_field]);
+        }
+
+        $this->set_table($insert[$this->partition_field]);
         return parent::insert($insert);
     }
 
@@ -90,18 +91,16 @@ abstract class Partition extends \GFPHP\Model
      */
     final public function save($data, $primary_key = '')
     {
-        if (!is_array($data)) return FALSE;
-        if ($primary_key != '') {
-            if (isset($data[$primary_key]) && $data[$primary_key]) {
-                $primary_value = $data[$primary_key];
-                unset($data[$primary_key]);
-                return $this->where($primary_key, $primary_value)->update($data);
-            } else {
-                return $this->insert($data);
-            }
-        } else {
-            return $this->insert($data);
+        if (!is_array($data)) {
+            return FALSE;
         }
+        if ($primary_key && isset($data[$primary_key]) && $data[$primary_key]) {
+            $primary_value = $data[$primary_key];
+            unset($data[$primary_key]);
+            return $this->where($primary_key, $primary_value)->update($data);
+        }
+
+        return $this->insert($data);
     }
 
 }

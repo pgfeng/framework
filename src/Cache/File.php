@@ -57,7 +57,9 @@ class file extends Cache
     private function toPath($key, $dir = FALSE)
     {
 
-        if (!$dir) $dir = $this->config['default_space'];
+        if (!$dir) {
+            $dir = $this->config['default_space'];
+        }
         return BASE_PATH . Config::cache('cache_dir') . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $key . '.php';
     }
 
@@ -68,7 +70,9 @@ class file extends Cache
      */
     private function toTimePath($key, $dir = false)
     {
-        if (!$dir) $dir = $this->config['default_space'];
+        if (!$dir) {
+            $dir = $this->config['default_space'];
+        }
         return BASE_PATH . Config::cache('cache_dir') . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . '__file_time__' . DIRECTORY_SEPARATOR . $key . '.php';
     }
 
@@ -81,10 +85,11 @@ class file extends Cache
      */
     private function read($path)
     {
-        if (file_exists($path))
+        if (file_exists($path)) {
             return file_get_contents($path);
-        else
-            return FALSE;
+        }
+
+        return FALSE;
     }
 
     /**
@@ -128,10 +133,11 @@ class file extends Cache
     public function _time($key, $space = '')
     {
         $path = $this->toPath($key, $space);
-        if (file_exists($path))
+        if (file_exists($path)) {
             return filemtime($path);
-        else
-            return FALSE;
+        }
+
+        return FALSE;
 
     }
 
@@ -149,10 +155,7 @@ class file extends Cache
     {
         $path = $this->toPath($key, $space);
         $timePath = $this->toTimePath($key, $space);
-        if ($this->write($path, $content) && $this->write($timePath, $expiration))
-            return TRUE;
-        else
-            return FALSE;
+        return $this->write($path, $content) && $this->write($timePath, $expiration);
     }
 
     /**
@@ -166,10 +169,8 @@ class file extends Cache
     private function write($path, $content)
     {
         $dir = dirname($path);
-        if (!file_exists($dir)) {
-            if (!@mkdir($dir, 0777, TRUE)) {
-                echo '创建缓存文件夹失败,没有写入权限';
-            }
+        if (!file_exists($dir) && !mkdir($dir, 0777, TRUE) && !is_dir($dir)) {
+            echo '创建缓存文件夹失败,没有写入权限';
         }
 
         return file_put_contents($path, $content);
@@ -200,13 +201,15 @@ class file extends Cache
      */
     public function _flush($dir = '')
     {
-        if (!$dir)
+        if (!$dir) {
             $dir = BASE_PATH . parseDir(Config::config('app_dir'), Config::cache('cache_dir'));
-        if (!file_exists($dir))
+        }
+        if (!file_exists($dir)) {
             return TRUE;
+        }
         $dh = opendir($dir);
         while ($file = readdir($dh)) {
-            if ($file != "." && $file != "..") {
+            if ($file !== "." && $file !== "..") {
                 $fullPath = $dir . "/" . $file;
                 if (!is_dir($fullPath)) {
                     @unlink($fullPath);
@@ -217,10 +220,6 @@ class file extends Cache
         }
         closedir($dh);
         //删除当前文件夹：
-        if (rmdir($dir)) {
-            return TRUE;
-        } else {
-            return FALSE;
-        }
+        return rmdir($dir);
     }
 }

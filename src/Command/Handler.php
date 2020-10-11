@@ -39,11 +39,11 @@ abstract class Handler
      * @param $argv
      * @return mixed
      */
-    abstract function handler($argv);
+    abstract public function handler($argv);
 
     /**
      * @return mixed
      */
-    abstract function help();
+    abstract public function help();
 
 }

@@ -45,14 +45,14 @@ class Mysql extends DBase
      *
      * @return string
      */
-    function real_escape_string($string)
+    public function real_escape_string($string)
     {
         $string = mysql_real_escape_string($string, $this->con);
         if(is_numeric($string)) {
             return $string;
-        }else{
-            return '\''.$string.'\'';
         }
+
+        return '\''.$string.'\'';
     }
 
     /**
@@ -60,7 +60,7 @@ class Mysql extends DBase
      *
      * @return string
      */
-    function getError()
+    public function getError()
     {
         return mysql_error($this->con);
     }
@@ -69,7 +69,7 @@ class Mysql extends DBase
      * @param $sql
      * @return array|bool
      */
-    function _query($sql)
+    public function _query($sql)
     {
         $query = mysql_query($sql, $this->con);
         if ($query) {
@@ -88,22 +88,22 @@ class Mysql extends DBase
      * @param $sql
      * @return resource
      */
-    function _exec($sql)
+    public function _exec($sql)
     {
         return mysql_query($sql, $this->con);
     }
 
-    function commit()
+    public function commit()
     {
         return $this->exec("commit");
     }
 
-    function rollBack()
+    public function rollBack()
     {
         return $this->exec("rollback");
     }
 
-    function beginTransaction()
+    public function beginTransaction()
     {
         $this->exec("set autocommit=0");
     }

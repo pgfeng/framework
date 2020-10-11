@@ -128,10 +128,11 @@ class Memcached extends Cache
     /**
      * 清空指定空间缓存
      *
+     * @param string $name
      * @return bool|mixed
      */
 
-    public function _flush()
+    public function _flush($name='')
     {
         return $this->mem->flush();
     }

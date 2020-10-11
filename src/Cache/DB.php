@@ -1,5 +1,7 @@
 <?php
+
 namespace GFPHP\Cache;
+
 use GFPHP\Config, GFPHP\Cache;
 use GFPHP\DBase;
 
@@ -7,7 +9,7 @@ use GFPHP\DBase;
 /**
  * 数据库存储缓存类
  * 将缓存放入数据库指定表中
- * 'CREATE TABLE ' . Config::database('table_pre') . $config['table'] . ' ( `cachekey` varchar(125) NOT NULL,`cachedata` text,`cachetime` int(10) NOT NULL,`cachespace` varchar(125) NOT NULL, KEY `cachekey` (`cachekey`,`cachetime`,`cachespace`) ) ENGINE=MyISAM DEFAULT CHARSET=utf8'
+ * 'CREATE TABLE ' . Config::database('table_pre') . $config['table'] . ' ( `cache_key` varchar(125) NOT NULL,`cache_data` text,`cache_time` int(10) NOT NULL,`cache_space` varchar(125) NOT NULL, KEY `cache_key` (`cache_key`,`cache_time`,`cache_space`) ) ENGINE=MyISAM DEFAULT CHARSET=utf8'
  * 创建时间：2014-8-24 10:20 PGF
  * 更新时间：2015-7-18 10:35 PGF 实现数据库缓存
  */
@@ -25,7 +27,7 @@ class DB extends Cache
     {
         if ($config) {
             foreach ($config as $k => $v) {
-                $this->config[ $k ] = $v;
+                $this->config[$k] = $v;
             }
         }
 
@@ -33,9 +35,7 @@ class DB extends Cache
         //--链接数据库，并且获取模型
 
         if (!$this->model) {
-
-            $this->model = model($config['table']);
-
+            $this->model = \GFPHP\DB::table($config['table'], $config['database_config_name']);
         }
 
     }
@@ -46,11 +46,12 @@ class DB extends Cache
 
         $key = $this->model->addslashes($key);
         $space = $this->model->addslashes($space);
-        $res = $this->model->where('cachekey', $key)->where('cachespace', $space)->select('cachedata')->limit(1)->query();
-        if (empty($res))
+        $res = $this->model->where('cache_key', $key)->where('cache_space', $space)->select('cache_data')->limit(1)->query();
+        if (empty($res)) {
             return FALSE;
+        }
 
-        return $res[0]['cachedata'];
+        return $res[0]['cache_data'];
 
     }
 
@@ -58,7 +59,7 @@ class DB extends Cache
     {
         $key = $this->model->addslashes($key);
         $space = $this->model->addslashes($space);
-        $res = $this->model->where('cachekey', $key)->where('cachespace', $space)->select('cachekey')->query();
+        $res = $this->model->where('cache_key', $key)->where('cache_space', $space)->select('cache_key')->query();
         if (empty($res)) {
             return FALSE;
         }
@@ -70,37 +71,33 @@ class DB extends Cache
     {
         $key = $this->model->addslashes($key);
         $space = $this->model->addslashes($space);
-        $res = $this->model->where('cachekey', $key)->where('cachespace', $space)->select('cachetime')->limit(1)->query();
+        $res = $this->model->where('cache_key', $key)->where('cache_space', $space)->select('cache_time')->limit(1)->query();
         if (empty($res))
             return FALSE;
 
-        return $res[0]['cachetime'];
+        return $res[0]['cache_time'];
     }
 
     public function _set($key, $content, $space)
     {
         if ($this->is_cache($key, $space)) {
             $update = [
-                'cachetime' => time(),
-                'cachedata' => $this->model->addslashes($content),
+                'cache_time' => time(),
+                'cache_data' => $this->model->addslashes($content),
             ];
-            if ($this->model->where('cachekey', $key)->where('cachespace', $space)->update($update) !== FALSE) {
+            if ($this->model->where('cache_key', $key)->where('cache_space', $space)->update($update) !== FALSE) {
                 return TRUE;
             } else {
                 return FALSE;
             }
         } else {
             $insert = [
-                'cachekey'   => $this->model->addslashes($key),
-                'cachedata'  => $this->model->addslashes($content),
-                'cachetime'  => time(),
-                'cachespace' => $this->model->addslashes($space),
+                'cache_key' => $this->model->addslashes($key),
+                'cache_data' => $this->model->addslashes($content),
+                'cache_time' => time(),
+                'cache_space' => $this->model->addslashes($space),
             ];
-            if ($this->model->insert($insert) !== FALSE) {
-                return TRUE;
-            } else {
-                return FALSE;
-            }
+            return $this->model->insert($insert) !== FALSE;
         }
     }
 
@@ -110,21 +107,21 @@ class DB extends Cache
             $key = $this->model->addslashes($key);
             $space = $this->model->addslashes($space);
 
-            return $this->model->where('cachekey', $key)->where('cachespace', $space)->delete();
+            return $this->model->where('cache_key', $key)->where('cache_space', $space)->delete();
         }
 
         return TRUE;
     }
 
-    public function _flush($space)
+    /**
+     * @param string|array $space
+     * @return bool|mixed
+     */
+    public function _flush($space='')
     {
-        if ($space != Config::database('cache_dir') . '/' . $this->model->db->table) {
+        if ((string)$space !== (string)Config::database('cache_dir') . '/' . $this->model->db->table) {
             $space = $this->model->addslashes($space);
-            if ($this->model->where('cachespace like \'' . $space . '%\'')->delete() !== FALSE) {
-                return TRUE;
-            } else {
-                return FALSE;
-            }
+            return $this->model->where('cache_space like \'' . $space . '%\'')->delete() !== FALSE;
         }
 
         return FALSE;
@@ -134,7 +131,7 @@ class DB extends Cache
     {
         $space = $this->model->addslashes($space);
         $time = time() - $lifetime;
-        if ($this->model->where('cachetime <' . $time)->where('cachespace', $space)->delete() !== FALSE)
+        if ($this->model->where('cache_time <' . $time)->where('cache_space', $space)->delete() !== FALSE)
             return TRUE;
         else
             return FALSE;

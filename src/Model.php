@@ -62,6 +62,11 @@ use GFPHP\Model\filesModel;
  * @method string lastSql() 获取最后执行的sql
  * @method int|bool lastInsertId() 获取最后插入的自增ID
  * @method $this like(string $field, string $value) 搜索查询
+ * @method $this leftLike(string|array $field, string $value) 搜索查询
+ * @method $this rightLike(string|array $field, string $value) 搜索查询
+ * @method $this bothLike(string|array $field, string $value) 搜索查询
+ * @method $this notNull(string $column)
+ * @method $this isNull(string $column)
  */
 class Model
 {

@@ -22,6 +22,9 @@ class ModelHandler extends Handler
 
     /**
      * 判断表是否存在
+     * @param $table
+     * @param $config_name
+     * @return bool
      */
     private function tableExists($table, $config_name)
     {
@@ -30,9 +33,9 @@ class ModelHandler extends Handler
         if (!DB::table('', $config_name)->query('show tables like "' . $table . '"')) {
             $this->command->writeln("数据库不存在此表!");
             return false;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     /**
@@ -43,10 +46,10 @@ class ModelHandler extends Handler
     public function handler($argv)
     {
         $this->argv = $argv;
-        if (!$argv || $argv[0] == '') {
+        if (!$argv || $argv[0] === '') {
             $this->help();
         } else {
-            if (!isset($argv[0]) || $argv[0] == '') {
+            if (!isset($argv[0]) || (string)$argv[0] === '') {
                 $argv[0] = $this->command->getStdin("请输入表名[表名]:")[0];
                 $this->handler($argv);
                 return;
@@ -68,13 +71,14 @@ class ModelHandler extends Handler
      * @param $nameSpace
      * @param $modelDir
      * @param $modelPath
+     * @return string
      */
     protected function buildModel($nameSpace, $modelDir, $modelPath)
     {
         $to_build = true;
         if (file_exists($modelPath)) {
             $res = $this->command->getStdin('模型已经存在是否重新生成,字段都会重复生成[yes or no]:')[0];
-            if (!preg_match('/yes/i', $res)) {
+            if (false === stripos($res, "yes")) {
                 $to_build = false;
             }else{
                 $to_build = true;
@@ -153,9 +157,9 @@ MODEL;
         if (!Config::database($config)) {
             unset($this->argv[2]);
             return $this->choseConfig('请输入正确的配置名称'.implode(',',array_keys(Config::database())).':');
-        } else {
-            return $config;
         }
+
+        return $config;
     }
 
     /**
@@ -166,14 +170,14 @@ MODEL;
     {
         if (!$dir_name) {
             return Config::command('BaseModelNameSpace');
-        } else {
-            $nameSpace = Config::command('BaseModelNameSpace');
-            $d = explode('\\', str_replace('/', '\\', $dir_name));
-            foreach ($d as $dd) {
-                $nameSpace .= '\\' . $dd;
-            }
-            return $nameSpace;
         }
+
+        $nameSpace = Config::command('BaseModelNameSpace');
+        $d = explode('\\', str_replace('/', '\\', $dir_name));
+        foreach ($d as $dd) {
+            $nameSpace .= '\\' . $dd;
+        }
+        return $nameSpace;
     }
 
     /**
@@ -184,14 +188,14 @@ MODEL;
     {
         if (!$dir_name) {
             return BASE_PATH . Config::command('ModelDir') . DIRECTORY_SEPARATOR;
-        } else {
-            $dir = Config::command('ModelDir') . DIRECTORY_SEPARATOR;
-            $d = explode('/', str_replace('\\', '/', $dir_name));
-            foreach ($d as $dd) {
-                $dir .= $dd . DIRECTORY_SEPARATOR;
-            }
-            return BASE_PATH . $dir;
         }
+
+        $dir = Config::command('ModelDir') . DIRECTORY_SEPARATOR;
+        $d = explode('/', str_replace('\\', '/', $dir_name));
+        foreach ($d as $dd) {
+            $dir .= $dd . DIRECTORY_SEPARATOR;
+        }
+        return BASE_PATH . $dir;
     }
 
     /**

@@ -61,10 +61,9 @@ class GFPHP
         $patterns[] = "/" . $leftDelim . "else" . $rightDelim . "/i";
         $replaces[] = "<?php } else { ?>";
 
-        //当为空时只需
+        //====或
         $patterns[] = "/" . $leftDelim . "elseLoop" . $rightDelim . "/i";
         $replaces[] = "<?php } else { ?>";
-
 
         $patterns[] = "/" . $leftDelim . "elseif\s+(.+?)" . $rightDelim . "/";
         $replaces[] = "<?php } elseif (\\1) { ?>";
@@ -84,18 +83,18 @@ class GFPHP
         $replaces[] = "<?php } ?>";
 
         //==== 赋值
-//        $patterns[] = "/" . $leftDelim . "(.+?)=(.+?)" . $rightDelim . "/";
-/*        $replaces[] = "<?php $\\1=='\\2'; ?>";*/
-//
-//        //==== ++ --
-//        $patterns[] = "/" . $leftDelim . "\+\+(.+?)" . $rightDelim . "/";
-/*        $replaces[] = "<?php ++$\\1; ?>";*/
-//        $patterns[] = "/" . $leftDelim . "\-\-(.+?)" . $rightDelim . "/";
-/*        $replaces[] = "<?php --$\\1; ?>";*/
-//        $patterns[] = "/" . $leftDelim . "(.+?)\-\-" . $rightDelim . "/";
-/*        $replaces[] = "<?php $\\1--; ?>";*/
-//        $patterns[] = "/" . $leftDelim . "(.+?)\+\+" . $rightDelim . "/";
-/*        $replaces[] = "<?php $\\1++; ?>";*/
+        //        $patterns[] = "/" . $leftDelim . "(.+?)=(.+?)" . $rightDelim . "/";
+        /*        $replaces[] = "<?php $\\1=='\\2'; ?>";*/
+        //
+        //        //==== ++ --
+        //        $patterns[] = "/" . $leftDelim . "\+\+(.+?)" . $rightDelim . "/";
+        /*        $replaces[] = "<?php ++$\\1; ?>";*/
+        //        $patterns[] = "/" . $leftDelim . "\-\-(.+?)" . $rightDelim . "/";
+        /*        $replaces[] = "<?php --$\\1; ?>";*/
+        //        $patterns[] = "/" . $leftDelim . "(.+?)\-\-" . $rightDelim . "/";
+        /*        $replaces[] = "<?php $\\1--; ?>";*/
+        //        $patterns[] = "/" . $leftDelim . "(.+?)\+\+" . $rightDelim . "/";
+        /*        $replaces[] = "<?php $\\1++; ?>";*/
 
         //== LOOP循环 相当于foreach 去掉as去掉括号
         $patterns[] = "/" . $leftDelim . "loop\s+(\S+)\s+(\S+)" . $rightDelim . "/i";
@@ -124,9 +123,7 @@ class GFPHP
             $key = array_shift($v);
             $p = '[\'' . implode('\'][\'', $v) . '\']';
             $var = '$' . $key . $p;
-            $match = '<?php echo ' . $var . ';?>';
-
-            return $match;
+            return '<?php echo ' . $var . ';?>';
         }, $str);
 
         //** 引入CSS标签
@@ -135,10 +132,11 @@ class GFPHP
             $cssArray = explode(',', $css);
             $css = '';
             foreach ($cssArray as $c) {
-                if (preg_match('/^https?:\/\//i', $c))
+                if (preg_match('/^https?:\/\//i', $c)) {
                     $css .= '<link href="' . $c . '" type="text/css" rel="stylesheet">';
-                else
+                } else {
                     $css .= '<link href="' . Config::template('css_path') . $c . '" type="text/css" rel="stylesheet">';
+                }
             }
 
             return $css;
@@ -158,10 +156,11 @@ class GFPHP
             $jsArray = explode(',', $js);
             $js = '';
             foreach ($jsArray as $j) {
-                if (preg_match('/^https?:\/\//i', $j))
+                if (preg_match('/^https?:\/\//i', $j)) {
                     $js .= '<script type="text/javascript" src="' . $j . '"></script>';
-                else
+                } else {
                     $js .= '<script type="text/javascript" src="' . Config::template('js_path') . $j . '"></script>';
+                }
             }
             return $js;
         }, $str);

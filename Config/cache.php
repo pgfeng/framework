@@ -7,11 +7,11 @@ return array(
 
     //======= CACHE DRIVER CONFIG START =====//                                             可以参考drivers下的缓存驱动
 
-//    'driver' => \GFPHP\Cache\memcached::class,
-//    'driver' => \GFPHP\Cache\DB::class,
-//
+    //    'driver' => \GFPHP\Cache\memcached::class,
+    //    'driver' => \GFPHP\Cache\DB::class,
+    //
     'driver' => \GFPHP\Cache\File::class,
-//    'driver' => \GFPHP\Cache\redis::class,
+    //    'driver' => \GFPHP\Cache\redis::class,
 
     //======= CACHE DRIVER CONFIG OVER  =====//
 
@@ -32,9 +32,10 @@ return array(
 
 
     //========== DB CONFIG START =======//
+    //-- cache database_config_name
+    'database_config_name' => 'default',
     //-- cache table
     'table' => 'caches',
-
     //-- cache table create status
     'create' => '1',
     //=======   DB CONFIG OVER  =======//

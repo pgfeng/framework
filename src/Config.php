@@ -51,7 +51,7 @@ class Config
             }
         }
         else {
-            throw new \Exception('$config must is array');
+            throw new \RuntimeException('$config must is array');
         }
         return TRUE;
     }

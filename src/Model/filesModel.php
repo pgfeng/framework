@@ -50,12 +50,12 @@ class filesModel extends Model
         if ($file) {
             if (unlink('./' . $file['file_path'])) {
                 return $this->Where('file_id', $file_id)->delete();
-            } else {
-                return FALSE;
             }
-        } else {
-            return TRUE;
+
+            return FALSE;
         }
+
+        return TRUE;
     }
 
     /**
@@ -77,34 +77,34 @@ class filesModel extends Model
         $extensions = $repository->findExtensions($mime);
         $data = base64_decode(explode('base64,', $base64_data)[1]);
         $ext = $extensions[0];
-        if (in_array(strtolower($ext), $allow_type)) {
+        if (in_array(strtolower($ext), $allow_type, true)) {
             $md5 = md5($data);
-            if ($rfile = $this->getFileByMd5($md5)) {
+            if ($file = $this->getFileByMd5($md5)) {
                 return [
                     'status' => 'true',
-                    'path' => $rfile['file_path'],
+                    'path' => $file['file_path'],
                     'msg' => '上传成功！！',
                 ];
-            } else {
-                $path = Config::file('upload_path') . date("Ymd") . '/' . time() . random(10) . '.' . $ext;
-                $full_path = $path;
-                mkPathDir($full_path);
-                if (file_put_contents($full_path, $data)) {
-                    $this->Insert([
-                        'file_name' => time(),
-                        'file_size' => strlen($data),
-                        'file_ext' => $ext,
-                        'file_type' => $mime,
-                        'file_md5' => $md5,
-                        'file_time' => time(),
-                        'file_path' => $path,
-                    ]);
-                    return [
-                        'status' => true,
-                        'path' => $path,
-                        'msg' => '上传成功',
-                    ];
-                }
+            }
+
+            $path = Config::file('upload_path') . date("Ymd") . '/' . time() . random(10) . '.' . $ext;
+            $full_path = $path;
+            mkPathDir($full_path);
+            if (file_put_contents($full_path, $data)) {
+                $this->Insert([
+                    'file_name' => time(),
+                    'file_size' => strlen($data),
+                    'file_ext' => $ext,
+                    'file_type' => $mime,
+                    'file_md5' => $md5,
+                    'file_time' => time(),
+                    'file_path' => $path,
+                ]);
+                return [
+                    'status' => true,
+                    'path' => $path,
+                    'msg' => '上传成功',
+                ];
             }
         } else {
             return [
@@ -169,10 +169,10 @@ class filesModel extends Model
                 $f = [];
                 if ((int)$error === 0 && (int)$file['size'][$key] !== 0) {
                     $md5 = md5_file($file['tmp_name'][$key]);
-                    if ($rfile = $this->getFileByMd5($md5)) {
+                    if ($file = $this->getFileByMd5($md5)) {
                         $f = [
                             'status' => true,
-                            'path' => $rfile['file_path'],
+                            'path' => $file['file_path'],
                             'msg' => '上传成功！！',
                         ];
                     } else {
@@ -330,10 +330,11 @@ class filesModel extends Model
     public function getFileByMd5($md5, $all = FALSE)
     {
         $this->Where('file_md5', $md5);
-        if ($all)
+        if ($all) {
             return $this->getOne();
-        else
-            return $this->getOne('file_path');
+        }
+
+        return $this->getOne('file_path');
     }
 
     /**
@@ -344,9 +345,11 @@ class filesModel extends Model
     public function getFileById($file_id, $all = FALSE)
     {
         $this->Where('file_id', $file_id);
-        if ($all)
+        if ($all) {
             return $this->getOne();
-        else
+        }
+        else {
             return $this->getOne('file_path');
+        }
     }
 }

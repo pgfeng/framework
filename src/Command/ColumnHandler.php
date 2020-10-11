@@ -57,45 +57,40 @@ class ColumnHandler extends Handler
         if($argv[0]==='--all'){
             unset($this->argv[0], $argv[0]);
         }else{
-            if (!$argv || !isset($argv[0]) || $argv[0] == '') {
+            if (!$argv || !isset($argv[0]) || (string)$argv[0] === '') {
                 $res = $this->command->getStdin("未输入更新的数据库配置是否要更新全部数据库字段[yes or no]:[默认yes]")[0];
-                if (preg_match('/no/i', $res)) {
+                if (false !== stripos($res, "no")) {
                     $this->argv[0] = $config = $this->choseConfig();
                 }
-            } else {
-                if (!Config::database($this->argv[0])) {
-                    $this->argv[0] = $config = $this->choseConfig();
-                }
+            } else if (!Config::database($this->argv[0])) {
+                $this->argv[0] = $config = $this->choseConfig();
             }
-            if ((!isset($argv[1]) || $argv[1] == 1) && (isset($this->argv[0]) && $this->argv[0] != '')) {
+            if ((!isset($argv[1]) || (int)$argv[1] === 1) && (isset($this->argv[0]) && (string)$this->argv[0] !== '')) {
                 $res = $this->command->getStdin("未输入表名,是否{$this->argv[0]}全部数据表[yes or no]:[默认yes]")[0];
-                if (preg_match('/no/i', $res)) {
+                if (false !== stripos($res, "no")) {
                     $this->argv[1] = $this->choseTable($this->argv[0]);
                 }
             }
-            if (isset($argv[1])) {
-                if (!$this->tableExists(Config::database($this->argv[0])['table_pre'] . $this->argv[1])) {
-                    $this->argv[1] = $this->choseTable($this->argv[0]);
-                }
+            if (isset($argv[1]) && !$this->tableExists(Config::database($this->argv[0])['table_pre'] . $this->argv[1])) {
+                $this->argv[1] = $this->choseTable($this->argv[0]);
             }
         }
         return $this->buildColumn();
-        return;
     }
 
     /**
      * 选择表
      * @param $config
-     * @return
+     * @return string
      */
     public function choseTable($config)
     {
         $table = $this->command->getStdin("请输入表名:")[0];
         if (!$table || !$this->tableExists(Config::database($config)['table_pre'] . $table)) {
             return $this->choseTable($config);
-        } else {
-            return $table;
         }
+
+        return $table;
     }
 
     /**
@@ -155,6 +150,7 @@ class ColumnHandler extends Handler
      * @param $config
      * @param $nameSpace
      * @param $columnPath
+     * @return string
      */
     private function buildTableColumn($table, $config, $nameSpace, $columnPath)
     {
@@ -211,9 +207,9 @@ Column;
         }
         if (!Config::database($config)) {
             return $this->choseConfig('请输入正确的配置名称:');
-        } else {
-            return $config;
         }
+
+        return $config;
     }
 
 }

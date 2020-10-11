@@ -23,16 +23,16 @@ class RouterHandler extends Handler
         if (!$argv[0]) {
             $this->argv[0] = $this->command->getStdin("请输入模块目录:")[0];
             return $this->handler($this->argv);
-        } else {
-            Router::buildAnnotation($argv[0]);
-            $this->command->writeln('生成规则成功！');
         }
+
+        Router::buildAnnotation($argv[0]);
+        $this->command->writeln('生成规则成功！');
     }
 
     /**
      * @return mixed
      */
-    function help()
+    public function help()
     {
         $this->command->writeln('生成路由规则');
     }

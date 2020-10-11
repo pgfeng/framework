@@ -23,7 +23,6 @@ class Controller
         $this->Init();
     }
 
-    //---- 替代 __construct
     public function Init()
     {
     }

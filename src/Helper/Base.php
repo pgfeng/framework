@@ -25,8 +25,9 @@ use GFPHP\Model;
  */
 function url($uri = '', $get = [], $method = 'GET')
 {
-    if (!$uri)
+    if (!$uri) {
         return Config::router('url_path');
+    }
 
     return Router::url($uri, $get, $method);
 }
@@ -56,11 +57,11 @@ function U($uri = '', $get = [], $method = 'GET')
  */
 function show_error($msg = '未知错误')
 {
-    if (IS_AJAX)
+    if (IS_AJAX) {
         return echo_json($msg, false);
-    else {
-        return $msg;
     }
+
+    return $msg;
 }
 
 /**
@@ -104,8 +105,9 @@ function model($table = '', $configName = false)
  */
 function view($name, $data = FALSE, $cacheTime = 0, $cacheKey = '')
 {
-    if ($data)
+    if ($data) {
         \GFPHP\GFPHP::$Template->assign($data);
+    }
     return \GFPHP\GFPHP::$Template->display($name, $cacheTime, $cacheKey);
 }
 
@@ -125,7 +127,7 @@ function hooks($Hooks_name, $params, $type = 'call')
             return Hooks::call($Hooks_name, $params);
             break;
         case 'listen':
-            return Hooks::listen($Hooks_name, $params);
+            Hooks::listen($Hooks_name, $params);
             break;
         case 'filter':
             return Hooks::filter($Hooks_name, $params);
@@ -145,24 +147,23 @@ function parseDir()
     $dir = '';
     foreach ($dirs as $d) {
         $d = trim($d);
-        if (strlen($d) > 0) {
-            if ($d[0] == '/')
+        if ($d !== '') {
+            if ((string)$d[0] === '/') {
                 $d = substr($d, 1, strlen($d) - 1);
-            if ($d[strlen($d) - 1] != '/')
+            }
+            if ($d[strlen($d) - 1] !== '/') {
                 $d .= '/';
+            }
             $dir .= $d;
         }
     }
     $dir = explode('/', $dir);
-    $c = count($dir);
-    for ($i = 0; $i < $c; $i++) {
-        if ($dir[$i] == '')
+    foreach ($dir as $i => $iValue) {
+        if ($iValue === '') {
             continue;
-        if (strpos('..', $dir[$i]) !== FALSE) {
-            if ($i > 0) {
-                unset($dir[$i - 1]);
-                unset($dir[$i]);
-            }
+        }
+        if ((strpos('..', $iValue) !== FALSE) && $i > 0) {
+            unset($dir[$i - 1], $dir[$i]);
         }
     }
 
@@ -180,20 +181,22 @@ function parseDir()
  */
 function str_cut($string, $length, $dot = '...')
 {
-    $length = intval($length);
+    $length = (int)$length;
     //--将html标签剔除
     $string = strip_tags($string);
     //--获取内容长度
-    $strlen = mb_strlen($string, 'utf8');
+    $str_len = mb_strlen($string, 'utf8');
     //--如果没有超过直接返回
-    if ($strlen <= $length) return $string;
+    if ($str_len <= $length) {
+        return $string;
+    }
 
-//    $string = str_replace([' ', ' ', '&amp;', '"', '&#039;', '&ldquo;', '&rdquo;', '&mdash;', '<', '>', '&middot;', '&hellip;'], ['', '',
-//        '&', '"', "'", '&ldquo;', '&rdquo;', '&mdash;', '<', '>', '&middot;', '&hellip;'], $string);
-//    $string = preg_replace("/<\/?[^>]+>/i", '', $string);
-    $strcut = mb_substr($string, 0, $length, 'utf-8');
+    //    $string = str_replace([' ', ' ', '&amp;', '"', '&#039;', '&ldquo;', '&rdquo;', '&mdash;', '<', '>', '&middot;', '&hellip;'], ['', '',
+    //        '&', '"', "'", '&ldquo;', '&rdquo;', '&mdash;', '<', '>', '&middot;', '&hellip;'], $string);
+    //    $string = preg_replace("/<\/?[^>]+>/i", '', $string);
+    $str_cut = mb_substr($string, 0, $length, 'utf-8');
 
-    return $strcut . $dot;
+    return $str_cut . $dot;
 }
 
 /**
@@ -210,12 +213,12 @@ function mkPathDir($path, $mode = 0777)
     if (!is_dir($dir)) {
         if (!file_exists($dir)) {
             return mkdir($dir, $mode, TRUE);
-        } else {
-            return FALSE;
         }
-    } else {
-        return TRUE;
+
+        return FALSE;
     }
+
+    return TRUE;
 }
 
 /**
@@ -336,15 +339,15 @@ function ip()
 
         if (isset($_SERVER["HTTP_X_FORWARDED_FOR"])) {
 
-            $IPaddress = $_SERVER["HTTP_X_FORWARDED_FOR"];
+            $IP_address = $_SERVER["HTTP_X_FORWARDED_FOR"];
 
         } else if (isset($_SERVER["HTTP_CLIENT_IP"])) {
 
-            $IPaddress = $_SERVER["HTTP_CLIENT_IP"];
+            $IP_address = $_SERVER["HTTP_CLIENT_IP"];
 
         } else {
 
-            $IPaddress = $_SERVER["REMOTE_ADDR"];
+            $IP_address = $_SERVER["REMOTE_ADDR"];
 
         }
 
@@ -352,21 +355,21 @@ function ip()
 
         if (getenv("HTTP_X_FORWARDED_FOR")) {
 
-            $IPaddress = getenv("HTTP_X_FORWARDED_FOR");
+            $IP_address = getenv("HTTP_X_FORWARDED_FOR");
 
         } else if (getenv("HTTP_CLIENT_IP")) {
 
-            $IPaddress = getenv("HTTP_CLIENT_IP");
+            $IP_address = getenv("HTTP_CLIENT_IP");
 
         } else {
 
-            $IPaddress = getenv("REMOTE_ADDR");
+            $IP_address = getenv("REMOTE_ADDR");
 
         }
 
     }
 
-    return preg_match('/[\d\.]{7,15}/', $IPaddress, $matches) ? $matches [0] : '';
+    return preg_match('/[\d\.]{7,15}/', $IP_address, $matches) ? $matches [0] : '';
 }
 
 /**
@@ -379,17 +382,21 @@ function ip()
  */
 function toTime($time = NULL, $date_format = 'Y/m/d H:i:s')
 {
-    $time = is_null($time) ? time() : $time;
+    $time = $time === null ? time() : $time;
     $now = time();
     $diff = $now - $time;
-    if ($diff < 10)
+    if ($diff < 10) {
         return '刚刚 ';
-    if ($diff < 60)
+    }
+    if ($diff < 60) {
         return $diff . '秒前 ';
-    if ($diff < (60 * 60))
+    }
+    if ($diff < (60 * 60)) {
         return floor($diff / 60) . '分钟前 ';
-    if (date('Ymd', $time) == date('Ymd', $now))
+    }
+    if (date('Ymd', $time) === date('Ymd', $now)) {
         return '今天 ' . date('H:i:s', $time);
+    }
 
     return date($date_format, $time);
 }
@@ -434,22 +441,23 @@ function remove_xss($string)
 {
     $string = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]+/S', '', $string);
 
-    $parm1 = ['javascript', 'vbscript', 'expression', 'applet', 'meta', 'xml', 'blink', 'link', 'script', 'embed', 'object', 'iframe', 'frame', 'frameset', 'ilayer', 'layer', 'bgsound', 'title', 'base'];
+    $params_1 = ['javascript', 'vbscript', 'expression', 'applet', 'meta', 'xml', 'blink', 'link', 'script', 'embed',
+        'object', 'iframe', 'frame', 'frameset', 'ilayer', 'layer', 'bgsound', 'title', 'base'];
 
-    $parm2 = ['onabort', 'onactivate', 'onafterprint', 'onafterupdate', 'onbeforeactivate', 'onbeforecopy', 'onbeforecut', 'onbeforedeactivate', 'onbeforeeditfocus', 'onbeforepaste', 'onbeforeprint', 'onbeforeunload', 'onbeforeupdate', 'onblur', 'onbounce', 'oncellchange', 'onchange', 'onclick', 'oncontextmenu', 'oncontrolselect', 'oncopy', 'oncut', 'ondataavailable', 'ondatasetchanged', 'ondatasetcomplete', 'ondblclick', 'ondeactivate', 'ondrag', 'ondragend', 'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'onerror', 'onerrorupdate', 'onfilterchange', 'onfinish', 'onfocus', 'onfocusin', 'onfocusout', 'onhelp', 'onkeydown', 'onkeypress', 'onkeyup', 'onlayoutcomplete', 'onload', 'onlosecapture', 'onmousedown', 'onmouseenter', 'onmouseleave', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onmousewheel', 'onmove', 'onmoveend', 'onmovestart', 'onpaste', 'onpropertychange', 'onreadystatechange', 'onreset', 'onresize', 'onresizeend', 'onresizestart', 'onrowenter', 'onrowexit', 'onrowsdelete', 'onrowsinserted', 'onscroll', 'onselect', 'onselectionchange', 'onselectstart', 'onstart', 'onstop', 'onsubmit', 'onunload'];
+    $params_2 = ['onabort', 'onactivate', 'onafterprint', 'onafterupdate', 'onbeforeactivate', 'onbeforecopy', 'onbeforecut', 'onbeforedeactivate', 'onbeforeeditfocus', 'onbeforepaste', 'onbeforeprint', 'onbeforeunload', 'onbeforeupdate', 'onblur', 'onbounce', 'oncellchange', 'onchange', 'onclick', 'oncontextmenu', 'oncontrolselect', 'oncopy', 'oncut', 'ondataavailable', 'ondatasetchanged', 'ondatasetcomplete', 'ondblclick', 'ondeactivate', 'ondrag', 'ondragend', 'ondragenter', 'ondragleave', 'ondragover', 'ondragstart', 'ondrop', 'onerror', 'onerrorupdate', 'onfilterchange', 'onfinish', 'onfocus', 'onfocusin', 'onfocusout', 'onhelp', 'onkeydown', 'onkeypress', 'onkeyup', 'onlayoutcomplete', 'onload', 'onlosecapture', 'onmousedown', 'onmouseenter', 'onmouseleave', 'onmousemove', 'onmouseout', 'onmouseover', 'onmouseup', 'onmousewheel', 'onmove', 'onmoveend', 'onmovestart', 'onpaste', 'onpropertychange', 'onreadystatechange', 'onreset', 'onresize', 'onresizeend', 'onresizestart', 'onrowenter', 'onrowexit', 'onrowsdelete', 'onrowsinserted', 'onscroll', 'onselect', 'onselectionchange', 'onselectstart', 'onstart', 'onstop', 'onsubmit', 'onunload'];
 
-    $parm = array_merge($parm1, $parm2);
+    $params = array_merge($params_1, $params_2);
 
-    for ($i = 0; $i < sizeof($parm); $i++) {
+    foreach ($params as $i => $iValue) {
         $pattern = '/';
-        for ($j = 0; $j < strlen($parm[$i]); $j++) {
+        for ($j = 0, $jMax = strlen($iValue); $j < $jMax; $j++) {
             if ($j > 0) {
                 $pattern .= '(';
                 $pattern .= '(&#[x|X]0([9][a][b]);?)?';
                 $pattern .= '|(&#0([9][10][13]);?)?';
                 $pattern .= ')?';
             }
-            $pattern .= $parm[$i][$j];
+            $pattern .= $params[$i][$j];
         }
         $pattern .= '/i';
         $string = preg_replace($pattern, '', $string);
@@ -525,8 +533,9 @@ function dump($var, $echo = TRUE, $label = NULL, $strict = TRUE)
  */
 function redirect($url, $time = 0)
 {
-    if ($time > 0)
+    if ($time > 0) {
         header('Refresh:' . $time . ';url=' . $url);
+    }
     else {
         header('Location:' . $url);
         exit;
@@ -548,10 +557,12 @@ function srtToRE($str)
     ];
     $str = str_split($str, 1);
     foreach ($str as $s) {
-        if (in_array($s, $regs))
+        if (in_array($s, $regs, true)) {
             $res .= '\\' . $s;
-        else
+        }
+        else {
             $res .= $s;
+        }
     }
 
     return $res;
@@ -614,26 +625,25 @@ function isGet($param = [])
             if (isset($_GET[$param])) {
                 return TRUE;
             }
-        } else {
-            if (!empty($param)) {
-                foreach ($param as $item) {
-                    if (!isset($_GET[$item]))
-                        return FALSE;
+        } else if (!empty($param)) {
+            foreach ($param as $item) {
+                if (!isset($_GET[$item])) {
+                    return FALSE;
                 }
             }
         }
 
         return TRUE;
-    } else {
-        return FALSE;
     }
+
+    return FALSE;
 }
 
 /**
  * 判断是否为POST请求
  * 如果有参数，则会去判断这些参数是否存在，如果存在返回TRUE
  *
- * @param array $param
+ * @param array|string $param
  *
  * @return bool
  */
@@ -644,19 +654,18 @@ function isPost($param = [])
             if (isset($_POST[$param])) {
                 return TRUE;
             }
-        } else {
-            if (!empty($param)) {
-                foreach ($param as $item) {
-                    if (!isset($_POST[$item]))
-                        return FALSE;
+        } else if (!empty($param)) {
+            foreach ($param as $item) {
+                if (!isset($_POST[$item])) {
+                    return FALSE;
                 }
             }
         }
 
         return TRUE;
-    } else {
-        return FALSE;
     }
+
+    return FALSE;
 }
 
 
@@ -688,7 +697,9 @@ function parse_uri($uri)
 {
     $NM = strpos($uri, '#');
     if ($NM === 0)          //没有填写 MODULE_NAME
+    {
         $uri = MODULE_NAME . '/' . substr($uri, 1);
+    }
     else {
         $NC = strpos($uri, '@');
         if ($NC === 0) {    //没有填写 MODULE_NAME 和 CONTROLLER_NAME
@@ -704,7 +715,7 @@ function parse_uri($uri)
  * @param mixed $data 数据
  * @param string $root 根节点名
  * @param string $item 数字索引的子节点名
- * @param string $attr 根节点属性
+ * @param string|array $attr 根节点属性
  * @param string $id 数字索引子节点key转换的属性名
  * @param string $encoding 数据编码
  *
