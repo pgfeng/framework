@@ -8,8 +8,9 @@
 return [
 
     //-- 项目URL根目录
-    'url_path' => (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https:' : 'http:' . '//' . $_SERVER['SERVER_NAME'] . ($_SERVER["SERVER_PORT"] == '80' ? '' : ':' . $_SERVER["SERVER_PORT"] . '/'),
+    'url_path' => \GFPHP\Http\Request::domain().'/',
 
+    'domain_name' => \GFPHP\Http\Request::domain(),
     //-- 默认模块
 
     'default_module' => 'Home',

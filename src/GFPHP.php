@@ -41,24 +41,6 @@ class GFPHP
         //==当前时间
         define('__NOW__', $_SERVER['REQUEST_TIME']);
 
-        //==请求类型
-        define('REQUEST_METHOD', $_SERVER['REQUEST_METHOD']);
-
-        //==是否为GET请求
-        define('IS_GET', REQUEST_METHOD === 'GET');
-
-        //==是否为POST请求
-        define('IS_POST', REQUEST_METHOD === 'POST');
-
-        //==是否为PUT请求
-        define('IS_PUT', REQUEST_METHOD === 'PUT');
-
-        //==是否为DELETE请求
-        define('IS_DELETE', REQUEST_METHOD === 'DELETE');
-
-        //==是否为AJAX请求
-        define('IS_AJAX', (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'));
-
         session_start();
 
         $time_zone = Config::config('time_zone');

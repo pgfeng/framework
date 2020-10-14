@@ -2,6 +2,8 @@
 
 use GFPHP\Config;
 use GFPHP\Debug;
+use GFPHP\Http\Request;
+use GFPHP\Http\Request\Data;
 use GFPHP\Router, GFPHP\Cache, GFPHP\Loader, GFPHP\Hooks;
 use GFPHP\Model;
 
@@ -232,18 +234,20 @@ function mkPathDir($path, $mode = 0777)
  */
 function getValue($params, $array, $default = null)
 {
-    if ($params == FALSE) {
+    if ($params === FALSE) {
         return $array;
-    } else if (is_array($params)) {
+    }
+
+    if (is_array($params)) {
         $data = [];
         foreach ($params as $key) {
             $data[$key] = getValue($key, $array);
         }
 
         return $data;
-    } else {
-        return isset($array[$params]) ? $array[$params] : $default;
     }
+
+    return isset($array[$params]) ? $array[$params] : $default;
 }
 
 /**
@@ -252,11 +256,11 @@ function getValue($params, $array, $default = null)
  * @param bool $params
  *
  * @param bool $default
- * @return array|bool|null
+ * @return array|bool|null|Data
  */
 function GET($params = false, $default = null)
 {
-    return getValue($params, $_GET, $default);
+    return GFPHP\Http\Request::$get->get($params, $default);
 }
 
 
@@ -266,11 +270,11 @@ function GET($params = false, $default = null)
  * @param bool $params
  *
  * @param null $default
- * @return array|bool|null
+ * @return array|bool|null|Data
  */
 function POST($params = false, $default = null)
 {
-    return getValue($params, $_POST, $default);
+    return Request::$post->get($params,$default);
 }
 
 
@@ -279,11 +283,11 @@ function POST($params = false, $default = null)
  *
  * @param $params
  *
- * @return array|bool|null
+ * @return array|bool|null|Data
  */
 function FILES($params = false)
 {
-    return getValue($params, $_FILES);
+    return Request::$file->get($params);
 }
 
 /**
@@ -292,11 +296,11 @@ function FILES($params = false)
  * @param bool $params
  *
  * @param null $default
- * @return array|bool|null
+ * @return array|bool|null|Data
  */
 function SESSION($params = false, $default = null)
 {
-    return getValue($params, $_SESSION, $default);
+    return Request::$session->get($params,$default);
 }
 
 /**
@@ -305,11 +309,11 @@ function SESSION($params = false, $default = null)
  * @param bool $params
  *
  * @param null $default
- * @return array|bool|null
+ * @return array|bool|null|Data
  */
 function COOKIE($params = false, $default = null)
 {
-    return getValue($params, $_COOKIE, $default);
+    return Request::$cookie->get($params,$default);
 }
 
 /**
@@ -318,15 +322,11 @@ function COOKIE($params = false, $default = null)
  * @param bool $params
  *
  * @param null $default
- * @return array|bool|null
+ * @return array|bool|null|Data
  */
 function REQUEST($params = FALSE, $default = null)
 {
-    $GET = $_GET;
-    unset($GET['_router']);
-    $_REQUEST = array_merge($_POST, $GET);
-
-    return getValue($params, $_REQUEST, $default);
+    return Request::$request->get($params,$default);
 }
 
 /**
