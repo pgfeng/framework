@@ -80,6 +80,7 @@ class Request
      * @var null|string
      */
     public static $routeUri = null;
+
     /**
      * 初始化
      */
