@@ -51,7 +51,32 @@ class Router
      */
     public static function init()
     {
+
+        //==错误处理
         error_reporting(Config::config('error_reporting'));
+
+        //==请求初始化
+        Request::init();
+
+        define('__URI__', Request::$routeUri);
+        //==请求类型
+        define('REQUEST_METHOD', Request::$method);
+
+        //==是否为GET请求
+        define('IS_GET', Request::isGetMethod());
+
+        //==是否为POST请求
+        define('IS_POST', Request::isPostMethod());
+
+        //==是否为PUT请求
+        define('IS_PUT', Request::isPutMethod());
+
+        //==是否为DELETE请求
+        define('IS_DELETE', Request::isDeleteMethod());
+
+        //==是否为AJAX请求
+        define('IS_AJAX', Request::isAjaxHttpRequest());
+
         self::all('(.*)', static function ($router) {
             $uris = explode('/', $router);
             $uris = array_filter($uris, static function ($value) {
@@ -85,24 +110,6 @@ class Router
             include $filename;
         }
 
-        Request::init();
-        //==请求类型
-        define('REQUEST_METHOD', Request::$method);
-
-        //==是否为GET请求
-        define('IS_GET', Request::isGetMethod());
-
-        //==是否为POST请求
-        define('IS_POST', Request::isPostMethod());
-
-        //==是否为PUT请求
-        define('IS_PUT', Request::isPutMethod());
-
-        //==是否为DELETE请求
-        define('IS_DELETE', Request::isDeleteMethod());
-
-        //==是否为AJAX请求
-        define('IS_AJAX', Request::isAjaxHttpRequest());
     }
 
     public static function buildAnnotation($app_name)

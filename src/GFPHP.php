@@ -55,12 +55,8 @@ class GFPHP
 
         Hooks::init();
 
-        if (isset($_GET['_router'])) {
-            define('__URI__', $_GET['_router']);
-            unset($_GET['_router']);
-        } else {
-            define('__URI__', '');
-        }
+        Router::init();
+        
         self::$Template = new Template();
         if (Config::config('develop_mod')) {
             $whoops = new \Whoops\Run;
@@ -71,7 +67,6 @@ class GFPHP
         }
 
         self::$app_name = $app_name;
-        Router::init();
     }
 
     /**

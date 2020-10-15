@@ -70,11 +70,16 @@ class Request
     public static $method;
 
     /**
-     * 路由地址
+     * 真实请求地址 携带参数
      * @var null | string
      */
     public static $requestUri = null;
 
+    /**
+     * 路由地址 不携带参数
+     * @var null|string
+     */
+    public static $routeUri = null;
     /**
      * 初始化
      */
@@ -88,6 +93,7 @@ class Request
         }
         self::$header = new Data($headers);
         self::$server = new Data($_SERVER);
+        self::$routeUri = $_GET['_router'];
         unset($_GET['_router'], $_REQUEST['_router']);
         self::$get = new Data($_GET);
         self::$post = new Data($_POST);
