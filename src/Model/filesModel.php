@@ -125,7 +125,7 @@ class filesModel extends Model
         /**
          * 验证包含后缀名的文件
          */
-        $extends = explode('.', $file);
+        $extends = explode('.', $file['name']);
         $size = count($extends);
         if ($size > 1) {
             $ext = $extends[$size - 1];
