@@ -116,9 +116,30 @@ class filesModel extends Model
 
     /**
      * 验证格式
+     * @param $file
+     * @param $allow_type
+     * @return array
      */
     public function checkType($file, $allow_type)
     {
+        /**
+         * 验证包含后缀名的文件
+         */
+        $extends = explode('.', $file);
+        $size = count($extends);
+        if ($size > 1) {
+            $ext = $extends[$size - 1];
+            if (in_array($ext, $allow_type, true)) {
+                return [
+                    'status' => true,
+                    'msg' => '效验成功',
+                    'ext' => $ext,
+                ];
+            }
+        }
+        /**
+         * 验证不含后缀名的文件
+         */
         $repository = new JsonRepository();
         $Extensions = $repository->findExtensions($file['type']);
         if (count($Extensions) === 0) {
@@ -126,21 +147,21 @@ class filesModel extends Model
                 'status' => false,
                 'msg' => "未知的MIME类型，" . $file['type'],
             ];
-        } else {
-            foreach ($Extensions as $ext) {
-                if (in_array(strtolower($ext), $allow_type, true)) {
-                    return [
-                        'status' => true,
-                        'msg' => "效验成功",
-                        'ext' => $ext
-                    ];
-                }
-            }
-            return [
-                'status' => false,
-                'msg' => '您上传的文件格式有误！'
-            ];
         }
+
+        foreach ($Extensions as $ext) {
+            if (in_array(strtolower($ext), $allow_type, true)) {
+                return [
+                    'status' => true,
+                    'msg' => "效验成功",
+                    'ext' => $ext
+                ];
+            }
+        }
+        return [
+            'status' => false,
+            'msg' => '您上传的文件格式有误！'
+        ];
     }
 
     /**
@@ -207,10 +228,10 @@ class filesModel extends Model
                                     'path' => $path,
                                     'msg' => '上传成功',
                                 ];
-                            }else{
+                            } else {
                                 return [
                                     'status' => false,
-                                    'msg'    => "系统故障，请稍后重试!"
+                                    'msg' => "系统故障，请稍后重试!"
                                 ];
                             }
                         }
@@ -267,7 +288,7 @@ class filesModel extends Model
                             'path' => $path,
                             'msg' => '上传成功',
                         ];
-                    }else{
+                    } else {
 
                         return [
                             'status' => false,
@@ -347,8 +368,7 @@ class filesModel extends Model
         $this->Where('file_id', $file_id);
         if ($all) {
             return $this->getOne();
-        }
-        else {
+        } else {
             return $this->getOne('file_path');
         }
     }
