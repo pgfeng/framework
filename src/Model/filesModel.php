@@ -81,7 +81,7 @@ class filesModel extends Model
             $md5 = md5($data);
             if ($file = $this->getFileByMd5($md5)) {
                 return [
-                    'status' => 'true',
+                    'status' => true,
                     'path' => $file['file_path'],
                     'msg' => '上传成功！！',
                 ];
@@ -238,7 +238,7 @@ class filesModel extends Model
                     }
                 } else {
                     $f = [
-                        'status' => 'false',
+                        'status' => false,
                         'msg' => $this->getErrorMsg($error),
                     ];
                 }
@@ -251,7 +251,7 @@ class filesModel extends Model
                 $md5 = md5_file($file['tmp_name']);
                 if ($rfile = $this->getFileByMd5($md5)) {
                     return [
-                        'status' => 'true',
+                        'status' => true,
                         'path' => $rfile['file_path'],
                         'msg' => '上传成功！！',
                     ];
