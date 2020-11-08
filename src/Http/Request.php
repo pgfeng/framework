@@ -266,7 +266,7 @@ class Request
      */
     public static function getHost()
     {
-        return self::$server->get('SERVER_NAME');
+        return self::$server->get('HTTP_HOST');
     }
 
     /**
