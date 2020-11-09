@@ -95,9 +95,9 @@ class DataObject extends ArrayObject implements \JsonSerializable
         if (!$this->is_row && $this->table === 'Data') {
             new Exception("数据不是单行数据库数据!");
             return FALSE;
-        } else {
-            return DB::table($this->table, $this->DBName)->where($primary_key, $this->storage->$primary_key)->delete();
         }
+
+        return DB::table($this->table, $this->DBName)->where($primary_key, $this->storage->$primary_key)->delete();
     }
 
     /**
@@ -144,6 +144,18 @@ class DataObject extends ArrayObject implements \JsonSerializable
     public function offsetUnset($offset)
     {
         unset($this->storage[$offset]);
+    }
+
+    /**
+     * 是否为空
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        if (empty($this->storage)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -212,9 +224,9 @@ class DataObject extends ArrayObject implements \JsonSerializable
         $data = current($this->storage);
         if (!empty($data)) {
             return new DataObject($data);
-        } else {
-            return NULL;
         }
+
+        return NULL;
     }
 
     /**
