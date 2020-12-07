@@ -58,7 +58,9 @@ class Router
         //==请求初始化
         Request::init();
 
+        //==设置URI
         define('__URI__', Request::$routeUri);
+
         //==请求类型
         define('REQUEST_METHOD', Request::$method);
 
@@ -109,7 +111,6 @@ class Router
         foreach (glob(BASE_PATH . "Router" . DIRECTORY_SEPARATOR . GFPHP::$app_name . DIRECTORY_SEPARATOR . "*.php") as $filename) {
             include $filename;
         }
-
     }
 
     public static function buildAnnotation($app_name)
@@ -178,7 +179,7 @@ class Router
         $method = strtoupper($method);
         $routers = self::$routes[$method];
         self::$routes[$method] = [];
-        self::$routes[$method][str_replace('\\', '/', dirname($_SERVER['PHP_SELF']) . '') . $params[0]] = $params[1];
+        self::$routes[$method][str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']) . '') . $params[0]] = $params[1];
         foreach ($routers as $uri => $route) {
             self::$routes[$method][$uri] = $route;
         }
@@ -220,6 +221,8 @@ class Router
                 }
             }
         }
+//        dump($callback);
+//        exit;/**/
         if (!$callback) {
             $callback = static function () {
                 header($_SERVER['SERVER_PROTOCOL'] . " 404 Not Found");

@@ -14,6 +14,7 @@ use GFPHP\Command\Handler;
 use GFPHP\Command\ModelHandler;
 use GFPHP\Command\ModuleHandler;
 use GFPHP\Command\RouterHandler;
+use GFPHP\Command\RunHandler;
 use League\CLImate\CLImate;
 
 /**
@@ -61,6 +62,7 @@ class Command
         $this->addHandler(new ColumnHandler($this));
         $this->addHandler(new ControllerHandler($this));
         $this->addHandler(new RouterHandler($this));
+        $this->addHandler(new RunHandler($this));
         $Handlers = Config::command('CommandHandlers');
 
         /**

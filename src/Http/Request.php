@@ -94,7 +94,7 @@ class Request
         }
         self::$header = new Data($headers);
         self::$server = new Data($_SERVER);
-        self::$routeUri = $_GET['_router'];
+        self::$routeUri = isset($_GET['_router']) ? $_GET['_router'] : substr($_SERVER['PATH_INFO'],1);
         unset($_GET['_router'], $_REQUEST['_router']);
         self::$get = new Data($_GET);
         self::$post = new Data($_POST);

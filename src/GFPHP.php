@@ -31,6 +31,10 @@ class GFPHP
      */
     public static function init($app_name = 'app')
     {
+
+        //== 绑定项目目录
+        self::$app_name = $app_name;
+
         if (!defined('BASE_PATH')) {
             exit('Not Define BASE_PATH');
         }
@@ -56,7 +60,7 @@ class GFPHP
         Hooks::init();
 
         Router::init();
-        
+
         self::$Template = new Template();
         if (Config::config('develop_mod')) {
             $whoops = new \Whoops\Run;
@@ -65,8 +69,6 @@ class GFPHP
             }
             $whoops->register();
         }
-
-        self::$app_name = $app_name;
     }
 
     /**
