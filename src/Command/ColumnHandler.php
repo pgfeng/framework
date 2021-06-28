@@ -155,7 +155,7 @@ class ColumnHandler extends Handler
     private function buildTableColumn($table, $config, $nameSpace, $columnPath)
     {
         $columns = DB::table('', $config)->query('desc ' . Config::database($config)['table_pre'] . $table);
-        $columns_comment = DB::table('', $config)->query('select column_name,column_comment from information_schema.columns where table_schema ="' . Config::database($config)['name'] . '"  and table_name = "' . Config::database($config)['table_pre'] . $table . '";');
+        $columns_comment = DB::table('', $config)->query('select column_name,column_comment from information_schema.columns where table_schema =\'' . Config::database($config)['name'] . '\'  and table_name = \'' . Config::database($config)['table_pre'] . $table . '\';');
         $columns_comment = $columns_comment->transPrimaryIndex('column_name');
         $const = '';
         foreach ($columns as $column) {
